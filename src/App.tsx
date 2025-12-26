@@ -13,6 +13,7 @@ import { DailyChallenge } from './components/DailyChallenge'
 import { Leaderboard } from './components/Leaderboard'
 import { TournamentView } from './components/TournamentView'
 import { BadgeShowcase } from './components/BadgeShowcase'
+import { ConfettiCelebration } from './components/ConfettiCelebration'
 import { Button } from './components/ui/button'
 import { ArrowLeft, Shuffle } from '@phosphor-icons/react'
 import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge } from './lib/types'
@@ -69,6 +70,7 @@ function App() {
   const [tournamentEntries, setTournamentEntries] = useKV<TournamentEntry[]>('ecorise-tournaments', [])
   const [playerBadges, setPlayerBadges] = useKV<PlayerBadge[]>('ecorise-badges', [])
   const [currentUserId, setCurrentUserId] = useState<string>('')
+  const [showStreakConfetti, setShowStreakConfetti] = useState(false)
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
@@ -522,6 +524,7 @@ function App() {
 
           if (newStreak >= 7 && !badges.some(b => b.type === 'streak-master')) {
             setTimeout(() => {
+              setShowStreakConfetti(true)
               toast.success('🔥 STREAK MASTER BADGE EARNED! 7 days in a row!', {
                 duration: 6000
               })
@@ -595,6 +598,12 @@ function App() {
     if (!exists) {
       setPlayerBadges(current => [...(current ?? []), badge])
       toast.success(`🏆 Badge Earned: ${badge.type}!`, { duration: 4000 })
+      
+      if (badge.type === 'streak-master') {
+        setTimeout(() => {
+          setShowStreakConfetti(true)
+        }, 500)
+      }
     }
   }
 
@@ -726,6 +735,13 @@ function App() {
         type={activePowerUp as any}
         isActive={!!activePowerUp}
         onComplete={() => setActivePowerUp(null)}
+      />
+
+      <ConfettiCelebration
+        isActive={showStreakConfetti}
+        onComplete={() => setShowStreakConfetti(false)}
+        duration={5000}
+        particleCount={100}
       />
       
       <div className="relative z-10 min-h-screen p-4 md:p-8">
