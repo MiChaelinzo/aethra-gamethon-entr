@@ -20,11 +20,23 @@ This is a tile-based puzzle game with multiple levels, persistent progress track
 - **Success criteria**: Level completes when target score is reached within the move limit; players see ecosystem transformation in real-time
 
 ### Tile-Matching Mechanic
-- **Functionality**: Grid-based system where players match 3+ adjacent tiles representing eco-solutions. Each biome features unique tiles: general solutions (solar panels, trees, wind turbines, recycling bins), tundra-specific (ice crystals, arctic wildlife, clean air auroras), and rainforest-specific (exotic orchids, jaguars, medicinal plants)
-- **Purpose**: Familiar, accessible mechanic that reinforces learning through repetition while introducing biome-specific environmental challenges
+- **Functionality**: Grid-based system where players match 3+ adjacent tiles representing eco-solutions. Each biome features unique tiles: general solutions (solar panels, trees, wind turbines, recycling bins), tundra-specific (ice crystals, arctic wildlife, clean air auroras), rainforest-specific (exotic orchids, jaguars, medicinal plants), and **rare power-up tiles** (supernova, tsunami, earthquake, meteor, phoenix) that spawn randomly with 2-3% chance
+- **Purpose**: Familiar, accessible mechanic that reinforces learning through repetition while introducing biome-specific environmental challenges and exciting power-up moments
 - **Trigger**: Player clicks/taps tiles to swap adjacent pieces
-- **Progression**: Select tile → Swap with adjacent → Match forms → Resources collected → Solution deployed
-- **Success criteria**: Valid matches award points and resources; invalid moves provide gentle feedback
+- **Progression**: Select tile → Swap with adjacent → Match forms → Resources collected → Solution deployed → (Power-up triggers mega-animation if matched)
+- **Success criteria**: Valid matches award points and resources; power-ups trigger spectacular screen-wide animations and clear all adjacent tiles with 3x score multiplier
+
+### Power-Up System
+- **Functionality**: Five ultra-rare power-up tiles with unique mega-animations that trigger full-screen visual spectacles when matched
+- **Purpose**: Creates moments of excitement and surprise, rewarding players with spectacular effects and massive point bonuses
+- **Trigger**: Power-ups spawn randomly (2-3% chance) and activate when successfully matched
+- **Progression**: Discover power-up → Match it → Full-screen mega-animation plays → All adjacent tiles cleared → Massive CO2 reduction bonus
+- **Success criteria**: Each power-up has a distinct animation:
+  - **Supernova** ☀️: Explosive radial burst with 40+ golden particles, 1500ms duration, clears 3x3 area (10,000 kg CO2)
+  - **Tsunami** 🌊: Rising blue wave sweeps across screen, 1300ms duration, clears entire row/column (8,500 kg CO2)
+  - **Earthquake** 🏔️: Screen shakes with tectonic rumble, 1200ms duration, strategic board reshuffle (7,000 kg CO2)
+  - **Meteor** ☄️: Purple cosmic impacts rain down, 1400ms duration, clears all tiles of chosen type (9,500 kg CO2)
+  - **Phoenix** 🔥: Rebirth animation with 50+ flame particles, 1800ms duration, transforms board optimally (12,000 kg CO2)
 
 ### Visual Ecosystem Transformation
 - **Functionality**: Background gradually transforms from polluted (gray, smoggy) to healthy (vibrant, green) based on player progress
@@ -96,7 +108,14 @@ Animations should celebrate player success and make the cause-and-effect relatio
 - **Desert**: Golden star bursts radiate with solar energy
 - **City**: Electric blue tech flashes pulse outward
 
-**Particle System**: Each tile type has custom particle configurations with specific colors, shapes (leaves, snowflakes, stars, water droplets, lightning bolts, petals), count (8-20 particles), duration (600-1200ms), and spread patterns. Particles animate from tile center outward using natural easing curves.
+**Particle System**: Each tile type has custom particle configurations with specific colors, shapes (leaves, snowflakes, stars, water droplets, lightning bolts, petals, explosions, flames, comets), count (8-20 particles for normal tiles, 30-60 for power-ups), duration (600-1200ms for normal, 1200-1800ms for power-ups), and spread patterns. Particles animate from tile center outward using natural easing curves. Power-up animations are full-screen spectacles with unique physics and multiple animation layers.
+
+**Power-Up Mega-Animations**: Each power-up tile triggers a dramatic full-screen effect:
+- **Supernova**: Radial golden explosion with pulsing core and 40+ particle rays
+- **Tsunami**: Multiple blue wave layers rising from bottom with rippling water particles
+- **Earthquake**: Screen shake effect with brown/amber tectonic plates and debris
+- **Meteor**: Purple cosmic projectiles falling diagonally with trailing comet tails
+- **Phoenix**: Rising bird silhouette in flames with ascending ember particles and rebirth transformation
 
 **Background Effects**: Full-screen biome atmosphere effects trigger during matches, including falling leaves, rising bubbles, drifting snow, floating particles specific to the current biome.
 
@@ -129,6 +148,7 @@ Avoid lengthy animations that slow gameplay—keep tile matching snappy (150-200
   - General tiles: Leaf (tree planting), Recycle, SolarPanel, Wind, Drop (water), Lightning (energy)
   - Tundra tiles: Snowflake (ice crystals), Bird (arctic wildlife), Sparkle (aurora/clean air)
   - Rainforest tiles: FlowerLotus (exotic orchids), Cat (jaguar/biodiversity), Leaf (medicinal plants)
+  - Power-up tiles: Sun (supernova), Waves (tsunami), Mountains (earthquake), Meteor (cosmic impact), Fire (phoenix rebirth)
   - UI icons: Heart (health), Star (achievements) from Phosphor Icons
   - All icons using duotone weight for richer visual depth
 

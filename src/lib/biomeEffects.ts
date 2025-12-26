@@ -3,7 +3,7 @@ import { TileType } from './types'
 export interface ParticleConfig {
   count: number
   colors: string[]
-  shapes: 'circle' | 'leaf' | 'snowflake' | 'star' | 'water' | 'lightning' | 'petal'
+  shapes: 'circle' | 'leaf' | 'snowflake' | 'star' | 'water' | 'lightning' | 'petal' | 'explosion' | 'fire' | 'comet'
   duration: number
   spread: number
 }
@@ -92,6 +92,41 @@ export const BIOME_EFFECTS: Record<TileType, ParticleConfig> = {
     shapes: 'leaf',
     duration: 850,
     spread: 105
+  },
+  supernova: {
+    count: 40,
+    colors: ['#fbbf24', '#fb923c', '#f97316', '#ef4444', '#fef3c7'],
+    shapes: 'explosion',
+    duration: 1500,
+    spread: 250
+  },
+  tsunami: {
+    count: 35,
+    colors: ['#0284c7', '#0ea5e9', '#38bdf8', '#7dd3fc', '#e0f2fe'],
+    shapes: 'water',
+    duration: 1300,
+    spread: 220
+  },
+  earthquake: {
+    count: 30,
+    colors: ['#78350f', '#92400e', '#b45309', '#d97706', '#f59e0b'],
+    shapes: 'circle',
+    duration: 1200,
+    spread: 200
+  },
+  meteor: {
+    count: 45,
+    colors: ['#6b21a8', '#7c3aed', '#8b5cf6', '#a78bfa', '#c4b5fd'],
+    shapes: 'comet',
+    duration: 1400,
+    spread: 230
+  },
+  phoenix: {
+    count: 50,
+    colors: ['#ea580c', '#f97316', '#fb923c', '#fdba74', '#fed7aa', '#ffedd5'],
+    shapes: 'fire',
+    duration: 1800,
+    spread: 280
   }
 }
 

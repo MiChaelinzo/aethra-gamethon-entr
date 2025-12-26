@@ -1,4 +1,4 @@
-export type TileType = 'tree' | 'solar' | 'wind' | 'recycle' | 'water' | 'energy' | 'ice' | 'penguin' | 'aurora' | 'orchid' | 'jaguar' | 'medicinal'
+export type TileType = 'tree' | 'solar' | 'wind' | 'recycle' | 'water' | 'energy' | 'ice' | 'penguin' | 'aurora' | 'orchid' | 'jaguar' | 'medicinal' | 'supernova' | 'tsunami' | 'earthquake' | 'meteor' | 'phoenix'
 
 export interface Tile {
   id: string
@@ -6,6 +6,7 @@ export interface Tile {
   row: number
   col: number
   isMatched?: boolean
+  isPowerUp?: boolean
 }
 
 export interface Level {

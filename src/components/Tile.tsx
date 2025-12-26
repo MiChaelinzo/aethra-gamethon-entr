@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { Tree, Wind, Recycle, Drop, Lightning, Snowflake, Bird, Sparkle, FlowerLotus, Cat, Leaf } from '@phosphor-icons/react'
+import { Tree, Wind, Recycle, Drop, Lightning, Snowflake, Bird, Sparkle, FlowerLotus, Cat, Leaf, Sun, Waves, Mountains, Meteor, Fire } from '@phosphor-icons/react'
 import { Tile as TileType } from '@/lib/types'
 import { TILE_INFO } from '@/lib/gameData'
 import { BIOME_EFFECTS } from '@/lib/biomeEffects'
@@ -25,6 +25,11 @@ const iconMap = {
   FlowerLotus,
   Cat,
   Leaf,
+  SunHorizon: Sun,
+  Waves,
+  Mountains,
+  Comet: Meteor,
+  FireSimple: Fire,
   SolarPanel: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
       <rect width="256" height="256" fill="none"/>
@@ -42,10 +47,13 @@ const iconMap = {
   )
 }
 
+const POWERUP_TYPES = ['supernova', 'tsunami', 'earthquake', 'meteor', 'phoenix']
+
 export function Tile({ tile, isSelected, isMatched = false, onClick }: TileProps) {
   const info = TILE_INFO[tile.type]
   const IconComponent = iconMap[info.icon as keyof typeof iconMap]
   const particleConfig = BIOME_EFFECTS[tile.type]
+  const isPowerUp = tile.isPowerUp || POWERUP_TYPES.includes(tile.type)
 
   return (
     <motion.div
@@ -66,17 +74,17 @@ export function Tile({ tile, isSelected, isMatched = false, onClick }: TileProps
               initial={{ opacity: 0 }}
               animate={{ 
                 opacity: [0, 0.8, 0],
-                scale: [1, 1.3, 1.5],
+                scale: [1, isPowerUp ? 2 : 1.3, isPowerUp ? 2.5 : 1.5],
                 boxShadow: [
                   '0 0 0px rgba(255,255,255,0)',
-                  `0 0 30px ${particleConfig.colors[0]}`,
+                  `0 0 ${isPowerUp ? 60 : 30}px ${particleConfig.colors[0]}`,
                   '0 0 0px rgba(255,255,255,0)'
                 ]
               }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
+              transition={{ duration: isPowerUp ? 1 : 0.6, ease: 'easeOut' }}
               style={{
-                background: `radial-gradient(circle, ${particleConfig.colors[0]}40 0%, transparent 70%)`
+                background: `radial-gradient(circle, ${particleConfig.colors[0]}${isPowerUp ? '60' : '40'} 0%, transparent 70%)`
               }}
             />
             <ParticleEffect 
@@ -94,19 +102,67 @@ export function Tile({ tile, isSelected, isMatched = false, onClick }: TileProps
           border-4 transition-all duration-200 hover:shadow-lg relative overflow-visible
           ${isSelected ? 'border-lime-500 shadow-lg' : 'border-transparent'}
           ${isMatched ? 'animate-pulse' : ''}
+          ${isPowerUp ? 'bg-gradient-to-br from-yellow-100 via-orange-50 to-purple-100 shadow-xl' : ''}
         `}
       >
+        {isPowerUp && (
+          <motion.div
+            className="absolute inset-0 rounded-lg"
+            animate={{
+              boxShadow: [
+                '0 0 10px rgba(251, 146, 60, 0.5)',
+                '0 0 20px rgba(251, 146, 60, 0.8)',
+                '0 0 10px rgba(251, 146, 60, 0.5)'
+              ]
+            }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+        )}
+        
         <motion.div 
-          className={`w-3/4 h-3/4 ${info.color}`}
+          className={`w-3/4 h-3/4 ${info.color} relative z-10`}
           animate={isMatched ? {
-            scale: [1, 1.2, 0.8, 1.1, 0],
-            rotate: [0, -10, 10, -5, 0],
+            scale: [1, isPowerUp ? 1.5 : 1.2, isPowerUp ? 1 : 0.8, isPowerUp ? 1.3 : 1.1, 0],
+            rotate: [0, isPowerUp ? -15 : -10, isPowerUp ? 15 : 10, isPowerUp ? -8 : -5, 0],
             opacity: [1, 1, 1, 0.5, 0]
+          } : isPowerUp ? {
+            scale: [1, 1.1, 1],
+            rotate: [0, 5, -5, 0]
           } : {}}
-          transition={isMatched ? { duration: 0.8, ease: 'easeInOut' } : {}}
+          transition={isMatched ? 
+            { duration: isPowerUp ? 1.2 : 0.8, ease: 'easeInOut' } : 
+            { duration: 2, repeat: Infinity, ease: 'easeInOut' }
+          }
         >
           <IconComponent />
         </motion.div>
+
+        {isPowerUp && !isMatched && (
+          <>
+            {[...Array(4)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1 h-1 rounded-full bg-orange-400"
+                style={{
+                  top: '50%',
+                  left: '50%',
+                }}
+                animate={{
+                  x: [0, Math.cos(i * Math.PI / 2) * 30],
+                  y: [0, Math.sin(i * Math.PI / 2) * 30],
+                  opacity: [1, 0],
+                  scale: [0, 1]
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  delay: i * 0.2,
+                  ease: 'easeOut'
+                }}
+              />
+            ))}
+          </>
+        )}
       </Card>
     </motion.div>
   )

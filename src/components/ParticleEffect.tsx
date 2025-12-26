@@ -87,6 +87,45 @@ const ShapeComponent = ({ shape, color }: { shape: string; color: string }) => {
           />
         </svg>
       )
+    case 'explosion':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
+          <path
+            d="M12 2l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z"
+            fill={color}
+            stroke={color}
+            strokeWidth="1.5"
+          />
+          <circle cx="12" cy="12" r="3" fill={color} opacity="0.8" />
+        </svg>
+      )
+    case 'fire':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
+          <path
+            d="M12 2c-1 4-4 6-4 10 0 3 2 6 5 6s5-3 5-6c0-4-3-6-4-10z"
+            fill={color}
+            opacity="0.9"
+          />
+          <path
+            d="M12 8c-0.5 2-2 3-2 5 0 1.5 1 3 2.5 3s2.5-1.5 2.5-3c0-2-1.5-3-2-5z"
+            fill="rgba(255,255,255,0.6)"
+          />
+        </svg>
+      )
+    case 'comet':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
+          <circle cx="16" cy="8" r="4" fill={color} />
+          <path
+            d="M14 10L4 20M12 8L2 18M14 6L6 14"
+            stroke={color}
+            strokeWidth="2"
+            strokeLinecap="round"
+            opacity="0.6"
+          />
+        </svg>
+      )
     default:
       return (
         <div

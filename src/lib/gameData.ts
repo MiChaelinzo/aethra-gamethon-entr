@@ -96,6 +96,46 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     color: 'text-emerald-600',
     fact: '70% of cancer-fighting plants come from rainforests. Preserving these ecosystems protects both human health and planetary climate.',
     co2Impact: 2200
+  },
+  supernova: {
+    type: 'supernova',
+    name: 'Solar Supernova',
+    icon: 'SunHorizon',
+    color: 'text-yellow-400',
+    fact: 'A supernova of renewable energy! This mega power-up clears all adjacent tiles and supercharges your restoration efforts with 10,000 kg of CO2 reduction.',
+    co2Impact: 10000
+  },
+  tsunami: {
+    type: 'tsunami',
+    name: 'Ocean Wave',
+    icon: 'Waves',
+    color: 'text-blue-500',
+    fact: 'Ride the wave of change! This powerful tsunami clears an entire row or column and restores ocean ecosystems, preventing 8,500 kg of CO2 emissions.',
+    co2Impact: 8500
+  },
+  earthquake: {
+    type: 'earthquake',
+    name: 'Tectonic Shift',
+    icon: 'Mountains',
+    color: 'text-amber-700',
+    fact: 'Shake up the status quo! This geological power reshuffles the board strategically and plants 7,000 kg worth of carbon-capturing trees.',
+    co2Impact: 7000
+  },
+  meteor: {
+    type: 'meteor',
+    name: 'Asteroid Impact',
+    icon: 'Comet',
+    color: 'text-purple-600',
+    fact: 'Impact for good! This cosmic power clears all tiles of a chosen type, creating space for new growth and capturing 9,500 kg of CO2.',
+    co2Impact: 9500
+  },
+  phoenix: {
+    type: 'phoenix',
+    name: 'Phoenix Rebirth',
+    icon: 'FireSimple',
+    color: 'text-orange-500',
+    fact: 'Rise from the ashes! The phoenix transforms the entire board, creating optimal matches and symbolizing Earth\'s renewal with 12,000 kg CO2 offset.',
+    co2Impact: 12000
   }
 }
 

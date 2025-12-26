@@ -1,6 +1,7 @@
 import { Tile, TileType, Level } from './types'
 
 const TILE_TYPES: TileType[] = ['tree', 'solar', 'wind', 'recycle', 'water', 'energy']
+const POWERUP_TYPES: TileType[] = ['supernova', 'tsunami', 'earthquake', 'meteor', 'phoenix']
 
 export function generateGrid(size: number, level?: Level): Tile[] {
   const grid: Tile[] = []
@@ -8,11 +9,13 @@ export function generateGrid(size: number, level?: Level): Tile[] {
   
   for (let row = 0; row < size; row++) {
     for (let col = 0; col < size; col++) {
+      const isPowerUp = Math.random() < 0.03
       grid.push({
         id: `${row}-${col}`,
-        type: availableTiles[Math.floor(Math.random() * availableTiles.length)],
+        type: isPowerUp ? POWERUP_TYPES[Math.floor(Math.random() * POWERUP_TYPES.length)] : availableTiles[Math.floor(Math.random() * availableTiles.length)],
         row,
-        col
+        col,
+        isPowerUp
       })
     }
   }
@@ -32,15 +35,54 @@ export function findMatches(grid: Tile[], size: number): Tile[] {
       
       if (horizontalMatch.length >= 3) {
         horizontalMatch.forEach(t => matches.add(t.id))
+        
+        const hasPowerUp = horizontalMatch.some(t => t.isPowerUp)
+        if (hasPowerUp) {
+          horizontalMatch.forEach(t => {
+            if (t.isPowerUp) {
+              const adjacentTiles = getAdjacentTiles(grid, size, t.row, t.col)
+              adjacentTiles.forEach(adj => matches.add(adj.id))
+            }
+          })
+        }
       }
       
       if (verticalMatch.length >= 3) {
         verticalMatch.forEach(t => matches.add(t.id))
+        
+        const hasPowerUp = verticalMatch.some(t => t.isPowerUp)
+        if (hasPowerUp) {
+          verticalMatch.forEach(t => {
+            if (t.isPowerUp) {
+              const adjacentTiles = getAdjacentTiles(grid, size, t.row, t.col)
+              adjacentTiles.forEach(adj => matches.add(adj.id))
+            }
+          })
+        }
       }
     }
   }
   
   return grid.filter(tile => matches.has(tile.id))
+}
+
+function getAdjacentTiles(grid: Tile[], size: number, row: number, col: number): Tile[] {
+  const adjacent: Tile[] = []
+  const directions = [
+    [-1, -1], [-1, 0], [-1, 1],
+    [0, -1],           [0, 1],
+    [1, -1],  [1, 0],  [1, 1]
+  ]
+  
+  for (const [dr, dc] of directions) {
+    const newRow = row + dr
+    const newCol = col + dc
+    if (newRow >= 0 && newRow < size && newCol >= 0 && newCol < size) {
+      adjacent.push(grid[newRow * size + newCol])
+    }
+  }
+  
+  return adjacent
 }
 
 function checkHorizontalMatch(grid: Tile[], size: number, row: number, col: number): Tile[] {
@@ -132,11 +174,13 @@ export function fillEmpty(grid: Tile[], size: number, level?: Level): Tile[] {
     const missing = size - colTiles.length
     
     for (let i = 0; i < missing; i++) {
+      const isPowerUp = Math.random() < 0.02
       newGrid.push({
         id: `${i}-${col}`,
-        type: availableTiles[Math.floor(Math.random() * availableTiles.length)],
+        type: isPowerUp ? POWERUP_TYPES[Math.floor(Math.random() * POWERUP_TYPES.length)] : availableTiles[Math.floor(Math.random() * availableTiles.length)],
         row: i,
-        col
+        col,
+        isPowerUp
       })
     }
   }

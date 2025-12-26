@@ -8,6 +8,7 @@ import { EducationalCard } from './components/EducationalCard'
 import { LevelComplete } from './components/LevelComplete'
 import { LevelSelect } from './components/LevelSelect'
 import { BiomeBackgroundEffect } from './components/BiomeBackgroundEffect'
+import { PowerUpAnimation } from './components/PowerUpAnimation'
 import { Button } from './components/ui/button'
 import { ArrowLeft, Shuffle } from '@phosphor-icons/react'
 import { Tile, GameState, TileInfo } from './lib/types'
@@ -46,6 +47,7 @@ function App() {
   const [levelCO2, setLevelCO2] = useState(0)
   const [seenTileTypes, setSeenTileTypes] = useKV<string[]>('ecorise-seen-tiles', [])
   const [showBiomeEffect, setShowBiomeEffect] = useState(false)
+  const [activePowerUp, setActivePowerUp] = useState<string | null>(null)
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
@@ -62,13 +64,13 @@ function App() {
     const level = LEVELS.find(l => l.id === levelId)
     if (!level) return
 
-    setGameState({
-      ...state,
+    setGameState((current) => ({
+      ...(current ?? DEFAULT_GAME_STATE),
       currentLevel: levelId,
       score: 0,
       moves: 0,
       pollution: 100
-    })
+    }))
     setGrid(generateGrid(level.gridSize, level))
     setCombo(0)
     setLevelCO2(0)
@@ -79,7 +81,7 @@ function App() {
     if (isProcessing || !currentLevel) return
 
     if (!seen.includes(tile.type)) {
-      setSeenTileTypes([...seen, tile.type])
+      setSeenTileTypes((current) => [...(current ?? []), tile.type])
       setCurrentTileInfo(TILE_INFO[tile.type])
       setShowEducational(true)
     }
@@ -122,29 +124,50 @@ function App() {
     setMatchedTiles(matches)
     setShowBiomeEffect(true)
 
-    const matchScore = matches.length * 50 * (combo + 1)
-    const co2Reduction = matches.reduce((sum, match) => sum + TILE_INFO[match.type].co2Impact, 0)
-    const pollutionReduction = matches.length * 5
+    const powerUpMatch = matches.find(m => m.isPowerUp)
+    if (powerUpMatch) {
+      setActivePowerUp(powerUpMatch.type)
+      
+      const powerUpMessages: Record<string, string> = {
+        supernova: '☀️ SUPERNOVA! Massive energy burst!',
+        tsunami: '🌊 TSUNAMI! Cleansing wave of change!',
+        earthquake: '🏔️ EARTHQUAKE! Reshaping the landscape!',
+        meteor: '☄️ METEOR IMPACT! Cosmic transformation!',
+        phoenix: '🔥 PHOENIX! Rising from the ashes!'
+      }
+      
+      toast.success(powerUpMessages[powerUpMatch.type] || 'POWER-UP ACTIVATED!', {
+        duration: 3000
+      })
+    }
 
-    setGameState({
-      ...state,
-      score: state.score + matchScore,
-      moves: state.moves + 1,
-      pollution: Math.max(0, state.pollution - pollutionReduction),
-      totalCO2Reduced: state.totalCO2Reduced + co2Reduction
-    })
+    const matchScore = matches.length * 50 * (combo + 1) * (powerUpMatch ? 3 : 1)
+    const co2Reduction = matches.reduce((sum, match) => sum + TILE_INFO[match.type].co2Impact, 0)
+    const pollutionReduction = matches.length * (powerUpMatch ? 15 : 5)
+
+    setGameState((current) => ({
+      ...(current ?? DEFAULT_GAME_STATE),
+      score: (current?.score ?? 0) + matchScore,
+      moves: (current?.moves ?? 0) + 1,
+      pollution: Math.max(0, (current?.pollution ?? 100) - pollutionReduction),
+      totalCO2Reduced: (current?.totalCO2Reduced ?? 0) + co2Reduction
+    }))
 
     setLevelCO2(prev => prev + co2Reduction)
     setCombo(prev => prev + 1)
 
-    if (matches.length >= 4) {
-      toast.success(`Amazing! ${matches.length} match combo!`)
+    if (matches.length >= 4 || powerUpMatch) {
+      toast.success(`${powerUpMatch ? 'MEGA ' : ''}Amazing! ${matches.length} match combo!`)
     }
 
-    await new Promise(resolve => setTimeout(resolve, 800))
+    await new Promise(resolve => setTimeout(resolve, powerUpMatch ? 1500 : 800))
 
     setMatchedTiles([])
     setShowBiomeEffect(false)
+    if (powerUpMatch) {
+      await new Promise(resolve => setTimeout(resolve, 500))
+      setActivePowerUp(null)
+    }
 
     let newGrid = removeMatches(currentGrid, matches)
     newGrid = dropTiles(newGrid, currentLevel.gridSize)
@@ -166,17 +189,18 @@ function App() {
   const checkGameEnd = (currentGrid: Tile[]) => {
     if (!currentLevel) return
 
-    const hasWon = state.score >= currentLevel.targetScore
-    const hasLost = state.moves >= currentLevel.movesLimit && !hasWon
+    const currentState = gameState ?? DEFAULT_GAME_STATE
+    const hasWon = currentState.score >= currentLevel.targetScore
+    const hasLost = currentState.moves >= currentLevel.movesLimit && !hasWon
     const noMoves = !hasValidMoves(currentGrid, currentLevel.gridSize)
 
     if (hasWon) {
-      setGameState({
-        ...state,
-        completedLevels: state.completedLevels.includes(currentLevel.id)
-          ? state.completedLevels
-          : [...state.completedLevels, currentLevel.id]
-      })
+      setGameState((current) => ({
+        ...(current ?? DEFAULT_GAME_STATE),
+        completedLevels: (current?.completedLevels ?? []).includes(currentLevel.id)
+          ? (current?.completedLevels ?? [])
+          : [...(current?.completedLevels ?? []), currentLevel.id]
+      }))
       setShowLevelComplete(true)
       toast.success('Level Complete! 🎉')
     } else if (hasLost) {
@@ -203,10 +227,10 @@ function App() {
   }
 
   const handleBackToMenu = () => {
-    setGameState({
-      ...state,
+    setGameState((current) => ({
+      ...(current ?? DEFAULT_GAME_STATE),
       currentLevel: 0
-    })
+    }))
     setGrid([])
   }
 
@@ -245,6 +269,12 @@ function App() {
       <BiomeBackgroundEffect 
         biome={currentLevel?.biome || 'forest'} 
         isActive={showBiomeEffect} 
+      />
+
+      <PowerUpAnimation
+        type={activePowerUp as any}
+        isActive={!!activePowerUp}
+        onComplete={() => setActivePowerUp(null)}
       />
       
       <div className="relative z-10 min-h-screen p-4 md:p-8">
