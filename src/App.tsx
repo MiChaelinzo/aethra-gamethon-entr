@@ -21,6 +21,7 @@ import { MouseTrailControl } from './components/MouseTrailControl'
 import { ParticleThemeSwitcher } from './components/ParticleThemeSwitcher'
 import { ThemeSwitchBurst } from './components/ThemeSwitchBurst'
 import { CollisionMultiplier } from './components/CollisionMultiplier'
+import { HeatmapControl } from './components/HeatmapControl'
 import { Button } from './components/ui/button'
 import { ArrowLeft, Shuffle } from '@phosphor-icons/react'
 import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge, VisualizerStyle, TrailTheme } from './lib/types'
@@ -95,6 +96,9 @@ function App() {
     timestamp: number
   }>>([])
   const [currentMultiplier, setCurrentMultiplier] = useState(1)
+  const [heatmapEnabled, setHeatmapEnabled] = useKV<boolean>('ecorise-heatmap-enabled', false)
+  const [heatmapOpacity, setHeatmapOpacity] = useKV<number>('ecorise-heatmap-opacity', 0.6)
+  const [heatmapDecayRate, setHeatmapDecayRate] = useKV<number>('ecorise-heatmap-decay', 0.95)
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
@@ -107,6 +111,9 @@ function App() {
   const trailEnabled = mouseTrailEnabled ?? true
   const trailIntensity = mouseTrailIntensity ?? 'medium'
   const trailTheme = mouseTrailTheme ?? 'default'
+  const showHeatmap = heatmapEnabled ?? false
+  const heatmapOpacityValue = heatmapOpacity ?? 0.6
+  const heatmapDecayValue = heatmapDecayRate ?? 0.95
   
   const currentLevel = isChallenge && currentChallenge
     ? {
@@ -233,11 +240,19 @@ function App() {
           duration: 2000
         })
       }
+      
+      if (e.ctrlKey && e.key === 'h') {
+        e.preventDefault()
+        setHeatmapEnabled(current => !current)
+        toast(showHeatmap ? 'Collision heatmap disabled' : 'Collision heatmap enabled', {
+          icon: '🔥'
+        })
+      }
     }
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [trailEnabled, trailTheme, state.unlockedPowerUps])
+  }, [trailEnabled, trailTheme, state.unlockedPowerUps, showHeatmap])
 
   useEffect(() => {
     const updateLeaderboard = async () => {
@@ -825,6 +840,7 @@ function App() {
             <p className="font-semibold mb-1">Keyboard Shortcuts:</p>
             <p><kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">Ctrl+P</kbd> Toggle particle trail</p>
             <p><kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">Ctrl+Shift+P</kbd> Cycle themes</p>
+            <p><kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">Ctrl+H</kbd> Toggle collision heatmap</p>
           </div>
         </div>
 
@@ -945,6 +961,14 @@ function App() {
                 isTrailEnabled={trailEnabled}
                 onToggleTrail={setMouseTrailEnabled}
               />
+              <HeatmapControl
+                isEnabled={showHeatmap}
+                opacity={heatmapOpacityValue}
+                decayRate={heatmapDecayValue}
+                onToggle={setHeatmapEnabled}
+                onOpacityChange={setHeatmapOpacity}
+                onDecayRateChange={setHeatmapDecayRate}
+              />
               <MusicControl 
                 isPlaying={musicPlaying} 
                 onToggle={handleToggleMusic}
@@ -984,6 +1008,9 @@ function App() {
                     onTileClick={handleTileClick}
                     onCollisionMultiplier={handleCollisionMultiplier}
                     combo={combo}
+                    heatmapEnabled={showHeatmap}
+                    heatmapOpacity={heatmapOpacityValue}
+                    heatmapDecayRate={heatmapDecayValue}
                   />
                 </motion.div>
               </AnimatePresence>

@@ -3,6 +3,7 @@ import { Tile as TileType } from '@/lib/types'
 import { MatchedTileTrails } from './MatchedTileTrails'
 import { TrailCollisionEffects } from './TrailCollisionEffects'
 import { CollisionZoneIndicator } from './CollisionZoneIndicator'
+import { CollisionHeatmap } from './CollisionHeatmap'
 import { useCollisionZones } from '@/hooks/use-collision-zones'
 import { useEffect } from 'react'
 
@@ -14,6 +15,9 @@ interface GameGridProps {
   onTileClick: (tile: TileType) => void
   onCollisionMultiplier?: (multiplier: number, collisionCount: number, position: { x: number; y: number }) => void
   combo?: number
+  heatmapEnabled?: boolean
+  heatmapOpacity?: number
+  heatmapDecayRate?: number
 }
 
 export function GameGrid({ 
@@ -23,13 +27,24 @@ export function GameGrid({
   matchedTiles = [], 
   onTileClick, 
   onCollisionMultiplier,
-  combo = 0
+  combo = 0,
+  heatmapEnabled = false,
+  heatmapOpacity = 0.6,
+  heatmapDecayRate = 0.95
 }: GameGridProps) {
   const { zones, addCollisionZonesForMatches } = useCollisionZones()
 
   useEffect(() => {
     if (matchedTiles.length > 0) {
       addCollisionZonesForMatches(matchedTiles, Math.max(combo, 1))
+      
+      matchedTiles.forEach(tile => {
+        const intensity = Math.min(1, (combo + 1) * 0.15)
+        const event = new CustomEvent('collision-zone-hit', {
+          detail: { row: tile.row, col: tile.col, intensity }
+        })
+        window.dispatchEvent(event)
+      })
     }
   }, [matchedTiles, combo, addCollisionZonesForMatches])
 
@@ -43,6 +58,13 @@ export function GameGrid({
           gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))`
         }}
       >
+        <CollisionHeatmap
+          gridSize={size}
+          isActive={heatmapEnabled}
+          opacity={heatmapOpacity}
+          decayRate={heatmapDecayRate}
+        />
+        
         {grid.map((tile) => (
           <TileComponent
             key={tile.id}
