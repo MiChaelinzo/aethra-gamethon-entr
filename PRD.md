@@ -87,7 +87,22 @@ Typography should feel modern yet organic, with enough personality to engage you
 
 ## Animations
 
-Animations should celebrate player success and make the cause-and-effect relationship between actions and environmental improvement crystal clear. Use spring physics for tile movements (bouncy, energetic), smooth color transitions for background transformations (2-3 second gradual shifts), and particle effects for matches (leaves, water droplets, sparkles depending on tile type). Avoid lengthy animations that slow gameplay—keep tile matching snappy (150-200ms) while allowing ecosystem changes to be more contemplative (2-3s) since they reward progress.
+Animations should celebrate player success and make the cause-and-effect relationship between actions and environmental improvement crystal clear. Use spring physics for tile movements (bouncy, energetic), smooth color transitions for background transformations (2-3 second gradual shifts), and biome-specific particle effects for matches.
+
+**Tile Match Animations**: When tiles are matched, they trigger unique biome-specific transformations:
+- **Forest/Rainforest**: Green leaves spiral outward with organic falling motion
+- **Ocean**: Blue bubbles rise and expand in rippling circles
+- **Tundra**: Snowflakes cascade and drift with wind physics
+- **Desert**: Golden star bursts radiate with solar energy
+- **City**: Electric blue tech flashes pulse outward
+
+**Particle System**: Each tile type has custom particle configurations with specific colors, shapes (leaves, snowflakes, stars, water droplets, lightning bolts, petals), count (8-20 particles), duration (600-1200ms), and spread patterns. Particles animate from tile center outward using natural easing curves.
+
+**Background Effects**: Full-screen biome atmosphere effects trigger during matches, including falling leaves, rising bubbles, drifting snow, floating particles specific to the current biome.
+
+**Icon Transformations**: Matched tile icons scale, rotate, and fade with multi-stage animations (scale 1→1.2→0.8→1.1→0 over 800ms) while particles explode outward simultaneously.
+
+Avoid lengthy animations that slow gameplay—keep tile matching snappy (150-200ms for selection) while allowing match celebrations to be impactful (800ms) and ecosystem changes to be more contemplative (2-3s).
 
 ## Component Selection
 

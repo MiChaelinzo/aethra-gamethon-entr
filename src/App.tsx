@@ -7,6 +7,7 @@ import { GameStats } from './components/GameStats'
 import { EducationalCard } from './components/EducationalCard'
 import { LevelComplete } from './components/LevelComplete'
 import { LevelSelect } from './components/LevelSelect'
+import { BiomeBackgroundEffect } from './components/BiomeBackgroundEffect'
 import { Button } from './components/ui/button'
 import { ArrowLeft, Shuffle } from '@phosphor-icons/react'
 import { Tile, GameState, TileInfo } from './lib/types'
@@ -36,6 +37,7 @@ function App() {
   const [gameState, setGameState] = useKV<GameState>('ecorise-game-state', DEFAULT_GAME_STATE)
   const [grid, setGrid] = useState<Tile[]>([])
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null)
+  const [matchedTiles, setMatchedTiles] = useState<Tile[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [combo, setCombo] = useState(0)
   const [showEducational, setShowEducational] = useState(false)
@@ -43,6 +45,7 @@ function App() {
   const [showLevelComplete, setShowLevelComplete] = useState(false)
   const [levelCO2, setLevelCO2] = useState(0)
   const [seenTileTypes, setSeenTileTypes] = useKV<string[]>('ecorise-seen-tiles', [])
+  const [showBiomeEffect, setShowBiomeEffect] = useState(false)
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
@@ -116,6 +119,9 @@ function App() {
   const processMatches = async (currentGrid: Tile[], matches: Tile[]) => {
     if (!currentLevel) return
 
+    setMatchedTiles(matches)
+    setShowBiomeEffect(true)
+
     const matchScore = matches.length * 50 * (combo + 1)
     const co2Reduction = matches.reduce((sum, match) => sum + TILE_INFO[match.type].co2Impact, 0)
     const pollutionReduction = matches.length * 5
@@ -135,7 +141,10 @@ function App() {
       toast.success(`Amazing! ${matches.length} match combo!`)
     }
 
-    await new Promise(resolve => setTimeout(resolve, 300))
+    await new Promise(resolve => setTimeout(resolve, 800))
+
+    setMatchedTiles([])
+    setShowBiomeEffect(false)
 
     let newGrid = removeMatches(currentGrid, matches)
     newGrid = dropTiles(newGrid, currentLevel.gridSize)
@@ -233,6 +242,11 @@ function App() {
         animate={{ opacity: gradientOpacity }}
       />
       
+      <BiomeBackgroundEffect 
+        biome={currentLevel?.biome || 'forest'} 
+        isActive={showBiomeEffect} 
+      />
+      
       <div className="relative z-10 min-h-screen p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-6">
@@ -265,6 +279,7 @@ function App() {
                     grid={grid}
                     size={currentLevel?.gridSize || 6}
                     selectedTile={selectedTile}
+                    matchedTiles={matchedTiles}
                     onTileClick={handleTileClick}
                   />
                 </motion.div>

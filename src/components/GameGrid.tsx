@@ -5,10 +5,11 @@ interface GameGridProps {
   grid: TileType[]
   size: number
   selectedTile: TileType | null
+  matchedTiles?: TileType[]
   onTileClick: (tile: TileType) => void
 }
 
-export function GameGrid({ grid, size, selectedTile, onTileClick }: GameGridProps) {
+export function GameGrid({ grid, size, selectedTile, matchedTiles = [], onTileClick }: GameGridProps) {
   return (
     <div 
       className="grid gap-2 mx-auto"
@@ -22,6 +23,7 @@ export function GameGrid({ grid, size, selectedTile, onTileClick }: GameGridProp
           key={tile.id}
           tile={tile}
           isSelected={selectedTile?.id === tile.id}
+          isMatched={matchedTiles.some(m => m.id === tile.id)}
           onClick={() => onTileClick(tile)}
         />
       ))}
