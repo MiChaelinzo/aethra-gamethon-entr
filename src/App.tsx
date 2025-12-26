@@ -18,7 +18,7 @@ import { MusicControl } from './components/MusicControl'
 import { MusicVisualizer } from './components/MusicVisualizer'
 import { Button } from './components/ui/button'
 import { ArrowLeft, Shuffle } from '@phosphor-icons/react'
-import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge } from './lib/types'
+import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge, VisualizerStyle } from './lib/types'
 import { LEVELS, TILE_INFO, BIOME_GRADIENTS, POLLUTION_GRADIENT } from './lib/gameData'
 import { getTodayChallenge, isChallengeActive } from './lib/challengeData'
 import { getCurrentTournament, isTournamentActive } from './lib/tournamentData'
@@ -76,6 +76,7 @@ function App() {
   const [currentUserId, setCurrentUserId] = useState<string>('')
   const [showStreakConfetti, setShowStreakConfetti] = useState(false)
   const [isMusicPlaying, setIsMusicPlaying] = useKV<boolean>('ecorise-music-playing', true)
+  const [visualizerStyle, setVisualizerStyle] = useKV<VisualizerStyle>('ecorise-visualizer-style', 'bars')
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
@@ -84,6 +85,7 @@ function App() {
   const tournaments = tournamentEntries ?? []
   const badges = playerBadges ?? []
   const musicPlaying = isMusicPlaying ?? true
+  const currentVisualizerStyle = visualizerStyle ?? 'bars'
   
   const currentLevel = isChallenge && currentChallenge
     ? {
@@ -695,12 +697,14 @@ function App() {
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-        <MusicVisualizer isPlaying={musicPlaying} biome="menu" />
+        <MusicVisualizer isPlaying={musicPlaying} biome="menu" style={currentVisualizerStyle} />
         
         <div className="fixed top-4 right-4 z-50">
           <MusicControl 
             isPlaying={musicPlaying} 
             onToggle={handleToggleMusic}
+            visualizerStyle={currentVisualizerStyle}
+            onStyleChange={setVisualizerStyle}
           />
         </div>
 
@@ -773,7 +777,7 @@ function App() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      <MusicVisualizer isPlaying={musicPlaying} biome={currentLevel?.biome || 'menu'} />
+      <MusicVisualizer isPlaying={musicPlaying} biome={currentLevel?.biome || 'menu'} style={currentVisualizerStyle} />
       
       <motion.div
         className={`absolute inset-0 bg-gradient-to-br ${backgroundGradient} transition-opacity duration-[2000ms]`}
@@ -815,6 +819,8 @@ function App() {
               <MusicControl 
                 isPlaying={musicPlaying} 
                 onToggle={handleToggleMusic}
+                visualizerStyle={currentVisualizerStyle}
+                onStyleChange={setVisualizerStyle}
               />
               <Button variant="outline" onClick={handleShuffle} disabled={isProcessing}>
                 <Shuffle className="mr-2" />

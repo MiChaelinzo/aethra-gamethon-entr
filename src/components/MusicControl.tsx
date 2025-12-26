@@ -1,16 +1,19 @@
 import { useState } from 'react'
 import { Button } from './ui/button'
 import { Slider } from './ui/slider'
-import { SpeakerHigh, SpeakerSlash } from '@phosphor-icons/react'
+import { SpeakerHigh, SpeakerSlash, Waveform, Circle, ChartBar } from '@phosphor-icons/react'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { setMusicVolume } from '@/lib/backgroundMusic'
+import { VisualizerStyle } from '@/lib/types'
 
 interface MusicControlProps {
   isPlaying: boolean
   onToggle: (playing: boolean) => void
+  visualizerStyle: VisualizerStyle
+  onStyleChange: (style: VisualizerStyle) => void
 }
 
-export function MusicControl({ isPlaying, onToggle }: MusicControlProps) {
+export function MusicControl({ isPlaying, onToggle, visualizerStyle, onStyleChange }: MusicControlProps) {
   const [volume, setVolume] = useState(100)
 
   const handleVolumeChange = (values: number[]) => {
@@ -36,6 +39,12 @@ export function MusicControl({ isPlaying, onToggle }: MusicControlProps) {
       onToggle(true)
     }
   }
+
+  const visualizerStyles: { value: VisualizerStyle; icon: any; label: string }[] = [
+    { value: 'bars', icon: ChartBar, label: 'Bars' },
+    { value: 'waveform', icon: Waveform, label: 'Waveform' },
+    { value: 'circular', icon: Circle, label: 'Circular' },
+  ]
 
   return (
     <Popover>
@@ -80,6 +89,27 @@ export function MusicControl({ isPlaying, onToggle }: MusicControlProps) {
             </div>
             <div className="text-xs text-center text-muted-foreground">
               {volume}%
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs text-muted-foreground">Visualizer Style</label>
+            <div className="grid grid-cols-3 gap-2">
+              {visualizerStyles.map((style) => {
+                const Icon = style.icon
+                return (
+                  <Button
+                    key={style.value}
+                    variant={visualizerStyle === style.value ? 'default' : 'outline'}
+                    size="sm"
+                    className="flex flex-col gap-1 h-auto py-2"
+                    onClick={() => onStyleChange(style.value)}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span className="text-xs">{style.label}</span>
+                  </Button>
+                )
+              })}
             </div>
           </div>
 
