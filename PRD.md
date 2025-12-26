@@ -239,6 +239,30 @@ Avoid lengthy animations that slow gameplay—keep tile matching snappy (150-200
   - Ambient effects include trailing glows, orbital systems, pulsing auras, and sweeping light beams
   - All effects are non-interactive (pointer-events-none) and layer properly (z-index 30 for particles, 40 for visualizer bars)
 
+### Collision Zone Indicators
+- **Functionality**: Visual overlay system that highlights grid cells where matches occur, displaying animated collision zones with intensity-based visual effects. Zones appear on matched tiles with pulsing borders, radial gradients, and rotating energy effects. Higher combo counts and multiple matches in the same location create more intense visual indicators with distinct colors (green for basic, blue for medium, orange for high, purple/pink for extreme intensity).
+- **Purpose**: Provides clear visual feedback showing exactly where matches are happening on the grid, helps players understand spatial relationships between matches, celebrates high-intensity collision zones with spectacular effects, and creates satisfying visual confirmation of successful moves
+- **Trigger**: Collision zones automatically appear when tiles are matched, intensity scales with combo multiplier
+- **Progression**: Match tiles → Zones spawn at matched positions → Pulsing borders and gradients animate → High-intensity zones show rotating conic gradients and emoji indicators → Zones fade after 1.5 seconds → New matches create new zones
+- **Success criteria**:
+  - Zones positioned accurately at grid cell locations corresponding to matched tiles
+  - Four intensity tiers with distinct visual styles:
+    - **Basic (intensity 1)**: Green gradient with teal border, subtle pulsing glow
+    - **Medium (intensity 2-2.9)**: Blue/cyan gradient with animated border, 💥 emoji indicator, radial pulse waves
+    - **High (intensity 3-4.9)**: Orange/yellow gradient with rotating conic shine, ✨ emoji indicator, faster animations
+    - **Extreme (intensity 5+)**: Purple/pink gradient with multi-layer rotating effects, ⚡ emoji indicator, 8-ray starburst animation, full-grid ambient glow
+  - Border colors animate between primary and secondary colors for each intensity tier
+  - Pulsing radial gradient effects that expand and fade (scale 1→1.3, opacity 0.6→0)
+  - High-intensity zones display rotating conic gradient overlays
+  - Emoji indicators scale and pulse in center of zone
+  - Extreme zones create ambient purple glow effect across entire grid
+  - Smooth entrance animation (scale 0.5→1) and exit animation (scale 1→1.5 with fade)
+  - Zones automatically remove after 1.5 seconds
+  - Multiple zones can appear simultaneously for chain matches
+  - Performance optimized with AnimatePresence for smooth entry/exit transitions
+  - Zones are non-interactive (pointer-events-none) and positioned absolutely within grid
+  - Responsive sizing based on grid cell dimensions
+
 - **Mobile**: 
   - Grid sizes adapt to screen size (6x6 on mobile, up to 10x10 on desktop for later levels)
   - Stack stat panels vertically below game board instead of side-by-side

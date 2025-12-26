@@ -983,6 +983,7 @@ function App() {
                     matchedTiles={matchedTiles}
                     onTileClick={handleTileClick}
                     onCollisionMultiplier={handleCollisionMultiplier}
+                    combo={combo}
                   />
                 </motion.div>
               </AnimatePresence>
