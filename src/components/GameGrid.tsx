@@ -9,9 +9,17 @@ interface GameGridProps {
   selectedTile: TileType | null
   matchedTiles?: TileType[]
   onTileClick: (tile: TileType) => void
+  onCollisionMultiplier?: (multiplier: number, collisionCount: number, position: { x: number; y: number }) => void
 }
 
-export function GameGrid({ grid, size, selectedTile, matchedTiles = [], onTileClick }: GameGridProps) {
+export function GameGrid({ 
+  grid, 
+  size, 
+  selectedTile, 
+  matchedTiles = [], 
+  onTileClick, 
+  onCollisionMultiplier 
+}: GameGridProps) {
   return (
     <div className="relative mx-auto" style={{ maxWidth: `min(90vw, ${size * 80}px)` }}>
       <div 
@@ -39,6 +47,7 @@ export function GameGrid({ grid, size, selectedTile, matchedTiles = [], onTileCl
         matchedTiles={matchedTiles}
         gridSize={size}
         isActive={matchedTiles.length > 0}
+        onCollisionMultiplier={onCollisionMultiplier}
       />
     </div>
   )

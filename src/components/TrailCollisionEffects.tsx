@@ -7,6 +7,7 @@ interface TrailCollisionEffectsProps {
   matchedTiles: Tile[]
   gridSize: number
   isActive: boolean
+  onCollisionMultiplier?: (multiplier: number, collisionCount: number, position: { x: number; y: number }) => void
 }
 
 interface ParticlePath {
@@ -44,7 +45,12 @@ const GAP_SIZE = 8
 const COLLISION_THRESHOLD = 25
 const PATH_LIFETIME = 800
 
-export function TrailCollisionEffects({ matchedTiles, gridSize, isActive }: TrailCollisionEffectsProps) {
+export function TrailCollisionEffects({ 
+  matchedTiles, 
+  gridSize, 
+  isActive, 
+  onCollisionMultiplier 
+}: TrailCollisionEffectsProps) {
   const [particlePaths, setParticlePaths] = useState<ParticlePath[]>([])
   const [collisions, setCollisions] = useState<CollisionPoint[]>([])
   const [collisionParticles, setCollisionParticles] = useState<CollisionParticle[]>([])
@@ -92,6 +98,8 @@ export function TrailCollisionEffects({ matchedTiles, gridSize, isActive }: Trai
       points: path.points.filter(p => now - p.time < PATH_LIFETIME)
     })).filter(path => path.points.length > 0)
 
+    const collisionClusters = new Map<string, CollisionPoint[]>()
+
     for (let i = 0; i < recentPaths.length; i++) {
       for (let j = i + 1; j < recentPaths.length; j++) {
         const path1 = recentPaths[i]
@@ -118,7 +126,7 @@ export function TrailCollisionEffects({ matchedTiles, gridSize, isActive }: Trai
                   collisionType = 'ripple'
                 }
 
-                detectedCollisions.push({
+                const collision: CollisionPoint = {
                   id: `collision-${path1.id}-${path2.id}-${point1.time}`,
                   x: (point1.x + point2.x) / 2,
                   y: (point1.y + point2.y) / 2,
@@ -127,13 +135,34 @@ export function TrailCollisionEffects({ matchedTiles, gridSize, isActive }: Trai
                   intensity,
                   type: collisionType,
                   timestamp: now
-                })
+                }
+
+                detectedCollisions.push(collision)
+
+                const clusterKey = `${Math.floor(collision.x / 50)}-${Math.floor(collision.y / 50)}`
+                if (!collisionClusters.has(clusterKey)) {
+                  collisionClusters.set(clusterKey, [])
+                }
+                collisionClusters.get(clusterKey)!.push(collision)
               }
             }
           }
         }
       }
     }
+
+    collisionClusters.forEach((clusterCollisions, key) => {
+      if (clusterCollisions.length >= 2) {
+        const avgX = clusterCollisions.reduce((sum, c) => sum + c.x, 0) / clusterCollisions.length
+        const avgY = clusterCollisions.reduce((sum, c) => sum + c.y, 0) / clusterCollisions.length
+        
+        const multiplier = 1 + (clusterCollisions.length - 1) * 0.5
+        
+        if (onCollisionMultiplier) {
+          onCollisionMultiplier(multiplier, clusterCollisions.length, { x: avgX, y: avgY })
+        }
+      }
+    })
 
     return detectedCollisions
   }

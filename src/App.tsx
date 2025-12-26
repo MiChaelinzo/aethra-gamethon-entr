@@ -20,6 +20,7 @@ import { MouseTrail } from './components/MouseTrail'
 import { MouseTrailControl } from './components/MouseTrailControl'
 import { ParticleThemeSwitcher } from './components/ParticleThemeSwitcher'
 import { ThemeSwitchBurst } from './components/ThemeSwitchBurst'
+import { CollisionMultiplier } from './components/CollisionMultiplier'
 import { Button } from './components/ui/button'
 import { ArrowLeft, Shuffle } from '@phosphor-icons/react'
 import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge, VisualizerStyle, TrailTheme } from './lib/types'
@@ -86,6 +87,14 @@ function App() {
   const [mouseTrailIntensity, setMouseTrailIntensity] = useKV<'low' | 'medium' | 'high'>('ecorise-trail-intensity', 'medium')
   const [mouseTrailTheme, setMouseTrailTheme] = useKV<import('./lib/types').TrailTheme>('ecorise-trail-theme', 'default')
   const [keyboardBurstTrigger, setKeyboardBurstTrigger] = useState(0)
+  const [collisionMultipliers, setCollisionMultipliers] = useState<Array<{
+    id: string
+    multiplier: number
+    collisionCount: number
+    position: { x: number; y: number }
+    timestamp: number
+  }>>([])
+  const [currentMultiplier, setCurrentMultiplier] = useState(1)
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
@@ -149,6 +158,39 @@ function App() {
 
   const handleToggleMusic = (playing: boolean) => {
     setIsMusicPlaying(playing)
+  }
+
+  useEffect(() => {
+    if (collisionMultipliers.length > 0) {
+      const timer = setTimeout(() => {
+        setCollisionMultipliers([])
+      }, 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [collisionMultipliers])
+
+  const handleCollisionMultiplier = (multiplier: number, collisionCount: number, position: { x: number; y: number }) => {
+    const id = `${Date.now()}-${Math.random()}`
+    setCollisionMultipliers(prev => [
+      ...prev,
+      { id, multiplier, collisionCount, position, timestamp: Date.now() }
+    ])
+    
+    setCurrentMultiplier(multiplier)
+
+    if (multiplier >= 5) {
+      playSoundEffect('collision-vortex')
+    } else if (multiplier >= 3) {
+      playSoundEffect('collision-spark')
+    } else if (multiplier >= 2) {
+      playSoundEffect('collision-burst')
+    }
+
+    if (multiplier >= 3) {
+      toast.success(`🌟 COLLISION COMBO! ×${multiplier.toFixed(1)} multiplier!`, {
+        duration: 2000
+      })
+    }
   }
 
   useEffect(() => {
@@ -400,9 +442,16 @@ function App() {
       })
     }
 
-    const matchScore = matches.length * 50 * (combo + 1) * (powerUpMatch ? 3 : 1)
+    const matchScore = matches.length * 50 * (combo + 1) * (powerUpMatch ? 3 : 1) * currentMultiplier
     const co2Reduction = matches.reduce((sum, match) => sum + TILE_INFO[match.type].co2Impact, 0)
     const pollutionReduction = matches.length * (powerUpMatch ? 15 : 5)
+
+    if (currentMultiplier > 1) {
+      toast.success(`×${currentMultiplier.toFixed(1)} collision bonus applied!`, {
+        duration: 1500,
+        icon: '⚡'
+      })
+    }
 
     setGameState((current) => ({
       ...(current ?? DEFAULT_GAME_STATE),
@@ -414,6 +463,7 @@ function App() {
 
     setLevelCO2(prev => prev + co2Reduction)
     setCombo(prev => prev + 1)
+    setCurrentMultiplier(1)
 
     if (matches.length >= 4 || powerUpMatch) {
       toast.success(`${powerUpMatch ? 'MEGA ' : ''}Amazing! ${matches.length} match combo!`)
@@ -932,6 +982,7 @@ function App() {
                     selectedTile={selectedTile}
                     matchedTiles={matchedTiles}
                     onTileClick={handleTileClick}
+                    onCollisionMultiplier={handleCollisionMultiplier}
                   />
                 </motion.div>
               </AnimatePresence>
@@ -958,6 +1009,16 @@ function App() {
           tileInfo={currentTileInfo}
         />
       )}
+
+      {collisionMultipliers.map((cm) => (
+        <CollisionMultiplier
+          key={cm.id}
+          multiplier={cm.multiplier}
+          position={cm.position}
+          isActive={true}
+          collisionCount={cm.collisionCount}
+        />
+      ))}
 
       {currentLevel && (
         <LevelComplete
