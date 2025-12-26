@@ -19,6 +19,7 @@ import { MusicVisualizer } from './components/MusicVisualizer'
 import { MouseTrail } from './components/MouseTrail'
 import { MouseTrailControl } from './components/MouseTrailControl'
 import { ParticleThemeSwitcher } from './components/ParticleThemeSwitcher'
+import { ThemeSwitchBurst } from './components/ThemeSwitchBurst'
 import { Button } from './components/ui/button'
 import { ArrowLeft, Shuffle } from '@phosphor-icons/react'
 import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge, VisualizerStyle, TrailTheme } from './lib/types'
@@ -84,6 +85,7 @@ function App() {
   const [mouseTrailEnabled, setMouseTrailEnabled] = useKV<boolean>('ecorise-mouse-trail', true)
   const [mouseTrailIntensity, setMouseTrailIntensity] = useKV<'low' | 'medium' | 'high'>('ecorise-trail-intensity', 'medium')
   const [mouseTrailTheme, setMouseTrailTheme] = useKV<import('./lib/types').TrailTheme>('ecorise-trail-theme', 'default')
+  const [keyboardBurstTrigger, setKeyboardBurstTrigger] = useState(0)
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
@@ -180,10 +182,13 @@ function App() {
         )
         const currentIndex = availableThemes.indexOf(trailTheme)
         const nextIndex = (currentIndex + 1) % availableThemes.length
-        setMouseTrailTheme(availableThemes[nextIndex] as any)
-        const themeConfig = TRAIL_THEMES[availableThemes[nextIndex] as TrailTheme]
-        toast(`Switched to ${themeConfig.name}`, {
-          icon: themeConfig.icon
+        const newTheme = availableThemes[nextIndex] as TrailTheme
+        setMouseTrailTheme(newTheme as any)
+        setKeyboardBurstTrigger(prev => prev + 1)
+        const themeConfig = TRAIL_THEMES[newTheme]
+        toast(`${themeConfig.icon} Switched to ${themeConfig.name}`, {
+          icon: themeConfig.icon,
+          duration: 2000
         })
       }
     }
@@ -736,6 +741,7 @@ function App() {
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+        <ThemeSwitchBurst theme={trailTheme} trigger={keyboardBurstTrigger} />
         <MusicVisualizer isPlaying={musicPlaying} biome="menu" style={currentVisualizerStyle} />
         <MouseTrail isActive={trailEnabled} biome="menu" intensity={trailIntensity} theme={trailTheme} />
         
@@ -841,6 +847,7 @@ function App() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      <ThemeSwitchBurst theme={trailTheme} trigger={keyboardBurstTrigger} />
       <MusicVisualizer isPlaying={musicPlaying} biome={currentLevel?.biome || 'menu'} style={currentVisualizerStyle} />
       <MouseTrail isActive={trailEnabled && !!isInGame} biome={currentLevel?.biome || 'menu'} intensity={trailIntensity} theme={trailTheme} />
       

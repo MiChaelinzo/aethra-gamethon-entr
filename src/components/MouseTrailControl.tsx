@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from './ui/button'
 import { Sparkle } from '@phosphor-icons/react'
 import {
@@ -17,6 +17,8 @@ import {
 } from './ui/select'
 import { TrailTheme, TileType } from '../lib/types'
 import { TRAIL_THEMES, getAvailableThemes } from '../lib/trailThemes'
+import { ThemeSwitchBurst } from './ThemeSwitchBurst'
+import { toast } from 'sonner'
 
 interface MouseTrailControlProps {
   isEnabled: boolean
@@ -38,12 +40,35 @@ export function MouseTrailControl({
   onThemeChange
 }: MouseTrailControlProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [burstTrigger, setBurstTrigger] = useState(0)
+  const [burstTheme, setBurstTheme] = useState<TrailTheme>(theme)
+  const triggerRef = useRef<HTMLButtonElement>(null)
   const availableThemes = getAvailableThemes(unlockedPowerUps)
 
+  const handleThemeChange = (newTheme: TrailTheme) => {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect()
+      setBurstTrigger(prev => prev + 1)
+      setBurstTheme(newTheme)
+    }
+    onThemeChange(newTheme)
+    
+    const themeConfig = TRAIL_THEMES[newTheme]
+    toast.success(`${themeConfig.icon} Switched to ${themeConfig.name}!`, {
+      duration: 2000
+    })
+  }
+
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <>
+      <ThemeSwitchBurst 
+        theme={burstTheme} 
+        trigger={burstTrigger}
+      />
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button
+          ref={triggerRef}
           variant={isEnabled ? "default" : "outline"}
           size="icon"
           className="relative"
@@ -93,7 +118,7 @@ export function MouseTrailControl({
                 <Label htmlFor="trail-theme" className="text-sm">
                   Theme {availableThemes.length > 1 && `(${availableThemes.length} unlocked)`}
                 </Label>
-                <Select value={theme} onValueChange={(value) => onThemeChange(value as TrailTheme)}>
+                <Select value={theme} onValueChange={handleThemeChange}>
                   <SelectTrigger id="trail-theme">
                     <SelectValue />
                   </SelectTrigger>
@@ -141,5 +166,6 @@ export function MouseTrailControl({
         </div>
       </PopoverContent>
     </Popover>
+    </>
   )
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
@@ -15,7 +15,9 @@ import {
 import { TrailTheme, TileType } from '../lib/types'
 import { TRAIL_THEMES, getAvailableThemes } from '../lib/trailThemes'
 import { ParticleThemePreview } from './ParticleThemePreview'
+import { ThemeSwitchBurst } from './ThemeSwitchBurst'
 import { cn } from '../lib/utils'
+import { toast } from 'sonner'
 
 interface ParticleThemeSwitcherProps {
   currentTheme: TrailTheme
@@ -34,14 +36,30 @@ export function ParticleThemeSwitcher({
 }: ParticleThemeSwitcherProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [previewTheme, setPreviewTheme] = useState<TrailTheme | null>(null)
+  const [burstTrigger, setBurstTrigger] = useState(0)
+  const [burstPosition, setBurstPosition] = useState({ x: 0, y: 0 })
+  const [burstTheme, setBurstTheme] = useState<TrailTheme>(currentTheme)
   const availableThemes = getAvailableThemes(unlockedPowerUps)
 
-  const handleThemeSelect = (theme: TrailTheme) => {
+  const handleThemeSelect = (theme: TrailTheme, event: React.MouseEvent) => {
     if (availableThemes.includes(theme)) {
+      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+      const centerX = rect.left + rect.width / 2
+      const centerY = rect.top + rect.height / 2
+      
+      setBurstPosition({ x: centerX, y: centerY })
+      setBurstTheme(theme)
       onThemeChange(theme)
+      setBurstTrigger(prev => prev + 1)
+      
       if (!isTrailEnabled) {
         onToggleTrail(true)
       }
+      
+      const themeConfig = TRAIL_THEMES[theme]
+      toast.success(`${themeConfig.icon} Switched to ${themeConfig.name}!`, {
+        duration: 2000
+      })
     }
   }
 
@@ -49,7 +67,14 @@ export function ParticleThemeSwitcher({
   const themeConfig = TRAIL_THEMES[currentTheme]
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <>
+      <ThemeSwitchBurst 
+        theme={burstTheme} 
+        trigger={burstTrigger}
+        x={burstPosition.x}
+        y={burstPosition.y}
+      />
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
           variant="outline"
@@ -109,7 +134,7 @@ export function ParticleThemeSwitcher({
                     )}
                     onMouseEnter={() => !isLocked && setPreviewTheme(theme.id)}
                     onMouseLeave={() => setPreviewTheme(null)}
-                    onClick={() => handleThemeSelect(theme.id)}
+                    onClick={(e) => handleThemeSelect(theme.id, e)}
                   >
                     <AnimatePresence>
                       {(isCurrent || isHovered) && !isLocked && (
@@ -242,5 +267,6 @@ export function ParticleThemeSwitcher({
         </div>
       </DialogContent>
     </Dialog>
+    </>
   )
 }
