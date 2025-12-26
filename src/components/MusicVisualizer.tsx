@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getAudioAnalyser } from '../lib/backgroundMusic'
 import { VisualizerStyle } from '@/lib/types'
+import { getVisualizerColors } from '@/lib/visualizerThemes'
 
 interface MusicVisualizerProps {
   isPlaying: boolean
@@ -51,54 +52,7 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
     }
   }, [isPlaying])
 
-  const getBiomeColors = () => {
-    switch (biome) {
-      case 'forest':
-        return {
-          primary: 'rgba(34, 197, 94, 0.6)',
-          secondary: 'rgba(134, 239, 172, 0.4)',
-          accent: 'rgba(22, 163, 74, 0.8)'
-        }
-      case 'ocean':
-        return {
-          primary: 'rgba(59, 130, 246, 0.6)',
-          secondary: 'rgba(147, 197, 253, 0.4)',
-          accent: 'rgba(37, 99, 235, 0.8)'
-        }
-      case 'desert':
-        return {
-          primary: 'rgba(251, 146, 60, 0.6)',
-          secondary: 'rgba(253, 186, 116, 0.4)',
-          accent: 'rgba(234, 88, 12, 0.8)'
-        }
-      case 'city':
-        return {
-          primary: 'rgba(168, 85, 247, 0.6)',
-          secondary: 'rgba(216, 180, 254, 0.4)',
-          accent: 'rgba(147, 51, 234, 0.8)'
-        }
-      case 'tundra':
-        return {
-          primary: 'rgba(125, 211, 252, 0.6)',
-          secondary: 'rgba(186, 230, 253, 0.4)',
-          accent: 'rgba(14, 165, 233, 0.8)'
-        }
-      case 'rainforest':
-        return {
-          primary: 'rgba(16, 185, 129, 0.6)',
-          secondary: 'rgba(110, 231, 183, 0.4)',
-          accent: 'rgba(5, 150, 105, 0.8)'
-        }
-      default:
-        return {
-          primary: 'rgba(148, 163, 184, 0.6)',
-          secondary: 'rgba(203, 213, 225, 0.4)',
-          accent: 'rgba(100, 116, 139, 0.8)'
-        }
-    }
-  }
-
-  const colors = getBiomeColors()
+  const colors = getVisualizerColors(biome, style)
 
   const renderBarsVisualizer = () => (
     <motion.div
@@ -119,12 +73,12 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
               key={index}
               className="flex-1 max-w-[20px] rounded-t-full origin-bottom"
               style={{
-                background: `linear-gradient(to top, ${color}, ${colors.accent})`,
-                boxShadow: `0 -2px 10px ${color}`,
+                background: `linear-gradient(to top, ${colors.gradient.start}, ${colors.gradient.middle}, ${colors.gradient.end})`,
+                boxShadow: `0 -2px 10px ${colors.glow}, 0 -4px 20px ${color}`,
               }}
               animate={{
                 height: `${height}%`,
-                opacity: 0.3 + value * 0.7,
+                opacity: 0.4 + value * 0.6,
               }}
               transition={{
                 duration: 0.1,
@@ -139,10 +93,10 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
       <motion.div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: `radial-gradient(ellipse at bottom, ${colors.primary} 0%, transparent 70%)`,
+          background: `radial-gradient(ellipse at bottom, ${colors.glow} 0%, transparent 70%)`,
         }}
         animate={{
-          opacity: [0.2, 0.4, 0.2],
+          opacity: [0.2, 0.5, 0.2],
         }}
         transition={{
           duration: 2,
@@ -154,7 +108,7 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
       <div className="absolute top-0 left-0 right-0 flex justify-center gap-2 py-2">
         {frequencyData.slice(0, 16).map((value, index) => {
           const size = 4 + value * 8
-          const color = index % 2 === 0 ? colors.primary : colors.secondary
+          const color = index % 2 === 0 ? colors.accent : colors.secondary
           
           return (
             <motion.div
@@ -162,13 +116,13 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
               className="rounded-full"
               style={{
                 background: color,
-                boxShadow: `0 0 10px ${color}`,
+                boxShadow: `0 0 10px ${color}, 0 0 20px ${colors.glow}`,
               }}
               animate={{
                 width: size,
                 height: size,
                 y: [-5, 5, -5],
-                opacity: 0.3 + value * 0.7,
+                opacity: 0.4 + value * 0.6,
               }}
               transition={{
                 width: { duration: 0.1 },
@@ -201,10 +155,22 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
         <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
           <defs>
             <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor={colors.primary} stopOpacity="0.8" />
-              <stop offset="50%" stopColor={colors.accent} stopOpacity="1" />
-              <stop offset="100%" stopColor={colors.secondary} stopOpacity="0.8" />
+              <stop offset="0%" stopColor={colors.gradient.start} stopOpacity="0.9" />
+              <stop offset="50%" stopColor={colors.gradient.middle} stopOpacity="1" />
+              <stop offset="100%" stopColor={colors.gradient.end} stopOpacity="0.9" />
             </linearGradient>
+            <linearGradient id="waveGradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={colors.gradient.end} stopOpacity="0.8" />
+              <stop offset="50%" stopColor={colors.primary} stopOpacity="1" />
+              <stop offset="100%" stopColor={colors.gradient.start} stopOpacity="0.8" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
           </defs>
           
           <motion.path
@@ -214,7 +180,8 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
               return `L ${x} ${y}`
             }).join(' ')} L 100 50 Z`}
             fill="url(#waveGradient)"
-            opacity={0.3 + avgFrequency * 0.4}
+            opacity={0.4 + avgFrequency * 0.4}
+            filter="url(#glow)"
             animate={{
               d: `M 0 ${50} ${frequencyData.map((value, i) => {
                 const x = (i / frequencyData.length) * 100
@@ -233,8 +200,9 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
             }).join(' ')}`}
             fill="none"
             stroke={colors.accent}
-            strokeWidth="2"
-            opacity={0.6 + avgFrequency * 0.4}
+            strokeWidth="3"
+            opacity={0.7 + avgFrequency * 0.3}
+            filter="url(#glow)"
             animate={{
               d: `M 0 ${50} ${frequencyData.map((value, i) => {
                 const x = (i / frequencyData.length) * 100
@@ -251,8 +219,9 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
               const y = 50 + value * 40
               return `L ${x} ${y}`
             }).join(' ')} L 100 50 Z`}
-            fill="url(#waveGradient)"
-            opacity={0.2 + avgFrequency * 0.3}
+            fill="url(#waveGradient2)"
+            opacity={0.3 + avgFrequency * 0.3}
+            filter="url(#glow)"
             animate={{
               d: `M 0 ${50} ${frequencyData.map((value, i) => {
                 const x = (i / frequencyData.length) * 100
@@ -270,9 +239,10 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
               return `L ${x} ${y}`
             }).join(' ')}`}
             fill="none"
-            stroke={colors.primary}
-            strokeWidth="2"
-            opacity={0.5 + avgFrequency * 0.4}
+            stroke={colors.secondary}
+            strokeWidth="3"
+            opacity={0.6 + avgFrequency * 0.4}
+            filter="url(#glow)"
             animate={{
               d: `M 0 ${50} ${frequencyData.map((value, i) => {
                 const x = (i / frequencyData.length) * 100
@@ -287,10 +257,10 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
         <motion.div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: `radial-gradient(ellipse at center, ${colors.primary} 0%, transparent 70%)`,
+            background: `radial-gradient(ellipse at center, ${colors.glow} 0%, transparent 70%)`,
           }}
           animate={{
-            opacity: [0.1, 0.3, 0.1],
+            opacity: [0.15, 0.35, 0.15],
           }}
           transition={{
             duration: 2,
@@ -317,11 +287,12 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
           <motion.div
             className="absolute inset-0 rounded-full"
             style={{
-              background: `radial-gradient(circle, ${colors.accent} 0%, ${colors.primary} 50%, transparent 100%)`,
+              background: `radial-gradient(circle, ${colors.gradient.end} 0%, ${colors.gradient.middle} 50%, transparent 100%)`,
+              boxShadow: `0 0 40px ${colors.glow}, inset 0 0 40px ${colors.accent}`,
             }}
             animate={{
-              scale: [1, 1.2 + avgFrequency * 0.3, 1],
-              opacity: [0.3, 0.5 + avgFrequency * 0.3, 0.3],
+              scale: [1, 1.2 + avgFrequency * 0.4, 1],
+              opacity: [0.4, 0.6 + avgFrequency * 0.3, 0.4],
             }}
             transition={{
               duration: 1,
@@ -331,6 +302,15 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
           />
 
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200">
+            <defs>
+              <filter id="circularGlow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
             {frequencyData.map((value, index) => {
               const angle = (index / frequencyData.length) * 2 * Math.PI - Math.PI / 2
               const radius = 60
@@ -349,12 +329,13 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
                   x2={x1}
                   y2={y1}
                   stroke={color}
-                  strokeWidth="3"
+                  strokeWidth="4"
                   strokeLinecap="round"
+                  filter="url(#circularGlow)"
                   animate={{
                     x2,
                     y2,
-                    opacity: 0.3 + value * 0.7,
+                    opacity: 0.4 + value * 0.6,
                   }}
                   transition={{
                     duration: 0.1,
@@ -373,11 +354,12 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
                 width: `${40 + ringIndex * 30}%`,
                 height: `${40 + ringIndex * 30}%`,
                 border: `2px solid ${ringIndex === 0 ? colors.accent : ringIndex === 1 ? colors.primary : colors.secondary}`,
-                opacity: 0.15 + avgFrequency * 0.3,
+                opacity: 0.2 + avgFrequency * 0.3,
+                boxShadow: `0 0 10px ${ringIndex === 0 ? colors.accent : ringIndex === 1 ? colors.primary : colors.secondary}`,
               }}
               animate={{
                 scale: [1, 1.1 + avgFrequency * 0.2, 1],
-                rotate: [0, 360],
+                rotate: ringIndex % 2 === 0 ? [0, 360] : [360, 0],
               }}
               transition={{
                 scale: {
@@ -397,11 +379,11 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
           <motion.div
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full"
             style={{
-              background: `radial-gradient(circle, ${colors.accent}, ${colors.primary})`,
-              boxShadow: `0 0 30px ${colors.accent}`,
+              background: `radial-gradient(circle, ${colors.gradient.middle}, ${colors.accent})`,
+              boxShadow: `0 0 30px ${colors.accent}, 0 0 50px ${colors.glow}`,
             }}
             animate={{
-              scale: [1, 1.1 + avgFrequency * 0.5, 1],
+              scale: [1, 1.15 + avgFrequency * 0.5, 1],
             }}
             transition={{
               duration: 0.8,
