@@ -18,10 +18,12 @@ import { MusicControl } from './components/MusicControl'
 import { MusicVisualizer } from './components/MusicVisualizer'
 import { MouseTrail } from './components/MouseTrail'
 import { MouseTrailControl } from './components/MouseTrailControl'
+import { ParticleThemeSwitcher } from './components/ParticleThemeSwitcher'
 import { Button } from './components/ui/button'
 import { ArrowLeft, Shuffle } from '@phosphor-icons/react'
-import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge, VisualizerStyle } from './lib/types'
+import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge, VisualizerStyle, TrailTheme } from './lib/types'
 import { LEVELS, TILE_INFO, BIOME_GRADIENTS, POLLUTION_GRADIENT } from './lib/gameData'
+import { TRAIL_THEMES } from './lib/trailThemes'
 import { getTodayChallenge, isChallengeActive } from './lib/challengeData'
 import { getCurrentTournament, isTournamentActive } from './lib/tournamentData'
 import {
@@ -160,6 +162,35 @@ function App() {
     }
     getUserId()
   }, [])
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault()
+        setMouseTrailEnabled(current => !current)
+        toast(trailEnabled ? 'Particle trail disabled' : 'Particle trail enabled', {
+          icon: '✨'
+        })
+      }
+      
+      if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+        e.preventDefault()
+        const availableThemes = ['default', 'supernova', 'tsunami', 'earthquake', 'meteor', 'phoenix'].filter(
+          t => t === 'default' || state.unlockedPowerUps.includes(t as any)
+        )
+        const currentIndex = availableThemes.indexOf(trailTheme)
+        const nextIndex = (currentIndex + 1) % availableThemes.length
+        setMouseTrailTheme(availableThemes[nextIndex] as any)
+        const themeConfig = TRAIL_THEMES[availableThemes[nextIndex] as TrailTheme]
+        toast(`Switched to ${themeConfig.name}`, {
+          icon: themeConfig.icon
+        })
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [trailEnabled, trailTheme, state.unlockedPowerUps])
 
   useEffect(() => {
     const updateLeaderboard = async () => {
@@ -709,6 +740,13 @@ function App() {
         <MouseTrail isActive={trailEnabled} biome="menu" intensity={trailIntensity} theme={trailTheme} />
         
         <div className="fixed top-4 right-4 z-50 flex gap-2">
+          <ParticleThemeSwitcher
+            currentTheme={trailTheme}
+            unlockedPowerUps={state.unlockedPowerUps}
+            onThemeChange={setMouseTrailTheme}
+            isTrailEnabled={trailEnabled}
+            onToggleTrail={setMouseTrailEnabled}
+          />
           <MouseTrailControl
             isEnabled={trailEnabled}
             intensity={trailIntensity}
@@ -724,6 +762,14 @@ function App() {
             visualizerStyle={currentVisualizerStyle}
             onStyleChange={setVisualizerStyle}
           />
+        </div>
+
+        <div className="fixed bottom-4 right-4 z-40">
+          <div className="text-xs text-muted-foreground bg-card/80 backdrop-blur-sm px-3 py-2 rounded-lg border shadow-lg">
+            <p className="font-semibold mb-1">Keyboard Shortcuts:</p>
+            <p><kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">Ctrl+P</kbd> Toggle particle trail</p>
+            <p><kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">Ctrl+Shift+P</kbd> Cycle themes</p>
+          </div>
         </div>
 
         {showDailyChallenge && (
@@ -835,6 +881,13 @@ function App() {
             </div>
 
             <div className="flex items-center gap-2">
+              <ParticleThemeSwitcher
+                currentTheme={trailTheme}
+                unlockedPowerUps={state.unlockedPowerUps}
+                onThemeChange={setMouseTrailTheme}
+                isTrailEnabled={trailEnabled}
+                onToggleTrail={setMouseTrailEnabled}
+              />
               <MusicControl 
                 isPlaying={musicPlaying} 
                 onToggle={handleToggleMusic}
