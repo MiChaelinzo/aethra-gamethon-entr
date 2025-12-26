@@ -34,11 +34,23 @@ This is a tile-based puzzle game with multiple levels, persistent progress track
 - **Success criteria**: Tournament rotates weekly automatically, leaderboard shows top 10 with ranks and badges, player's best score is kept, special rules affect gameplay (e.g., "Rainforest tiles worth 2x points"), prizes and badges are awarded correctly, countdown timer shows time remaining, replays replace score only if higher
 
 ### Tournament Badge System
-- **Functionality**: Animated badge collection displayed on player profiles showing tournament placements (Champion 🥇, Runner-Up 🥈, Third Place 🥉, Top 10 🏆), achievement badges (Streak Master 🔥, Eco Warrior ♻️, Challenger ⚡), and participant badges. Each badge features unique colors, glowing animations, and tooltips with details. Players can click any profile to view their full badge collection and tournament history.
-- **Purpose**: Creates prestigious rewards for competitive play, provides social proof of skill, builds long-term progression system, and encourages engagement across all game modes
-- **Trigger**: Badges appear automatically on player cards in leaderboard and tournament views; clicking a player opens their full profile
-- **Progression**: Earn tournament placement or achievement → Badge appears on profile → Other players see badges → Click profile to view full collection → See tournament history and detailed stats
-- **Success criteria**: Badges display with smooth animations, show accurate rank/achievement, appear on all instances of player profile, clicking opens detailed profile modal with stats and badge gallery, tournament history shows past placements
+- **Functionality**: Animated badge collection with synthesized audio feedback displayed on player profiles showing tournament placements (Champion 🥇, Runner-Up 🥈, Third Place 🥉, Top 10 🏆), achievement badges (Streak Master 🔥, Eco Warrior ♻️, Challenger ⚡), and participant badges. Each badge features unique colors, glowing animations, distinct sound effects, and tooltips with details. Players can click any profile to view their full badge collection and tournament history.
+- **Purpose**: Creates prestigious rewards for competitive play, provides satisfying audio-visual feedback for achievements, builds social proof of skill, and encourages long-term progression across all game modes
+- **Trigger**: Badges appear automatically with sound when earned; visible on player cards in leaderboard and tournament views; clicking a player opens their full profile
+- **Progression**: Earn tournament placement or achievement → Badge appears with celebration sound → Other players see badges → Click profile to view full collection → See tournament history and detailed stats
+- **Success criteria**: Badges display with smooth animations and appropriate sound effects (champion fanfare, streak master ascending arpeggio, standard badge unlock chime), show accurate rank/achievement, appear on all instances of player profile, clicking opens detailed profile modal with stats and badge gallery, tournament history shows past placements
+
+### Sound Effects System
+- **Functionality**: Web Audio API-powered synthesized sound effects that provide immediate audio feedback for achievements and interactions, including badge unlocks, power-up activations, and milestone celebrations
+- **Purpose**: Enhances satisfaction and reward feeling for achievements, makes moments of success more memorable and impactful, adds another layer of polish to the game experience
+- **Trigger**: Sounds automatically play when specific events occur (badge earned, power-up matched, achievement unlocked, streak milestone reached)
+- **Progression**: Event occurs → Appropriate sound plays → Visual and audio feedback combine for maximum impact
+- **Success criteria**: Five distinct synthesized sounds using oscillators and gain nodes:
+  - **Badge Unlock**: Ascending three-tone chime (C5→C6, 400ms) - plays for standard badges (participant, runner-up, third-place, top-10)
+  - **Streak Master**: Dramatic five-note ascending cascade (C5→E5→G5→C6→E6, 500ms total, 80ms intervals) with bass note accompaniment - plays for Streak Master badge
+  - **Champion**: Triumphant trumpet-like fanfare (C5→E5→G5→C6, 1000ms) with high shimmer overtones - plays for tournament Champion badge
+  - **Power-Up**: Rising square wave with filter sweep (A3→A4, 300ms) - plays when power-up tiles are matched or unlocked
+  - **Achievement**: Warm three-note chord (C5+E5+G5, 600ms) with high sparkle note - plays for Eco Warrior and Challenger badges
 
 ### Power-Up Collection System
 - **Functionality**: Visual collection display showing all 5 power-ups (Supernova, Tsunami, Earthquake, Meteor, Phoenix), tracking which are locked/unlocked
@@ -62,10 +74,10 @@ This is a tile-based puzzle game with multiple levels, persistent progress track
 - **Success criteria**: Valid matches award points and resources; power-ups trigger spectacular screen-wide animations and clear all adjacent tiles with 3x score multiplier
 
 ### Power-Up System
-- **Functionality**: Five ultra-rare power-up tiles with unique mega-animations that trigger full-screen visual spectacles when matched
-- **Purpose**: Creates moments of excitement and surprise, rewarding players with spectacular effects and massive point bonuses
+- **Functionality**: Five ultra-rare power-up tiles with unique mega-animations that trigger full-screen visual spectacles when matched, accompanied by synthesized sound effects
+- **Purpose**: Creates moments of excitement and surprise, rewarding players with spectacular effects, massive point bonuses, and satisfying audio feedback
 - **Trigger**: Power-ups spawn randomly (2-3% chance) and activate when successfully matched
-- **Progression**: Discover power-up → Match it → Full-screen mega-animation plays → All adjacent tiles cleared → Massive CO2 reduction bonus
+- **Progression**: Discover power-up → Match it → Full-screen mega-animation plays with power-up sound → All adjacent tiles cleared → Massive CO2 reduction bonus
 - **Success criteria**: Each power-up has a distinct animation:
   - **Supernova** ☀️: Explosive radial burst with 40+ golden particles, 1500ms duration, clears 3x3 area (10,000 kg CO2)
   - **Tsunami** 🌊: Rising blue wave sweeps across screen, 1300ms duration, clears entire row/column (8,500 kg CO2)

@@ -31,6 +31,7 @@ import {
   hasValidMoves,
   shuffleGrid
 } from './lib/gameLogic'
+import { playSoundEffect } from './lib/soundEffects'
 
 const DEFAULT_GAME_STATE: GameState = {
   currentLevel: 0,
@@ -313,6 +314,7 @@ function App() {
     const powerUpMatch = matches.find(m => m.isPowerUp)
     if (powerUpMatch) {
       setActivePowerUp(powerUpMatch.type)
+      playSoundEffect('power-up')
       
       const powerUpMessages: Record<string, string> = {
         supernova: '☀️ SUPERNOVA! Massive energy burst!',
@@ -521,10 +523,13 @@ function App() {
           toast.success(`🎁 Unlocked ${TILE_INFO[currentChallenge.rewardPowerUp].name}!`, {
             duration: 5000
           })
+          
+          playSoundEffect('power-up')
 
           if (newStreak >= 7 && !badges.some(b => b.type === 'streak-master')) {
             setTimeout(() => {
               setShowStreakConfetti(true)
+              playSoundEffect('streak-master')
               toast.success('🔥 STREAK MASTER BADGE EARNED! 7 days in a row!', {
                 duration: 6000
               })
@@ -597,6 +602,15 @@ function App() {
     
     if (!exists) {
       setPlayerBadges(current => [...(current ?? []), badge])
+      
+      if (badge.type === 'champion') {
+        playSoundEffect('champion')
+      } else if (badge.type === 'streak-master') {
+        playSoundEffect('streak-master')
+      } else {
+        playSoundEffect('badge-unlock')
+      }
+      
       toast.success(`🏆 Badge Earned: ${badge.type}!`, { duration: 4000 })
       
       if (badge.type === 'streak-master') {
@@ -608,7 +622,11 @@ function App() {
   }
 
   useEffect(() => {
-    if (state.dailyChallengeStreak >= 7) {
+    const previousStreak = badges.some(b => b.type === 'streak-master')
+    const previousEcoWarrior = badges.some(b => b.type === 'eco-warrior')
+    const previousChallenger = badges.some(b => b.type === 'challenger')
+    
+    if (state.dailyChallengeStreak >= 7 && !previousStreak) {
       awardBadge({
         type: 'streak-master',
         detail: `${state.dailyChallengeStreak} day streak`,
@@ -616,7 +634,7 @@ function App() {
       })
     }
 
-    if (state.totalCO2Reduced >= 100000) {
+    if (state.totalCO2Reduced >= 100000 && !previousEcoWarrior) {
       awardBadge({
         type: 'eco-warrior',
         detail: `${(state.totalCO2Reduced / 1000).toFixed(1)}t CO₂ reduced`,
@@ -624,7 +642,7 @@ function App() {
       })
     }
 
-    if (completions.length >= 25) {
+    if (completions.length >= 25 && !previousChallenger) {
       awardBadge({
         type: 'challenger',
         detail: `${completions.length} challenges completed`,
