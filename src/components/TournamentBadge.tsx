@@ -9,16 +9,9 @@ import {
   Sparkle
 } from '@phosphor-icons/react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
+import { BadgeType } from '@/lib/types'
 
-export type BadgeType = 
-  | 'champion' 
-  | 'runner-up' 
-  | 'third-place'
-  | 'top-10'
-  | 'participant'
-  | 'streak-master'
-  | 'eco-warrior'
-  | 'challenger'
+export type { BadgeType }
 
 interface TournamentBadgeProps {
   type: BadgeType

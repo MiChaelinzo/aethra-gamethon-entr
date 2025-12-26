@@ -12,9 +12,10 @@ import { PowerUpAnimation } from './components/PowerUpAnimation'
 import { DailyChallenge } from './components/DailyChallenge'
 import { Leaderboard } from './components/Leaderboard'
 import { TournamentView } from './components/TournamentView'
+import { BadgeShowcase } from './components/BadgeShowcase'
 import { Button } from './components/ui/button'
 import { ArrowLeft, Shuffle } from '@phosphor-icons/react'
-import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry } from './lib/types'
+import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge } from './lib/types'
 import { LEVELS, TILE_INFO, BIOME_GRADIENTS, POLLUTION_GRADIENT } from './lib/gameData'
 import { getTodayChallenge, isChallengeActive } from './lib/challengeData'
 import { getCurrentTournament, isTournamentActive } from './lib/tournamentData'
@@ -58,6 +59,7 @@ function App() {
   const [showDailyChallenge, setShowDailyChallenge] = useState(false)
   const [showLeaderboard, setShowLeaderboard] = useState(false)
   const [showTournament, setShowTournament] = useState(false)
+  const [showBadgeShowcase, setShowBadgeShowcase] = useState(false)
   const [isChallenge, setIsChallenge] = useState(false)
   const [isTournament, setIsTournament] = useState(false)
   const [currentChallenge, setCurrentChallenge] = useState<DailyChallengeType | null>(null)
@@ -65,6 +67,7 @@ function App() {
   const [challengeCompletions, setChallengeCompletions] = useKV<ChallengeCompletion[]>('ecorise-challenges', [])
   const [leaderboardEntries, setLeaderboardEntries] = useKV<LeaderboardEntry[]>('ecorise-leaderboard', [])
   const [tournamentEntries, setTournamentEntries] = useKV<TournamentEntry[]>('ecorise-tournaments', [])
+  const [playerBadges, setPlayerBadges] = useKV<PlayerBadge[]>('ecorise-badges', [])
   const [currentUserId, setCurrentUserId] = useState<string>('')
 
   const state = gameState ?? DEFAULT_GAME_STATE
@@ -72,6 +75,7 @@ function App() {
   const completions = challengeCompletions ?? []
   const leaderboard = leaderboardEntries ?? []
   const tournaments = tournamentEntries ?? []
+  const badges = playerBadges ?? []
   
   const currentLevel = isChallenge && currentChallenge
     ? {
@@ -414,6 +418,63 @@ function App() {
                   isOwner: user.isOwner
                 }
               ])
+
+              awardBadge({
+                type: 'participant',
+                tournamentName: currentTournament.name,
+                tournamentId: currentTournament.id,
+                earnedAt: new Date().toISOString()
+              })
+
+              setTimeout(() => {
+                const sortedEntries = [...tournaments, {
+                  tournamentId: currentTournament.id,
+                  userId: String(user.id),
+                  username: user.login,
+                  avatarUrl: user.avatarUrl,
+                  score: currentState.score,
+                  co2Reduced: levelCO2,
+                  completedAt: new Date().toISOString(),
+                  isOwner: user.isOwner
+                }].filter(e => e.tournamentId === currentTournament.id)
+                  .sort((a, b) => b.score - a.score)
+
+                const userRank = sortedEntries.findIndex(e => e.userId === String(user.id)) + 1
+
+                if (userRank === 1) {
+                  awardBadge({
+                    type: 'champion',
+                    tournamentName: currentTournament.name,
+                    tournamentId: currentTournament.id,
+                    rank: 1,
+                    earnedAt: new Date().toISOString()
+                  })
+                } else if (userRank === 2) {
+                  awardBadge({
+                    type: 'runner-up',
+                    tournamentName: currentTournament.name,
+                    tournamentId: currentTournament.id,
+                    rank: 2,
+                    earnedAt: new Date().toISOString()
+                  })
+                } else if (userRank === 3) {
+                  awardBadge({
+                    type: 'third-place',
+                    tournamentName: currentTournament.name,
+                    tournamentId: currentTournament.id,
+                    rank: 3,
+                    earnedAt: new Date().toISOString()
+                  })
+                } else if (userRank <= 10) {
+                  awardBadge({
+                    type: 'top-10',
+                    tournamentName: currentTournament.name,
+                    tournamentId: currentTournament.id,
+                    rank: userRank,
+                    earnedAt: new Date().toISOString()
+                  })
+                }
+              }, 100)
             } catch (error) {
               console.error('Failed to add tournament entry:', error)
             }
@@ -505,6 +566,44 @@ function App() {
     setCurrentTournament(null)
   }
 
+  const awardBadge = (badge: PlayerBadge) => {
+    const exists = badges.some(b => 
+      b.type === badge.type && 
+      b.tournamentId === badge.tournamentId
+    )
+    
+    if (!exists) {
+      setPlayerBadges(current => [...(current ?? []), badge])
+      toast.success(`🏆 Badge Earned: ${badge.type}!`, { duration: 4000 })
+    }
+  }
+
+  useEffect(() => {
+    if (state.dailyChallengeStreak >= 7) {
+      awardBadge({
+        type: 'streak-master',
+        detail: `${state.dailyChallengeStreak} day streak`,
+        earnedAt: new Date().toISOString()
+      })
+    }
+
+    if (state.totalCO2Reduced >= 100000) {
+      awardBadge({
+        type: 'eco-warrior',
+        detail: `${(state.totalCO2Reduced / 1000).toFixed(1)}t CO₂ reduced`,
+        earnedAt: new Date().toISOString()
+      })
+    }
+
+    if (completions.length >= 25) {
+      awardBadge({
+        type: 'challenger',
+        detail: `${completions.length} challenges completed`,
+        earnedAt: new Date().toISOString()
+      })
+    }
+  }, [state.dailyChallengeStreak, state.totalCO2Reduced, completions.length])
+
   const progressPercent = currentLevel 
     ? Math.min((state.score / currentLevel.targetScore) * 100, 100)
     : 0
@@ -562,6 +661,19 @@ function App() {
           />
         )}
 
+        {showBadgeShowcase && (
+          <BadgeShowcase
+            onClose={() => setShowBadgeShowcase(false)}
+            playerBadges={badges}
+            stats={{
+              totalCO2Reduced: state.totalCO2Reduced,
+              challengesCompleted: completions.length,
+              currentStreak: state.dailyChallengeStreak,
+              tournamentsEntered: tournaments.filter(t => t.userId === currentUserId).length
+            }}
+          />
+        )}
+
         <LevelSelect
           levels={LEVELS}
           completedLevels={state.completedLevels}
@@ -570,6 +682,7 @@ function App() {
           onOpenDailyChallenge={() => setShowDailyChallenge(true)}
           onOpenLeaderboard={() => setShowLeaderboard(true)}
           onOpenTournament={() => setShowTournament(true)}
+          onOpenBadgeShowcase={() => setShowBadgeShowcase(true)}
           unlockedPowerUps={state.unlockedPowerUps}
         />
       </div>

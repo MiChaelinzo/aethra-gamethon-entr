@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Play, Trophy, Ranking, CalendarDots, Sword } from '@phosphor-icons/react'
+import { Play, Trophy, Ranking, CalendarDots, Sword, Sparkle } from '@phosphor-icons/react'
 import { Level, TileType } from '@/lib/types'
 import { BIOME_GRADIENTS } from '@/lib/gameData'
 import { PowerUpCollection } from './PowerUpCollection'
@@ -15,6 +15,7 @@ interface LevelSelectProps {
   onOpenDailyChallenge?: () => void
   onOpenLeaderboard?: () => void
   onOpenTournament?: () => void
+  onOpenBadgeShowcase?: () => void
   unlockedPowerUps?: TileType[]
 }
 
@@ -26,6 +27,7 @@ export function LevelSelect({
   onOpenDailyChallenge,
   onOpenLeaderboard,
   onOpenTournament,
+  onOpenBadgeShowcase,
   unlockedPowerUps = []
 }: LevelSelectProps) {
   return (
@@ -74,6 +76,18 @@ export function LevelSelect({
             >
               <Ranking weight="fill" size={20} className="mr-2" />
               Leaderboard
+            </Button>
+          )}
+
+          {onOpenBadgeShowcase && (
+            <Button 
+              onClick={onOpenBadgeShowcase}
+              size="lg"
+              variant="outline"
+              className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            >
+              <Sparkle weight="fill" size={20} className="mr-2" />
+              Badge Collection
             </Button>
           )}
         </div>

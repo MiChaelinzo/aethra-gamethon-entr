@@ -1,5 +1,7 @@
 export type TileType = 'tree' | 'solar' | 'wind' | 'recycle' | 'water' | 'energy' | 'ice' | 'penguin' | 'aurora' | 'orchid' | 'jaguar' | 'medicinal' | 'supernova' | 'tsunami' | 'earthquake' | 'meteor' | 'phoenix'
 
+export type BadgeType = 'champion' | 'runner-up' | 'third-place' | 'top-10' | 'participant' | 'streak-master' | 'eco-warrior' | 'challenger'
+
 export interface Tile {
   id: string
   type: TileType
