@@ -13,11 +13,11 @@ This is a tile-based puzzle game with multiple levels, persistent progress track
 ## Essential Features
 
 ### Level-Based Gameplay
-- **Functionality**: Progressive stages where players restore different biomes (forest, ocean, city, arctic)
-- **Purpose**: Creates achievable goals while teaching about diverse environmental challenges
+- **Functionality**: Progressive stages where players restore different biomes (forest, desert, ocean, city, tundra, rainforest) across 8 challenging levels
+- **Purpose**: Creates achievable goals while teaching about diverse environmental challenges across Earth's most critical ecosystems
 - **Trigger**: Player clicks "Start Game" or "Next Level" button
 - **Progression**: Select Level → View Objective → Match tiles to collect resources → Deploy solutions → Watch ecosystem transform → Complete level
-- **Success criteria**: Level completes when pollution meter reaches zero and ecosystem health reaches 100%
+- **Success criteria**: Level completes when target score is reached within the move limit; players see ecosystem transformation in real-time
 
 ### Tile-Matching Mechanic
 - **Functionality**: Grid-based system where players match 3+ adjacent tiles representing eco-solutions (solar panels, trees, wind turbines, recycling bins)
@@ -61,10 +61,10 @@ The design should feel hopeful, vibrant, and energizing—like watching a time-l
 
 ## Color Selection
 
-A dynamic palette that shifts throughout gameplay, from pollution to restoration:
+A dynamic palette that shifts throughout gameplay, from pollution to restoration, adapting to each biome:
 
 - **Primary Color**: Deep Forest Green `oklch(0.52 0.14 155)` - Represents growth and environmental health, used for primary actions and success states
-- **Secondary Colors**: Sky Blue `oklch(0.65 0.15 230)` for water/air restoration, Warm Earth `oklch(0.55 0.09 65)` for soil/land themes
+- **Secondary Colors**: Sky Blue `oklch(0.65 0.15 230)` for water/air restoration, Warm Earth `oklch(0.55 0.09 65)` for soil/land themes, Icy Cyan `oklch(0.70 0.12 210)` for tundra, Vibrant Emerald `oklch(0.58 0.18 150)` for rainforest
 - **Accent Color**: Vibrant Lime `oklch(0.75 0.20 135)` - Energizing highlight for power-ups, matches, and celebration moments
 - **Foreground/Background Pairings**: 
   - Primary (Forest Green oklch(0.52 0.14 155)): White text (oklch(0.99 0 0)) - Ratio 6.2:1 ✓
@@ -121,7 +121,7 @@ Animations should celebrate player success and make the cause-and-effect relatio
   - Stat displays: space-y-3 for vertical rhythm
 
 - **Mobile**: 
-  - Reduce tile grid from 8x8 on desktop to 6x6 on mobile for easier tapping
+  - Grid sizes adapt to screen size (6x6 on mobile, up to 10x10 on desktop for later levels)
   - Stack stat panels vertically below game board instead of side-by-side
   - Larger tap targets (min 56px) for tiles on touch devices
   - Full-screen level completion dialogs on mobile, floating cards on desktop

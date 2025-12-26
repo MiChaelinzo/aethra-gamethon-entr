@@ -87,6 +87,42 @@ export const LEVELS: Level[] = [
     gridSize: 8,
     targetScore: 1500,
     movesLimit: 35
+  },
+  {
+    id: 5,
+    name: 'Frozen Wasteland',
+    biome: 'tundra',
+    description: 'Preserve the melting ice caps and protect arctic ecosystems.',
+    gridSize: 8,
+    targetScore: 1800,
+    movesLimit: 38
+  },
+  {
+    id: 6,
+    name: 'Amazon Heart',
+    biome: 'rainforest',
+    description: 'Save the lungs of the Earth from deforestation and pollution.',
+    gridSize: 9,
+    targetScore: 2200,
+    movesLimit: 40
+  },
+  {
+    id: 7,
+    name: 'Arctic Guardian',
+    biome: 'tundra',
+    description: 'Battle climate change in the frozen north with renewable solutions.',
+    gridSize: 9,
+    targetScore: 2500,
+    movesLimit: 42
+  },
+  {
+    id: 8,
+    name: 'Canopy Revival',
+    biome: 'rainforest',
+    description: 'Restore biodiversity in the endangered tropical paradise.',
+    gridSize: 10,
+    targetScore: 3000,
+    movesLimit: 45
   }
 ]
 
@@ -94,7 +130,9 @@ export const BIOME_GRADIENTS = {
   forest: 'from-green-900 via-green-700 to-green-500',
   desert: 'from-orange-900 via-yellow-700 to-yellow-400',
   ocean: 'from-blue-900 via-cyan-700 to-blue-400',
-  city: 'from-gray-800 via-slate-600 to-blue-500'
+  city: 'from-gray-800 via-slate-600 to-blue-500',
+  tundra: 'from-blue-950 via-cyan-800 to-blue-300',
+  rainforest: 'from-emerald-900 via-green-700 to-lime-500'
 }
 
 export const POLLUTION_GRADIENT = 'from-gray-800 via-gray-600 to-gray-500'
