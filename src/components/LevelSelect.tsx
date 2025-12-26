@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Play, Trophy, Ranking, CalendarDots, Sword, Sparkle } from '@phosphor-icons/react'
+import { Play, Trophy, Ranking, CalendarDots, Sword, Sparkle, Flame } from '@phosphor-icons/react'
 import { Level, TileType } from '@/lib/types'
 import { BIOME_GRADIENTS } from '@/lib/gameData'
 import { PowerUpCollection } from './PowerUpCollection'
@@ -17,6 +17,7 @@ interface LevelSelectProps {
   onOpenTournament?: () => void
   onOpenBadgeShowcase?: () => void
   unlockedPowerUps?: TileType[]
+  currentStreak?: number
 }
 
 export function LevelSelect({ 
@@ -28,7 +29,8 @@ export function LevelSelect({
   onOpenLeaderboard,
   onOpenTournament,
   onOpenBadgeShowcase,
-  unlockedPowerUps = []
+  unlockedPowerUps = [],
+  currentStreak = 0
 }: LevelSelectProps) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6">
@@ -101,6 +103,36 @@ export function LevelSelect({
                   <div className="text-sm text-muted-foreground">Total Impact</div>
                   <div className="text-2xl font-bold text-primary">
                     {totalCO2Reduced.toLocaleString()} lbs CO₂
+                  </div>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {currentStreak > 0 && (
+            <Card className={`p-4 ${currentStreak >= 7 ? 'bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-400' : ''}`}>
+              <div className="flex items-center gap-3">
+                <motion.div
+                  animate={{
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Flame className="text-orange-500" weight="fill" size={32} />
+                </motion.div>
+                <div className="text-left">
+                  <div className="text-sm text-muted-foreground">Challenge Streak</div>
+                  <div className="text-2xl font-bold text-orange-600 flex items-center gap-2">
+                    {currentStreak} {currentStreak === 1 ? 'day' : 'days'}
+                    {currentStreak >= 7 && (
+                      <Badge className="bg-orange-500 text-white text-xs">
+                        Streak Master!
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </div>

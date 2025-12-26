@@ -488,13 +488,21 @@ function App() {
         if (!alreadyCompleted) {
           const lastDate = state.lastChallengeDate
           const today = new Date().toISOString().split('T')[0]
-          const isConsecutive = lastDate && 
-            new Date(today).getTime() - new Date(lastDate).getTime() === 86400000
+          
+          let isConsecutive = false
+          if (lastDate) {
+            const lastDateTime = new Date(lastDate + 'T00:00:00').getTime()
+            const todayTime = new Date(today + 'T00:00:00').getTime()
+            const daysDiff = Math.floor((todayTime - lastDateTime) / 86400000)
+            isConsecutive = daysDiff === 1
+          }
+          
+          const newStreak = isConsecutive ? (state.dailyChallengeStreak ?? 0) + 1 : 1
           
           setGameState((current) => ({
             ...(current ?? DEFAULT_GAME_STATE),
             unlockedPowerUps: [...new Set([...(current?.unlockedPowerUps ?? []), currentChallenge.rewardPowerUp])],
-            dailyChallengeStreak: isConsecutive ? (current?.dailyChallengeStreak ?? 0) + 1 : 1,
+            dailyChallengeStreak: newStreak,
             lastChallengeDate: today
           }))
 
@@ -511,6 +519,18 @@ function App() {
           toast.success(`🎁 Unlocked ${TILE_INFO[currentChallenge.rewardPowerUp].name}!`, {
             duration: 5000
           })
+
+          if (newStreak >= 7 && !badges.some(b => b.type === 'streak-master')) {
+            setTimeout(() => {
+              toast.success('🔥 STREAK MASTER BADGE EARNED! 7 days in a row!', {
+                duration: 6000
+              })
+            }, 1500)
+          } else if (isConsecutive) {
+            toast.success(`🔥 ${newStreak} day streak! ${newStreak >= 7 ? 'Amazing!' : `${7 - newStreak} more for Streak Master badge!`}`, {
+              duration: 4000
+            })
+          }
         }
       } else {
         setGameState((current) => ({
@@ -684,6 +704,7 @@ function App() {
           onOpenTournament={() => setShowTournament(true)}
           onOpenBadgeShowcase={() => setShowBadgeShowcase(true)}
           unlockedPowerUps={state.unlockedPowerUps}
+          currentStreak={state.dailyChallengeStreak}
         />
       </div>
     )

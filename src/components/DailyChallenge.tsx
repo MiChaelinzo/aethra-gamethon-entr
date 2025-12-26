@@ -95,15 +95,68 @@ export function DailyChallenge({
             </div>
 
             {streak > 0 && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-orange-100 rounded-lg border border-orange-300">
-                <Flame weight="fill" size={24} className="text-orange-500" />
+              <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-br from-orange-100 to-red-100 rounded-lg border-2 border-orange-400 shadow-lg">
+                <motion.div
+                  animate={{
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Flame weight="fill" size={28} className="text-orange-500" />
+                </motion.div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-orange-600">{streak}</div>
-                  <div className="text-xs text-orange-700">Day Streak</div>
+                  <div className="text-xs text-orange-700 font-medium">Day Streak</div>
                 </div>
               </div>
             )}
           </div>
+
+          {streak > 0 && streak < 7 && (
+            <div className="mb-4 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border-2 border-orange-200">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Flame weight="fill" size={20} className="text-orange-500" />
+                  <span className="font-bold text-orange-800">Streak Master Badge Progress</span>
+                </div>
+                <span className="text-sm font-bold text-orange-700">{streak}/7 days</span>
+              </div>
+              <Progress value={(streak / 7) * 100} className="h-3 mb-2" />
+              <p className="text-xs text-orange-700">
+                Complete {7 - streak} more consecutive daily challenge{7 - streak !== 1 ? 's' : ''} to earn the Epic Streak Master badge! 🔥
+              </p>
+            </div>
+          )}
+
+          {streak >= 7 && (
+            <div className="mb-4 p-4 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg border-2 border-yellow-400">
+              <div className="flex items-center gap-3">
+                <motion.div
+                  animate={{
+                    rotate: [0, 10, -10, 0],
+                    scale: [1, 1.1, 1]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Flame weight="fill" size={32} className="text-orange-600" />
+                </motion.div>
+                <div className="flex-1">
+                  <div className="font-bold text-orange-800 text-lg">🏆 Streak Master Status!</div>
+                  <p className="text-sm text-orange-700">
+                    You've completed {streak} consecutive days! Check your Badge Showcase! 🎉
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="mb-4">
             <h4 className="text-xl font-bold mb-2">{challenge.name}</h4>
