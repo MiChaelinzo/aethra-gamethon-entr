@@ -5,6 +5,7 @@ import { Clock, CalendarBlank, TrendUp, ChartBar, Flame } from '@phosphor-icons/
 
 interface TimeBasedAnalyticsProps {
   statistics: TimeBasedStatistics
+  selectedBiome?: string
 }
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -15,9 +16,40 @@ const HOUR_LABELS = Array.from({ length: 24 }, (_, i) => {
   return `${hour}${period}`
 })
 
-export function TimeBasedAnalytics({ statistics }: TimeBasedAnalyticsProps) {
-  const maxHourlyCollisions = Math.max(...statistics.hourlyStats.map(h => h.collisions), 1)
-  const maxDailyCollisions = Math.max(...statistics.dailyStats.map(d => d.collisions), 1)
+export function TimeBasedAnalytics({ statistics, selectedBiome }: TimeBasedAnalyticsProps) {
+  const filterBiomeData = (biomes: Record<string, number>) => {
+    if (!selectedBiome) return biomes
+    return Object.keys(biomes)
+      .filter(biome => biome === selectedBiome)
+      .reduce((acc, biome) => ({ ...acc, [biome]: biomes[biome] }), {})
+  }
+  
+  const filteredHourlyStats = statistics.hourlyStats.map(hourStat => ({
+    ...hourStat,
+    biomes: filterBiomeData(hourStat.biomes),
+    collisions: selectedBiome 
+      ? (hourStat.biomes[selectedBiome] || 0)
+      : hourStat.collisions
+  }))
+  
+  const filteredDailyStats = statistics.dailyStats.map(dayStat => ({
+    ...dayStat,
+    biomes: filterBiomeData(dayStat.biomes),
+    collisions: selectedBiome 
+      ? (dayStat.biomes[selectedBiome] || 0)
+      : dayStat.collisions
+  }))
+  
+  const maxHourlyCollisions = Math.max(...filteredHourlyStats.map(h => h.collisions), 1)
+  const maxDailyCollisions = Math.max(...filteredDailyStats.map(d => d.collisions), 1)
+  
+  const peakHour = filteredHourlyStats.reduce((max, curr) => 
+    curr.collisions > max.collisions ? curr : max, filteredHourlyStats[0])
+  
+  const peakDay = filteredDailyStats.reduce((max, curr) => 
+    curr.collisions > max.collisions ? curr : max, filteredDailyStats[0])
+  
+  const totalCollisions = filteredHourlyStats.reduce((sum, h) => sum + h.collisions, 0)
 
   const getBiomeColor = (biome: string): string => {
     const colors: Record<string, string> = {
@@ -33,6 +65,14 @@ export function TimeBasedAnalytics({ statistics }: TimeBasedAnalyticsProps) {
 
   return (
     <div className="space-y-6">
+      {selectedBiome && (
+        <Card className="p-4 bg-gradient-to-br from-accent/20 to-primary/10 border-accent/30">
+          <p className="text-sm text-muted-foreground">
+            Showing time trends for: <span className="font-bold text-foreground capitalize">{selectedBiome}</span>
+          </p>
+        </Card>
+      )}
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <div className="flex items-center gap-3">
@@ -41,8 +81,8 @@ export function TimeBasedAnalytics({ statistics }: TimeBasedAnalyticsProps) {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Peak Hour</p>
-              <p className="text-2xl font-bold">{HOUR_LABELS[statistics.peakHour.hour]}</p>
-              <p className="text-xs text-muted-foreground">{statistics.peakHour.collisions} collisions</p>
+              <p className="text-2xl font-bold">{HOUR_LABELS[peakHour.hour]}</p>
+              <p className="text-xs text-muted-foreground">{peakHour.collisions} collisions</p>
             </div>
           </div>
         </Card>
@@ -54,8 +94,8 @@ export function TimeBasedAnalytics({ statistics }: TimeBasedAnalyticsProps) {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Peak Day</p>
-              <p className="text-2xl font-bold">{statistics.peakDay.dayName}</p>
-              <p className="text-xs text-muted-foreground">{statistics.peakDay.collisions} collisions</p>
+              <p className="text-2xl font-bold">{peakDay.dayName}</p>
+              <p className="text-xs text-muted-foreground">{peakDay.collisions} collisions</p>
             </div>
           </div>
         </Card>
@@ -67,9 +107,9 @@ export function TimeBasedAnalytics({ statistics }: TimeBasedAnalyticsProps) {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Collisions</p>
-              <p className="text-2xl font-bold">{statistics.totalCollisions.toLocaleString()}</p>
+              <p className="text-2xl font-bold">{totalCollisions.toLocaleString()}</p>
               <p className="text-xs text-muted-foreground">
-                Avg: {statistics.averageCollisionsPerHour.toFixed(1)}/hr
+                {selectedBiome ? `${selectedBiome} only` : 'All biomes'}
               </p>
             </div>
           </div>
@@ -92,10 +132,10 @@ export function TimeBasedAnalytics({ statistics }: TimeBasedAnalyticsProps) {
           </div>
           
           <div className="grid grid-cols-24 gap-1">
-            {statistics.hourlyStats.map((hourStat) => {
+            {filteredHourlyStats.map((hourStat) => {
               const height = (hourStat.collisions / maxHourlyCollisions) * 100
-              const isPeak = hourStat.hour === statistics.peakHour.hour
-              const topBiome = Object.entries(hourStat.biomes).sort(([, a], [, b]) => b - a)[0]
+              const isPeak = hourStat.hour === peakHour.hour
+              const topBiome = Object.entries(hourStat.biomes).sort(([, a], [, b]) => (b as number) - (a as number))[0]
               const biomeColor = topBiome ? getBiomeColor(topBiome[0]) : '#6b7280'
 
               return (
@@ -138,7 +178,7 @@ export function TimeBasedAnalytics({ statistics }: TimeBasedAnalyticsProps) {
                         <div className="mt-2 pt-2 border-t">
                           <p className="font-semibold mb-1">Biomes:</p>
                           {Object.entries(hourStat.biomes)
-                            .sort(([, a], [, b]) => b - a)
+                            .sort(([, a], [, b]) => (b as number) - (a as number))
                             .slice(0, 3)
                             .map(([biome, count]) => (
                               <p key={biome} className="flex items-center gap-1">
@@ -146,7 +186,7 @@ export function TimeBasedAnalytics({ statistics }: TimeBasedAnalyticsProps) {
                                   className="w-2 h-2 rounded-full"
                                   style={{ backgroundColor: getBiomeColor(biome) }}
                                 />
-                                <span className="capitalize">{biome}: {count}</span>
+                                <span className="capitalize">{biome}: {count as number}</span>
                               </p>
                             ))}
                         </div>
@@ -190,10 +230,10 @@ export function TimeBasedAnalytics({ statistics }: TimeBasedAnalyticsProps) {
         </div>
         
         <div className="space-y-4">
-          {statistics.dailyStats.map((dayStat) => {
+          {filteredDailyStats.map((dayStat) => {
             const width = (dayStat.collisions / maxDailyCollisions) * 100
-            const isPeak = dayStat.dayOfWeek === statistics.peakDay.dayOfWeek
-            const topBiome = Object.entries(dayStat.biomes).sort(([, a], [, b]) => b - a)[0]
+            const isPeak = dayStat.dayOfWeek === peakDay.dayOfWeek
+            const topBiome = Object.entries(dayStat.biomes).sort(([, a], [, b]) => (b as number) - (a as number))[0]
             const biomeColor = topBiome ? getBiomeColor(topBiome[0]) : '#6b7280'
 
             return (
@@ -229,7 +269,7 @@ export function TimeBasedAnalytics({ statistics }: TimeBasedAnalyticsProps) {
                   {Object.entries(dayStat.biomes).length > 0 && (
                     <div className="absolute inset-0 flex items-center px-3 gap-2">
                       {Object.entries(dayStat.biomes)
-                        .sort(([, a], [, b]) => b - a)
+                        .sort(([, a], [, b]) => (b as number) - (a as number))
                         .slice(0, 5)
                         .map(([biome, count]) => (
                           <div
@@ -241,7 +281,7 @@ export function TimeBasedAnalytics({ statistics }: TimeBasedAnalyticsProps) {
                               style={{ backgroundColor: getBiomeColor(biome) }}
                             />
                             <span className="capitalize">{biome}</span>
-                            <span className="font-semibold">{count}</span>
+                            <span className="font-semibold">{count as number}</span>
                           </div>
                         ))}
                     </div>
@@ -263,28 +303,28 @@ export function TimeBasedAnalytics({ statistics }: TimeBasedAnalyticsProps) {
           <div className="p-4 bg-muted/30 rounded-lg">
             <p className="text-sm text-muted-foreground mb-1">Most Active Time Range</p>
             <p className="text-lg font-bold">
-              {HOUR_LABELS[statistics.peakHour.hour]} - {HOUR_LABELS[(statistics.peakHour.hour + 1) % 24]}
+              {HOUR_LABELS[peakHour.hour]} - {HOUR_LABELS[(peakHour.hour + 1) % 24]}
             </p>
           </div>
           
           <div className="p-4 bg-muted/30 rounded-lg">
             <p className="text-sm text-muted-foreground mb-1">Average Collisions</p>
             <p className="text-lg font-bold">
-              {statistics.averageCollisionsPerDay.toFixed(1)} per day
+              {(totalCollisions / Math.max(filteredDailyStats.filter(d => d.collisions > 0).length, 1)).toFixed(1)} per day
             </p>
           </div>
           
           <div className="p-4 bg-muted/30 rounded-lg">
             <p className="text-sm text-muted-foreground mb-1">Busiest Day</p>
             <p className="text-lg font-bold">
-              {statistics.peakDay.dayName}s
+              {peakDay.dayName}s
             </p>
           </div>
           
           <div className="p-4 bg-muted/30 rounded-lg">
             <p className="text-sm text-muted-foreground mb-1">Total Sessions Tracked</p>
             <p className="text-lg font-bold">
-              {statistics.totalCollisions.toLocaleString()}
+              {totalCollisions.toLocaleString()}
             </p>
           </div>
         </div>
