@@ -145,3 +145,37 @@ export interface CollisionStatistics {
   biomeStats: BiomeCollisionStats[]
   globalHottestZones: CollisionZoneData[]
 }
+
+export interface CollisionTimeEntry {
+  timestamp: string
+  hour: number
+  dayOfWeek: number
+  count: number
+  biome: string
+  multiplier: number
+}
+
+export interface HourlyStats {
+  hour: number
+  collisions: number
+  averageMultiplier: number
+  biomes: Record<string, number>
+}
+
+export interface DailyStats {
+  dayOfWeek: number
+  dayName: string
+  collisions: number
+  averageMultiplier: number
+  biomes: Record<string, number>
+}
+
+export interface TimeBasedStatistics {
+  hourlyStats: HourlyStats[]
+  dailyStats: DailyStats[]
+  peakHour: { hour: number; collisions: number }
+  peakDay: { dayOfWeek: number; dayName: string; collisions: number }
+  totalCollisions: number
+  averageCollisionsPerHour: number
+  averageCollisionsPerDay: number
+}

@@ -25,7 +25,7 @@ import { HeatmapControl } from './components/HeatmapControl'
 import { CollisionStatisticsPanel } from './components/CollisionStatisticsPanel'
 import { Button } from './components/ui/button'
 import { ArrowLeft, Shuffle, ChartBar } from '@phosphor-icons/react'
-import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge, VisualizerStyle, TrailTheme, CollisionZoneData, BiomeCollisionStats, CollisionStatistics } from './lib/types'
+import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge, VisualizerStyle, TrailTheme, CollisionZoneData, BiomeCollisionStats, CollisionStatistics, CollisionTimeEntry, TimeBasedStatistics } from './lib/types'
 import { LEVELS, TILE_INFO, BIOME_GRADIENTS, POLLUTION_GRADIENT } from './lib/gameData'
 import { TRAIL_THEMES } from './lib/trailThemes'
 import { getTodayChallenge, isChallengeActive } from './lib/challengeData'
@@ -102,6 +102,7 @@ function App() {
   const [heatmapDecayRate, setHeatmapDecayRate] = useKV<number>('ecorise-heatmap-decay', 0.95)
   const [collisionZonesData, setCollisionZonesData] = useKV<Record<string, CollisionZoneData>>('ecorise-collision-zones', {})
   const [showStatisticsPanel, setShowStatisticsPanel] = useState(false)
+  const [collisionTimeData, setCollisionTimeData] = useKV<CollisionTimeEntry[]>('ecorise-collision-time-data', [])
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
@@ -217,6 +218,19 @@ function App() {
           }
         }
       })
+
+      const now = new Date()
+      setCollisionTimeData((current) => [
+        ...(current ?? []),
+        {
+          timestamp: now.toISOString(),
+          hour: now.getHours(),
+          dayOfWeek: now.getDay(),
+          count: collisionCount,
+          biome: currentLevel.biome,
+          multiplier: multiplier
+        }
+      ])
     }
 
     if (multiplier >= 5) {
@@ -332,6 +346,70 @@ function App() {
       uniqueZones: zoneArray.length,
       biomeStats: Array.from(biomeMap.values()),
       globalHottestZones
+    }
+  }
+
+  const computeTimeBasedStatistics = (): TimeBasedStatistics => {
+    const timeData = collisionTimeData ?? []
+    
+    const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    
+    const hourlyMap = new Map<number, { collisions: number; totalMultiplier: number; biomes: Map<string, number> }>()
+    const dailyMap = new Map<number, { collisions: number; totalMultiplier: number; biomes: Map<string, number> }>()
+    
+    for (let i = 0; i < 24; i++) {
+      hourlyMap.set(i, { collisions: 0, totalMultiplier: 0, biomes: new Map() })
+    }
+    
+    for (let i = 0; i < 7; i++) {
+      dailyMap.set(i, { collisions: 0, totalMultiplier: 0, biomes: new Map() })
+    }
+    
+    timeData.forEach(entry => {
+      const hourData = hourlyMap.get(entry.hour)!
+      hourData.collisions += entry.count
+      hourData.totalMultiplier += entry.multiplier
+      hourData.biomes.set(entry.biome, (hourData.biomes.get(entry.biome) || 0) + entry.count)
+      
+      const dayData = dailyMap.get(entry.dayOfWeek)!
+      dayData.collisions += entry.count
+      dayData.totalMultiplier += entry.multiplier
+      dayData.biomes.set(entry.biome, (dayData.biomes.get(entry.biome) || 0) + entry.count)
+    })
+    
+    const hourlyStats = Array.from(hourlyMap.entries()).map(([hour, data]) => ({
+      hour,
+      collisions: data.collisions,
+      averageMultiplier: data.collisions > 0 ? data.totalMultiplier / data.collisions : 0,
+      biomes: Object.fromEntries(data.biomes)
+    }))
+    
+    const dailyStats = Array.from(dailyMap.entries()).map(([dayOfWeek, data]) => ({
+      dayOfWeek,
+      dayName: DAY_NAMES[dayOfWeek],
+      collisions: data.collisions,
+      averageMultiplier: data.collisions > 0 ? data.totalMultiplier / data.collisions : 0,
+      biomes: Object.fromEntries(data.biomes)
+    }))
+    
+    const peakHourEntry = hourlyStats.reduce((max, curr) => 
+      curr.collisions > max.collisions ? curr : max, hourlyStats[0])
+    
+    const peakDayEntry = dailyStats.reduce((max, curr) => 
+      curr.collisions > max.collisions ? curr : max, dailyStats[0])
+    
+    const totalCollisions = timeData.reduce((sum, entry) => sum + entry.count, 0)
+    const nonZeroHours = hourlyStats.filter(h => h.collisions > 0).length
+    const nonZeroDays = dailyStats.filter(d => d.collisions > 0).length
+    
+    return {
+      hourlyStats,
+      dailyStats,
+      peakHour: { hour: peakHourEntry.hour, collisions: peakHourEntry.collisions },
+      peakDay: { dayOfWeek: peakDayEntry.dayOfWeek, dayName: peakDayEntry.dayName, collisions: peakDayEntry.collisions },
+      totalCollisions,
+      averageCollisionsPerHour: nonZeroHours > 0 ? totalCollisions / nonZeroHours : 0,
+      averageCollisionsPerDay: nonZeroDays > 0 ? totalCollisions / nonZeroDays : 0
     }
   }
 
@@ -939,6 +1017,7 @@ function App() {
           isOpen={showStatisticsPanel}
           onClose={() => setShowStatisticsPanel(false)}
           statistics={computeCollisionStatistics()}
+          timeBasedStatistics={computeTimeBasedStatistics()}
         />
 
         {showDailyChallenge && (
@@ -1169,6 +1248,7 @@ function App() {
         isOpen={showStatisticsPanel}
         onClose={() => setShowStatisticsPanel(false)}
         statistics={computeCollisionStatistics()}
+        timeBasedStatistics={computeTimeBasedStatistics()}
       />
     </div>
   )

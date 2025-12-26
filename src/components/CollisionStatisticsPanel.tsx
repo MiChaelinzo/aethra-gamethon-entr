@@ -1,17 +1,19 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card } from './ui/card'
 import { Button } from './ui/button'
-import { X, TrendUp, MapPin, Fire, Globe } from '@phosphor-icons/react'
-import { CollisionStatistics, BiomeCollisionStats, CollisionZoneData } from '@/lib/types'
+import { X, TrendUp, MapPin, Fire, Globe, Clock } from '@phosphor-icons/react'
+import { CollisionStatistics, BiomeCollisionStats, CollisionZoneData, TimeBasedStatistics } from '@/lib/types'
 import { Progress } from './ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 import { ScrollArea } from './ui/scroll-area'
 import { Badge } from './ui/badge'
+import { TimeBasedAnalytics } from './TimeBasedAnalytics'
 
 interface CollisionStatisticsPanelProps {
   isOpen: boolean
   onClose: () => void
   statistics: CollisionStatistics
+  timeBasedStatistics: TimeBasedStatistics
 }
 
 const BIOME_COLORS: Record<string, string> = {
@@ -36,7 +38,7 @@ const BIOME_ICONS: Record<string, string> = {
   mountain: '⛰️'
 }
 
-export function CollisionStatisticsPanel({ isOpen, onClose, statistics }: CollisionStatisticsPanelProps) {
+export function CollisionStatisticsPanel({ isOpen, onClose, statistics, timeBasedStatistics }: CollisionStatisticsPanelProps) {
   const maxBiomeActivations = Math.max(...statistics.biomeStats.map(b => b.totalActivations), 1)
   
   return (
@@ -130,12 +132,20 @@ export function CollisionStatisticsPanel({ isOpen, onClose, statistics }: Collis
                     </Card>
                   </div>
 
-                  <Tabs defaultValue="overview" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3">
+                  <Tabs defaultValue="time" className="w-full">
+                    <TabsList className="grid w-full grid-cols-4">
+                      <TabsTrigger value="time">
+                        <Clock size={16} weight="fill" className="mr-2" />
+                        Time Trends
+                      </TabsTrigger>
                       <TabsTrigger value="overview">Biome Overview</TabsTrigger>
                       <TabsTrigger value="hottest">Hottest Zones</TabsTrigger>
                       <TabsTrigger value="detailed">Detailed Stats</TabsTrigger>
                     </TabsList>
+
+                    <TabsContent value="time" className="mt-4">
+                      <TimeBasedAnalytics statistics={timeBasedStatistics} />
+                    </TabsContent>
 
                     <TabsContent value="overview" className="space-y-4 mt-4">
                       <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
