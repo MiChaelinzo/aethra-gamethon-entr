@@ -11,11 +11,13 @@ import { BiomeBackgroundEffect } from './components/BiomeBackgroundEffect'
 import { PowerUpAnimation } from './components/PowerUpAnimation'
 import { DailyChallenge } from './components/DailyChallenge'
 import { Leaderboard } from './components/Leaderboard'
+import { TournamentView } from './components/TournamentView'
 import { Button } from './components/ui/button'
 import { ArrowLeft, Shuffle } from '@phosphor-icons/react'
-import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion } from './lib/types'
+import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry } from './lib/types'
 import { LEVELS, TILE_INFO, BIOME_GRADIENTS, POLLUTION_GRADIENT } from './lib/gameData'
 import { getTodayChallenge, isChallengeActive } from './lib/challengeData'
+import { getCurrentTournament, isTournamentActive } from './lib/tournamentData'
 import {
   generateGrid,
   findMatches,
@@ -55,16 +57,21 @@ function App() {
   const [activePowerUp, setActivePowerUp] = useState<string | null>(null)
   const [showDailyChallenge, setShowDailyChallenge] = useState(false)
   const [showLeaderboard, setShowLeaderboard] = useState(false)
+  const [showTournament, setShowTournament] = useState(false)
   const [isChallenge, setIsChallenge] = useState(false)
+  const [isTournament, setIsTournament] = useState(false)
   const [currentChallenge, setCurrentChallenge] = useState<DailyChallengeType | null>(null)
+  const [currentTournament, setCurrentTournament] = useState<Tournament | null>(null)
   const [challengeCompletions, setChallengeCompletions] = useKV<ChallengeCompletion[]>('ecorise-challenges', [])
   const [leaderboardEntries, setLeaderboardEntries] = useKV<LeaderboardEntry[]>('ecorise-leaderboard', [])
+  const [tournamentEntries, setTournamentEntries] = useKV<TournamentEntry[]>('ecorise-tournaments', [])
   const [currentUserId, setCurrentUserId] = useState<string>('')
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
   const completions = challengeCompletions ?? []
   const leaderboard = leaderboardEntries ?? []
+  const tournaments = tournamentEntries ?? []
   
   const currentLevel = isChallenge && currentChallenge
     ? {
@@ -77,9 +84,20 @@ function App() {
         movesLimit: currentChallenge.movesLimit,
         tileTypes: currentChallenge.tileTypes
       }
+    : isTournament && currentTournament
+    ? {
+        id: 998,
+        name: currentTournament.name,
+        biome: currentTournament.biome,
+        description: currentTournament.description,
+        gridSize: currentTournament.gridSize,
+        targetScore: currentTournament.targetScore,
+        movesLimit: currentTournament.movesLimit,
+        tileTypes: currentTournament.tileTypes
+      }
     : LEVELS.find(l => l.id === state.currentLevel)
   
-  const isInGame = (state.currentLevel > 0 || isChallenge) && currentLevel
+  const isInGame = (state.currentLevel > 0 || isChallenge || isTournament) && currentLevel
 
   useEffect(() => {
     if (currentLevel && grid.length === 0) {
@@ -155,7 +173,9 @@ function App() {
     if (!level) return
 
     setIsChallenge(false)
+    setIsTournament(false)
     setCurrentChallenge(null)
+    setCurrentTournament(null)
     setGameState((current) => ({
       ...(current ?? DEFAULT_GAME_STATE),
       currentLevel: levelId,
@@ -178,6 +198,8 @@ function App() {
 
     setCurrentChallenge(challenge)
     setIsChallenge(true)
+    setIsTournament(false)
+    setCurrentTournament(null)
     setShowDailyChallenge(false)
     setGameState((current) => ({
       ...(current ?? DEFAULT_GAME_STATE),
@@ -195,6 +217,40 @@ function App() {
       targetScore: challenge.targetScore,
       movesLimit: challenge.movesLimit,
       tileTypes: challenge.tileTypes
+    }, state.unlockedPowerUps))
+    setCombo(0)
+    setLevelCO2(0)
+    setShowLevelComplete(false)
+  }
+
+  const startTournament = () => {
+    const tournament = getCurrentTournament()
+    if (!isTournamentActive(tournament)) {
+      toast.error('This tournament is not active!')
+      return
+    }
+
+    setCurrentTournament(tournament)
+    setIsTournament(true)
+    setIsChallenge(false)
+    setCurrentChallenge(null)
+    setShowTournament(false)
+    setGameState((current) => ({
+      ...(current ?? DEFAULT_GAME_STATE),
+      currentLevel: 998,
+      score: 0,
+      moves: 0,
+      pollution: 100
+    }))
+    setGrid(generateGrid(tournament.gridSize, {
+      id: 998,
+      name: tournament.name,
+      biome: tournament.biome,
+      description: tournament.description,
+      gridSize: tournament.gridSize,
+      targetScore: tournament.targetScore,
+      movesLimit: tournament.movesLimit,
+      tileTypes: tournament.tileTypes
     }, state.unlockedPowerUps))
     setCombo(0)
     setLevelCO2(0)
@@ -319,12 +375,58 @@ function App() {
     const noMoves = !hasValidMoves(currentGrid, currentLevel.gridSize)
 
     if (hasWon) {
-      if (isChallenge && currentChallenge) {
-        const today = new Date().toISOString().split('T')[0]
+      if (isTournament && currentTournament) {
+        const existingEntryIndex = tournaments.findIndex(
+          t => t.tournamentId === currentTournament.id && t.userId === currentUserId
+        )
+
+        if (existingEntryIndex >= 0) {
+          const existingEntry = tournaments[existingEntryIndex]
+          if (currentState.score > existingEntry.score) {
+            setTournamentEntries(current => {
+              const updated = [...(current ?? [])]
+              updated[existingEntryIndex] = {
+                ...existingEntry,
+                score: currentState.score,
+                co2Reduced: levelCO2,
+                completedAt: new Date().toISOString()
+              }
+              return updated
+            })
+            toast.success('🏆 New personal best in tournament!', { duration: 5000 })
+          }
+        } else {
+          const addTournamentEntry = async () => {
+            try {
+              const user = await window.spark.user()
+              if (!user) return
+
+              setTournamentEntries(current => [
+                ...(current ?? []),
+                {
+                  tournamentId: currentTournament.id,
+                  userId: String(user.id),
+                  username: user.login,
+                  avatarUrl: user.avatarUrl,
+                  score: currentState.score,
+                  co2Reduced: levelCO2,
+                  completedAt: new Date().toISOString(),
+                  isOwner: user.isOwner
+                }
+              ])
+            } catch (error) {
+              console.error('Failed to add tournament entry:', error)
+            }
+          }
+          addTournamentEntry()
+          toast.success('🎉 Tournament entry submitted!', { duration: 5000 })
+        }
+      } else if (isChallenge && currentChallenge) {
         const alreadyCompleted = completions.some(c => c.challengeId === currentChallenge.id)
         
         if (!alreadyCompleted) {
           const lastDate = state.lastChallengeDate
+          const today = new Date().toISOString().split('T')[0]
           const isConsecutive = lastDate && 
             new Date(today).getTime() - new Date(lastDate).getTime() === 86400000
           
@@ -363,7 +465,9 @@ function App() {
     } else if (hasLost) {
       toast.error('Out of moves! Try again.')
       setTimeout(() => {
-        if (isChallenge) {
+        if (isTournament) {
+          startTournament()
+        } else if (isChallenge) {
           startDailyChallenge()
         } else {
           startLevel(currentLevel.id)
@@ -396,7 +500,9 @@ function App() {
     }))
     setGrid([])
     setIsChallenge(false)
+    setIsTournament(false)
     setCurrentChallenge(null)
+    setCurrentTournament(null)
   }
 
   const progressPercent = currentLevel 
@@ -414,6 +520,7 @@ function App() {
   if (!isInGame) {
     const todayChallenge = getTodayChallenge()
     const isChallengeCompleted = completions.some(c => c.challengeId === todayChallenge.id)
+    const activeTournament = getCurrentTournament()
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
@@ -444,6 +551,16 @@ function App() {
           />
         )}
 
+        {showTournament && (
+          <TournamentView
+            tournament={activeTournament}
+            entries={tournaments}
+            currentUserId={currentUserId}
+            onStart={startTournament}
+            onClose={() => setShowTournament(false)}
+          />
+        )}
+
         <LevelSelect
           levels={LEVELS}
           completedLevels={state.completedLevels}
@@ -451,6 +568,7 @@ function App() {
           totalCO2Reduced={state.totalCO2Reduced}
           onOpenDailyChallenge={() => setShowDailyChallenge(true)}
           onOpenLeaderboard={() => setShowLeaderboard(true)}
+          onOpenTournament={() => setShowTournament(true)}
           unlockedPowerUps={state.unlockedPowerUps}
         />
       </div>
@@ -542,9 +660,9 @@ function App() {
           score={state.score}
           targetScore={currentLevel.targetScore}
           co2Reduced={levelCO2}
-          onNextLevel={isChallenge ? handleBackToMenu : handleNextLevel}
-          onRestart={isChallenge ? startDailyChallenge : () => startLevel(currentLevel.id)}
-          isLastLevel={!isChallenge && currentLevel.id === LEVELS.length}
+          onNextLevel={isTournament ? handleBackToMenu : isChallenge ? handleBackToMenu : handleNextLevel}
+          onRestart={isTournament ? startTournament : isChallenge ? startDailyChallenge : () => startLevel(currentLevel.id)}
+          isLastLevel={!isTournament && !isChallenge && currentLevel.id === LEVELS.length}
         />
       )}
     </div>

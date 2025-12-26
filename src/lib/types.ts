@@ -65,6 +65,40 @@ export interface ChallengeCompletion {
   co2Reduced: number
 }
 
+export interface Tournament {
+  id: string
+  name: string
+  description: string
+  startDate: string
+  endDate: string
+  biome: string
+  gridSize: number
+  targetScore: number
+  movesLimit: number
+  tileTypes: TileType[]
+  prizes: TournamentPrize[]
+  specialRules: string
+}
+
+export interface TournamentPrize {
+  rank: number
+  title: string
+  badge: string
+  description: string
+}
+
+export interface TournamentEntry {
+  tournamentId: string
+  userId: string
+  username: string
+  avatarUrl: string
+  score: number
+  co2Reduced: number
+  completedAt: string
+  rank?: number
+  isOwner?: boolean
+}
+
 export interface TileInfo {
   type: TileType
   name: string

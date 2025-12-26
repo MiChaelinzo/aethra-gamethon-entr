@@ -26,6 +26,13 @@ This is a tile-based puzzle game with multiple levels, persistent progress track
 - **Progression**: Open leaderboard → View rankings → See own position highlighted → Sort by different metrics → Compare stats with others
 - **Success criteria**: Leaderboard updates automatically after each game, shows player avatars and usernames, highlights current user's position, displays top 3 with special badges
 
+### Weekly Tournament System
+- **Functionality**: Weekly competitive events with rotating biomes and special rules. Each tournament runs Monday-Sunday with unique challenges: Rainforest Revival, Arctic Preservation, Ocean Clean-Up, or Global Reforestation. Top 10 players receive CO2 bonus prizes (10,000 kg for 1st down to 1,000 kg for 10th). Players can replay unlimited times to improve their ranking.
+- **Purpose**: Creates recurring engagement, fosters competitive community, rewards skilled players, and provides fresh weekly content
+- **Trigger**: Player clicks "Weekly Tournament" button from main menu
+- **Progression**: View tournament details → See time remaining and special rules → Enter tournament → Complete challenge → Submit score → View top 10 rankings → Replay to improve rank → Receive prize at week end if in top 10
+- **Success criteria**: Tournament rotates weekly automatically, leaderboard shows top 10 with ranks, player's best score is kept, special rules affect gameplay (e.g., "Rainforest tiles worth 2x points"), prizes are awarded correctly, countdown timer shows time remaining, replays replace score only if higher
+
 ### Power-Up Collection System
 - **Functionality**: Visual collection display showing all 5 power-ups (Supernova, Tsunami, Earthquake, Meteor, Phoenix), tracking which are locked/unlocked
 - **Purpose**: Provides long-term progression goal, incentivizes daily challenge completion, creates collection mechanic

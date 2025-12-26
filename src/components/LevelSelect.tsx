@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Play, Trophy, Ranking, CalendarDots } from '@phosphor-icons/react'
+import { Play, Trophy, Ranking, CalendarDots, Sword } from '@phosphor-icons/react'
 import { Level, TileType } from '@/lib/types'
 import { BIOME_GRADIENTS } from '@/lib/gameData'
 import { PowerUpCollection } from './PowerUpCollection'
@@ -14,6 +14,7 @@ interface LevelSelectProps {
   totalCO2Reduced: number
   onOpenDailyChallenge?: () => void
   onOpenLeaderboard?: () => void
+  onOpenTournament?: () => void
   unlockedPowerUps?: TileType[]
 }
 
@@ -24,6 +25,7 @@ export function LevelSelect({
   totalCO2Reduced,
   onOpenDailyChallenge,
   onOpenLeaderboard,
+  onOpenTournament,
   unlockedPowerUps = []
 }: LevelSelectProps) {
   return (
@@ -41,6 +43,17 @@ export function LevelSelect({
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+          {onOpenTournament && (
+            <Button 
+              onClick={onOpenTournament}
+              size="lg"
+              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg animate-pulse"
+            >
+              <Sword weight="fill" size={20} className="mr-2" />
+              Weekly Tournament
+            </Button>
+          )}
+          
           {onOpenDailyChallenge && (
             <Button 
               onClick={onOpenDailyChallenge}
