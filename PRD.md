@@ -20,8 +20,8 @@ This is a tile-based puzzle game with multiple levels, persistent progress track
 - **Success criteria**: Level completes when target score is reached within the move limit; players see ecosystem transformation in real-time
 
 ### Tile-Matching Mechanic
-- **Functionality**: Grid-based system where players match 3+ adjacent tiles representing eco-solutions (solar panels, trees, wind turbines, recycling bins)
-- **Purpose**: Familiar, accessible mechanic that reinforces learning through repetition
+- **Functionality**: Grid-based system where players match 3+ adjacent tiles representing eco-solutions. Each biome features unique tiles: general solutions (solar panels, trees, wind turbines, recycling bins), tundra-specific (ice crystals, arctic wildlife, clean air auroras), and rainforest-specific (exotic orchids, jaguars, medicinal plants)
+- **Purpose**: Familiar, accessible mechanic that reinforces learning through repetition while introducing biome-specific environmental challenges
 - **Trigger**: Player clicks/taps tiles to swap adjacent pieces
 - **Progression**: Select tile → Swap with adjacent → Match forms → Resources collected → Solution deployed
 - **Success criteria**: Valid matches award points and resources; invalid moves provide gentle feedback
@@ -111,7 +111,10 @@ Animations should celebrate player success and make the cause-and-effect relatio
   - Progress bars: animated fill with color shift from red (pollution) to green (health)
 
 - **Icon Selection**: 
-  - Leaf (tree planting), Recycle, SolarPanel, Wind, Drop (water), Lightning (energy), Heart (health), Star (achievements) from Phosphor Icons
+  - General tiles: Leaf (tree planting), Recycle, SolarPanel, Wind, Drop (water), Lightning (energy)
+  - Tundra tiles: Snowflake (ice crystals), Bird (arctic wildlife), Sparkle (aurora/clean air)
+  - Rainforest tiles: FlowerLotus (exotic orchids), Cat (jaguar/biodiversity), Leaf (medicinal plants)
+  - UI icons: Heart (health), Star (achievements) from Phosphor Icons
   - All icons using duotone weight for richer visual depth
 
 - **Spacing**: 

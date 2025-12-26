@@ -48,6 +48,54 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     color: 'text-purple-500',
     fact: 'LED bulbs use 75% less energy than incandescent. If every US home switched, we\'d prevent 44M tons of CO2 annually.',
     co2Impact: 850
+  },
+  ice: {
+    type: 'ice',
+    name: 'Ice Crystal',
+    icon: 'Snowflake',
+    color: 'text-cyan-300',
+    fact: 'Arctic ice reflects 80% of sunlight back to space. Preserving ice sheets is crucial for regulating Earth\'s temperature and preventing feedback loops.',
+    co2Impact: 1200
+  },
+  penguin: {
+    type: 'penguin',
+    name: 'Wildlife Protection',
+    icon: 'Bird',
+    color: 'text-slate-700',
+    fact: 'Arctic and Antarctic wildlife like penguins and polar bears are indicators of ecosystem health. Protecting them preserves biodiversity and carbon sinks.',
+    co2Impact: 900
+  },
+  aurora: {
+    type: 'aurora',
+    name: 'Clean Air',
+    icon: 'Sparkle',
+    color: 'text-violet-400',
+    fact: 'The pristine Arctic air is threatened by pollution. Keeping polar regions clean prevents accelerated melting and preserves natural climate regulation.',
+    co2Impact: 1500
+  },
+  orchid: {
+    type: 'orchid',
+    name: 'Rare Plants',
+    icon: 'FlowerLotus',
+    color: 'text-pink-500',
+    fact: 'Rainforests contain 50% of Earth\'s plant species. A single hectare can hold 750 tree species—more than all of North America.',
+    co2Impact: 2500
+  },
+  jaguar: {
+    type: 'jaguar',
+    name: 'Biodiversity',
+    icon: 'Cat',
+    color: 'text-amber-600',
+    fact: 'Rainforest predators like jaguars maintain ecosystem balance. One rainforest acre supports 1,500 species, creating Earth\'s richest carbon-capturing system.',
+    co2Impact: 1800
+  },
+  medicinal: {
+    type: 'medicinal',
+    name: 'Medicinal Plants',
+    icon: 'Leaf',
+    color: 'text-emerald-600',
+    fact: '70% of cancer-fighting plants come from rainforests. Preserving these ecosystems protects both human health and planetary climate.',
+    co2Impact: 2200
   }
 }
 
@@ -59,7 +107,8 @@ export const LEVELS: Level[] = [
     description: 'Restore the dying forest by planting trees and cleaning the air.',
     gridSize: 6,
     targetScore: 500,
-    movesLimit: 20
+    movesLimit: 20,
+    tileTypes: ['tree', 'water', 'recycle', 'energy']
   },
   {
     id: 2,
@@ -68,7 +117,8 @@ export const LEVELS: Level[] = [
     description: 'Transform the wasteland with renewable solar energy.',
     gridSize: 7,
     targetScore: 800,
-    movesLimit: 25
+    movesLimit: 25,
+    tileTypes: ['solar', 'wind', 'recycle', 'energy']
   },
   {
     id: 3,
@@ -77,7 +127,8 @@ export const LEVELS: Level[] = [
     description: 'Clean the waters and restore marine life.',
     gridSize: 7,
     targetScore: 1000,
-    movesLimit: 30
+    movesLimit: 30,
+    tileTypes: ['water', 'wind', 'recycle', 'tree']
   },
   {
     id: 4,
@@ -86,7 +137,8 @@ export const LEVELS: Level[] = [
     description: 'Transform the polluted city into a sustainable urban paradise.',
     gridSize: 8,
     targetScore: 1500,
-    movesLimit: 35
+    movesLimit: 35,
+    tileTypes: ['solar', 'recycle', 'energy', 'tree', 'wind']
   },
   {
     id: 5,
@@ -95,7 +147,8 @@ export const LEVELS: Level[] = [
     description: 'Preserve the melting ice caps and protect arctic ecosystems.',
     gridSize: 8,
     targetScore: 1800,
-    movesLimit: 38
+    movesLimit: 38,
+    tileTypes: ['ice', 'penguin', 'aurora', 'wind', 'energy']
   },
   {
     id: 6,
@@ -104,7 +157,8 @@ export const LEVELS: Level[] = [
     description: 'Save the lungs of the Earth from deforestation and pollution.',
     gridSize: 9,
     targetScore: 2200,
-    movesLimit: 40
+    movesLimit: 40,
+    tileTypes: ['orchid', 'jaguar', 'medicinal', 'tree', 'water']
   },
   {
     id: 7,
@@ -113,7 +167,8 @@ export const LEVELS: Level[] = [
     description: 'Battle climate change in the frozen north with renewable solutions.',
     gridSize: 9,
     targetScore: 2500,
-    movesLimit: 42
+    movesLimit: 42,
+    tileTypes: ['ice', 'aurora', 'penguin', 'solar', 'wind']
   },
   {
     id: 8,
@@ -122,7 +177,8 @@ export const LEVELS: Level[] = [
     description: 'Restore biodiversity in the endangered tropical paradise.',
     gridSize: 10,
     targetScore: 3000,
-    movesLimit: 45
+    movesLimit: 45,
+    tileTypes: ['orchid', 'medicinal', 'jaguar', 'tree', 'recycle']
   }
 ]
 

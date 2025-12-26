@@ -1,4 +1,4 @@
-export type TileType = 'tree' | 'solar' | 'wind' | 'recycle' | 'water' | 'energy'
+export type TileType = 'tree' | 'solar' | 'wind' | 'recycle' | 'water' | 'energy' | 'ice' | 'penguin' | 'aurora' | 'orchid' | 'jaguar' | 'medicinal'
 
 export interface Tile {
   id: string
@@ -16,6 +16,7 @@ export interface Level {
   gridSize: number
   targetScore: number
   movesLimit: number
+  tileTypes?: TileType[]
 }
 
 export interface GameState {

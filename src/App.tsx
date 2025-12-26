@@ -51,7 +51,7 @@ function App() {
 
   useEffect(() => {
     if (currentLevel && grid.length === 0) {
-      setGrid(generateGrid(currentLevel.gridSize))
+      setGrid(generateGrid(currentLevel.gridSize, currentLevel))
     }
   }, [currentLevel])
 
@@ -66,7 +66,7 @@ function App() {
       moves: 0,
       pollution: 100
     })
-    setGrid(generateGrid(level.gridSize))
+    setGrid(generateGrid(level.gridSize, level))
     setCombo(0)
     setLevelCO2(0)
     setShowLevelComplete(false)
@@ -139,7 +139,7 @@ function App() {
 
     let newGrid = removeMatches(currentGrid, matches)
     newGrid = dropTiles(newGrid, currentLevel.gridSize)
-    newGrid = fillEmpty(newGrid, currentLevel.gridSize)
+    newGrid = fillEmpty(newGrid, currentLevel.gridSize, currentLevel)
     setGrid(newGrid)
 
     await new Promise(resolve => setTimeout(resolve, 300))

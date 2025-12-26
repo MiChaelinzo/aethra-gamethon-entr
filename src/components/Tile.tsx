@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Tree, Wind, Recycle, Drop, Lightning } from '@phosphor-icons/react'
+import { Tree, Wind, Recycle, Drop, Lightning, Snowflake, Bird, Sparkle, FlowerLotus, Cat, Leaf } from '@phosphor-icons/react'
 import { Tile as TileType } from '@/lib/types'
 import { TILE_INFO } from '@/lib/gameData'
 import { Card } from '@/components/ui/card'
@@ -16,6 +16,12 @@ const iconMap = {
   Recycle,
   Drop,
   Lightning,
+  Snowflake,
+  Bird,
+  Sparkle,
+  FlowerLotus,
+  Cat,
+  Leaf,
   SolarPanel: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
       <rect width="256" height="256" fill="none"/>

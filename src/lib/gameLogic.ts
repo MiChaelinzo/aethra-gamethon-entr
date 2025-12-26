@@ -1,15 +1,16 @@
-import { Tile, TileType } from './types'
+import { Tile, TileType, Level } from './types'
 
 const TILE_TYPES: TileType[] = ['tree', 'solar', 'wind', 'recycle', 'water', 'energy']
 
-export function generateGrid(size: number): Tile[] {
+export function generateGrid(size: number, level?: Level): Tile[] {
   const grid: Tile[] = []
+  const availableTiles = level?.tileTypes || TILE_TYPES
   
   for (let row = 0; row < size; row++) {
     for (let col = 0; col < size; col++) {
       grid.push({
         id: `${row}-${col}`,
-        type: TILE_TYPES[Math.floor(Math.random() * TILE_TYPES.length)],
+        type: availableTiles[Math.floor(Math.random() * availableTiles.length)],
         row,
         col
       })
@@ -122,8 +123,9 @@ export function dropTiles(grid: Tile[], size: number): Tile[] {
   return newGrid
 }
 
-export function fillEmpty(grid: Tile[], size: number): Tile[] {
+export function fillEmpty(grid: Tile[], size: number, level?: Level): Tile[] {
   const newGrid = [...grid]
+  const availableTiles = level?.tileTypes || TILE_TYPES
   
   for (let col = 0; col < size; col++) {
     const colTiles = newGrid.filter(t => t.col === col)
@@ -132,7 +134,7 @@ export function fillEmpty(grid: Tile[], size: number): Tile[] {
     for (let i = 0; i < missing; i++) {
       newGrid.push({
         id: `${i}-${col}`,
-        type: TILE_TYPES[Math.floor(Math.random() * TILE_TYPES.length)],
+        type: availableTiles[Math.floor(Math.random() * availableTiles.length)],
         row: i,
         col
       })
