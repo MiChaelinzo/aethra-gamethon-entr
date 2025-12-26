@@ -2,24 +2,36 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Play, Trophy } from '@phosphor-icons/react'
-import { Level } from '@/lib/types'
+import { Play, Trophy, Ranking, CalendarDots } from '@phosphor-icons/react'
+import { Level, TileType } from '@/lib/types'
 import { BIOME_GRADIENTS } from '@/lib/gameData'
+import { PowerUpCollection } from './PowerUpCollection'
 
 interface LevelSelectProps {
   levels: Level[]
   completedLevels: number[]
   onSelectLevel: (levelId: number) => void
   totalCO2Reduced: number
+  onOpenDailyChallenge?: () => void
+  onOpenLeaderboard?: () => void
+  unlockedPowerUps?: TileType[]
 }
 
-export function LevelSelect({ levels, completedLevels, onSelectLevel, totalCO2Reduced }: LevelSelectProps) {
+export function LevelSelect({ 
+  levels, 
+  completedLevels, 
+  onSelectLevel, 
+  totalCO2Reduced,
+  onOpenDailyChallenge,
+  onOpenLeaderboard,
+  unlockedPowerUps = []
+}: LevelSelectProps) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
+        className="text-center mb-8 max-w-4xl w-full"
       >
         <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-green-600 to-blue-500 bg-clip-text text-transparent">
           EcoRise
@@ -28,19 +40,50 @@ export function LevelSelect({ levels, completedLevels, onSelectLevel, totalCO2Re
           Restore the Planet, One Match at a Time
         </p>
         
-        {totalCO2Reduced > 0 && (
-          <Card className="p-4 inline-block">
-            <div className="flex items-center gap-3">
-              <Trophy className="text-yellow-500" weight="fill" size={32} />
-              <div className="text-left">
-                <div className="text-sm text-muted-foreground">Total Impact</div>
-                <div className="text-2xl font-bold text-primary">
-                  {totalCO2Reduced.toLocaleString()} lbs CO₂
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+          {onOpenDailyChallenge && (
+            <Button 
+              onClick={onOpenDailyChallenge}
+              size="lg"
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+            >
+              <CalendarDots weight="fill" size={20} className="mr-2" />
+              Daily Challenge
+            </Button>
+          )}
+          
+          {onOpenLeaderboard && (
+            <Button 
+              onClick={onOpenLeaderboard}
+              size="lg"
+              variant="outline"
+              className="border-2"
+            >
+              <Ranking weight="fill" size={20} className="mr-2" />
+              Leaderboard
+            </Button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {totalCO2Reduced > 0 && (
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <Trophy className="text-yellow-500" weight="fill" size={32} />
+                <div className="text-left">
+                  <div className="text-sm text-muted-foreground">Total Impact</div>
+                  <div className="text-2xl font-bold text-primary">
+                    {totalCO2Reduced.toLocaleString()} lbs CO₂
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
-        )}
+            </Card>
+          )}
+
+          {unlockedPowerUps.length > 0 && (
+            <PowerUpCollection unlockedPowerUps={unlockedPowerUps} />
+          )}
+        </div>
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl w-full">

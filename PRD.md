@@ -12,6 +12,27 @@ This is a tile-based puzzle game with multiple levels, persistent progress track
 
 ## Essential Features
 
+### Daily Challenges System
+- **Functionality**: Every 24 hours, a new unique challenge is generated with special conditions, time-limited availability, and exclusive power-up rewards
+- **Purpose**: Encourages daily engagement, rewards consistent play with streak bonuses, and unlocks rare power-ups that can spawn in regular gameplay
+- **Trigger**: Player clicks "Daily Challenge" button from main menu
+- **Progression**: View challenge details → See special conditions and reward → Start challenge → Complete within move limit → Unlock exclusive power-up → Power-up now spawns in all future games
+- **Success criteria**: Challenge rotates daily at midnight, streak counter increments for consecutive days, unlocked power-ups persist and appear in regular gameplay (2-3% spawn rate)
+
+### Global Leaderboard
+- **Functionality**: Real-time competitive rankings showing all players' scores, CO2 reduced, challenges completed, and streak days. Multiple sort options (score, CO2, challenges, streak)
+- **Purpose**: Creates social competition, motivates players to improve, showcases top performers, and validates player achievements
+- **Trigger**: Player clicks "Leaderboard" button from main menu
+- **Progression**: Open leaderboard → View rankings → See own position highlighted → Sort by different metrics → Compare stats with others
+- **Success criteria**: Leaderboard updates automatically after each game, shows player avatars and usernames, highlights current user's position, displays top 3 with special badges
+
+### Power-Up Collection System
+- **Functionality**: Visual collection display showing all 5 power-ups (Supernova, Tsunami, Earthquake, Meteor, Phoenix), tracking which are locked/unlocked
+- **Purpose**: Provides long-term progression goal, incentivizes daily challenge completion, creates collection mechanic
+- **Trigger**: Displayed on main menu after first daily challenge is completed
+- **Progression**: Complete daily challenge → Unlock power-up → See in collection → Power-up spawns in games → Build complete collection
+- **Success criteria**: Shows 5/5 power-ups with lock icons for incomplete, unlocked power-ups spawn in regular levels at 2-3% rate, tooltips explain how to unlock
+
 ### Level-Based Gameplay
 - **Functionality**: Progressive stages where players restore different biomes (forest, desert, ocean, city, tundra, rainforest) across 8 challenging levels
 - **Purpose**: Creates achievable goals while teaching about diverse environmental challenges across Earth's most critical ecosystems

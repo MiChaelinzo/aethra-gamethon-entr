@@ -3,16 +3,21 @@ import { Tile, TileType, Level } from './types'
 const TILE_TYPES: TileType[] = ['tree', 'solar', 'wind', 'recycle', 'water', 'energy']
 const POWERUP_TYPES: TileType[] = ['supernova', 'tsunami', 'earthquake', 'meteor', 'phoenix']
 
-export function generateGrid(size: number, level?: Level): Tile[] {
+export function generateGrid(size: number, level?: Level, unlockedPowerUps: TileType[] = []): Tile[] {
   const grid: Tile[] = []
   const availableTiles = level?.tileTypes || TILE_TYPES
+  const availablePowerUps = unlockedPowerUps.length > 0 
+    ? POWERUP_TYPES.filter(p => unlockedPowerUps.includes(p))
+    : []
   
   for (let row = 0; row < size; row++) {
     for (let col = 0; col < size; col++) {
-      const isPowerUp = Math.random() < 0.03
+      const isPowerUp = availablePowerUps.length > 0 && Math.random() < 0.03
       grid.push({
         id: `${row}-${col}`,
-        type: isPowerUp ? POWERUP_TYPES[Math.floor(Math.random() * POWERUP_TYPES.length)] : availableTiles[Math.floor(Math.random() * availableTiles.length)],
+        type: isPowerUp 
+          ? availablePowerUps[Math.floor(Math.random() * availablePowerUps.length)] 
+          : availableTiles[Math.floor(Math.random() * availableTiles.length)],
         row,
         col,
         isPowerUp
@@ -165,19 +170,24 @@ export function dropTiles(grid: Tile[], size: number): Tile[] {
   return newGrid
 }
 
-export function fillEmpty(grid: Tile[], size: number, level?: Level): Tile[] {
+export function fillEmpty(grid: Tile[], size: number, level?: Level, unlockedPowerUps: TileType[] = []): Tile[] {
   const newGrid = [...grid]
   const availableTiles = level?.tileTypes || TILE_TYPES
+  const availablePowerUps = unlockedPowerUps.length > 0 
+    ? POWERUP_TYPES.filter(p => unlockedPowerUps.includes(p))
+    : []
   
   for (let col = 0; col < size; col++) {
     const colTiles = newGrid.filter(t => t.col === col)
     const missing = size - colTiles.length
     
     for (let i = 0; i < missing; i++) {
-      const isPowerUp = Math.random() < 0.02
+      const isPowerUp = availablePowerUps.length > 0 && Math.random() < 0.02
       newGrid.push({
         id: `${i}-${col}`,
-        type: isPowerUp ? POWERUP_TYPES[Math.floor(Math.random() * POWERUP_TYPES.length)] : availableTiles[Math.floor(Math.random() * availableTiles.length)],
+        type: isPowerUp 
+          ? availablePowerUps[Math.floor(Math.random() * availablePowerUps.length)]
+          : availableTiles[Math.floor(Math.random() * availableTiles.length)],
         row: i,
         col,
         isPowerUp

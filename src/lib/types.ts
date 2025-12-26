@@ -27,6 +27,42 @@ export interface GameState {
   pollution: number
   completedLevels: number[]
   totalCO2Reduced: number
+  unlockedPowerUps: TileType[]
+  dailyChallengeStreak: number
+  lastChallengeDate?: string
+}
+
+export interface DailyChallenge {
+  id: string
+  date: string
+  name: string
+  description: string
+  biome: string
+  gridSize: number
+  targetScore: number
+  movesLimit: number
+  specialCondition: string
+  tileTypes: TileType[]
+  rewardPowerUp: TileType
+  expiresAt: string
+}
+
+export interface LeaderboardEntry {
+  userId: string
+  username: string
+  avatarUrl: string
+  score: number
+  co2Reduced: number
+  challengesCompleted: number
+  streak: number
+  isOwner?: boolean
+}
+
+export interface ChallengeCompletion {
+  challengeId: string
+  completedAt: string
+  score: number
+  co2Reduced: number
 }
 
 export interface TileInfo {
