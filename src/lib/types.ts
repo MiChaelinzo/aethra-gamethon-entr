@@ -124,3 +124,24 @@ export interface TileInfo {
   fact: string
   co2Impact: number
 }
+
+export interface CollisionZoneData {
+  row: number
+  col: number
+  count: number
+  biome: string
+  lastActivated: string
+}
+
+export interface BiomeCollisionStats {
+  biome: string
+  totalActivations: number
+  hottestZones: CollisionZoneData[]
+}
+
+export interface CollisionStatistics {
+  totalZonesActivated: number
+  uniqueZones: number
+  biomeStats: BiomeCollisionStats[]
+  globalHottestZones: CollisionZoneData[]
+}

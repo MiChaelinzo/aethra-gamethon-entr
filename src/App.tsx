@@ -22,9 +22,10 @@ import { ParticleThemeSwitcher } from './components/ParticleThemeSwitcher'
 import { ThemeSwitchBurst } from './components/ThemeSwitchBurst'
 import { CollisionMultiplier } from './components/CollisionMultiplier'
 import { HeatmapControl } from './components/HeatmapControl'
+import { CollisionStatisticsPanel } from './components/CollisionStatisticsPanel'
 import { Button } from './components/ui/button'
-import { ArrowLeft, Shuffle } from '@phosphor-icons/react'
-import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge, VisualizerStyle, TrailTheme } from './lib/types'
+import { ArrowLeft, Shuffle, ChartBar } from '@phosphor-icons/react'
+import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge, VisualizerStyle, TrailTheme, CollisionZoneData, BiomeCollisionStats, CollisionStatistics } from './lib/types'
 import { LEVELS, TILE_INFO, BIOME_GRADIENTS, POLLUTION_GRADIENT } from './lib/gameData'
 import { TRAIL_THEMES } from './lib/trailThemes'
 import { getTodayChallenge, isChallengeActive } from './lib/challengeData'
@@ -99,6 +100,8 @@ function App() {
   const [heatmapEnabled, setHeatmapEnabled] = useKV<boolean>('ecorise-heatmap-enabled', false)
   const [heatmapOpacity, setHeatmapOpacity] = useKV<number>('ecorise-heatmap-opacity', 0.6)
   const [heatmapDecayRate, setHeatmapDecayRate] = useKV<number>('ecorise-heatmap-decay', 0.95)
+  const [collisionZonesData, setCollisionZonesData] = useKV<Record<string, CollisionZoneData>>('ecorise-collision-zones', {})
+  const [showStatisticsPanel, setShowStatisticsPanel] = useState(false)
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
@@ -185,6 +188,37 @@ function App() {
     
     setCurrentMultiplier(multiplier)
 
+    if (currentLevel && collisionCount >= 2) {
+      const row = Math.floor(position.y / 80)
+      const col = Math.floor(position.x / 80)
+      const zoneKey = `${currentLevel.biome}-${row}-${col}`
+      
+      setCollisionZonesData((current) => {
+        const zones = { ...(current ?? {}) }
+        if (zones[zoneKey]) {
+          return {
+            ...zones,
+            [zoneKey]: {
+              ...zones[zoneKey],
+              count: zones[zoneKey].count + 1,
+              lastActivated: new Date().toISOString()
+            }
+          }
+        } else {
+          return {
+            ...zones,
+            [zoneKey]: {
+              row,
+              col,
+              count: 1,
+              biome: currentLevel.biome,
+              lastActivated: new Date().toISOString()
+            }
+          }
+        }
+      })
+    }
+
     if (multiplier >= 5) {
       playSoundEffect('collision-vortex')
     } else if (multiplier >= 3) {
@@ -248,11 +282,58 @@ function App() {
           icon: '🔥'
         })
       }
+      
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault()
+        setShowStatisticsPanel(true)
+        toast('Opening collision statistics', {
+          icon: '📊'
+        })
+      }
     }
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [trailEnabled, trailTheme, state.unlockedPowerUps, showHeatmap])
+
+  const computeCollisionStatistics = (): CollisionStatistics => {
+    const zones = collisionZonesData ?? {}
+    const zoneArray = Object.values(zones)
+    
+    const biomeMap = new Map<string, BiomeCollisionStats>()
+    
+    zoneArray.forEach(zone => {
+      if (!biomeMap.has(zone.biome)) {
+        biomeMap.set(zone.biome, {
+          biome: zone.biome,
+          totalActivations: 0,
+          hottestZones: []
+        })
+      }
+      
+      const biomeStats = biomeMap.get(zone.biome)!
+      biomeStats.totalActivations += zone.count
+      biomeStats.hottestZones.push(zone)
+    })
+    
+    biomeMap.forEach(stats => {
+      stats.hottestZones.sort((a, b) => b.count - a.count)
+      stats.hottestZones = stats.hottestZones.slice(0, 10)
+    })
+    
+    const globalHottestZones = zoneArray
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10)
+    
+    const totalZonesActivated = zoneArray.reduce((sum, zone) => sum + zone.count, 0)
+    
+    return {
+      totalZonesActivated,
+      uniqueZones: zoneArray.length,
+      biomeStats: Array.from(biomeMap.values()),
+      globalHottestZones
+    }
+  }
 
   useEffect(() => {
     const updateLeaderboard = async () => {
@@ -811,6 +892,15 @@ function App() {
         <MouseTrail isActive={trailEnabled} biome="menu" intensity={trailIntensity} theme={trailTheme} />
         
         <div className="fixed top-4 right-4 z-50 flex gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setShowStatisticsPanel(true)}
+            className="bg-card/80 backdrop-blur-sm hover:bg-card"
+            title="View Collision Statistics"
+          >
+            <ChartBar size={20} weight="fill" />
+          </Button>
           <ParticleThemeSwitcher
             currentTheme={trailTheme}
             unlockedPowerUps={state.unlockedPowerUps}
@@ -841,8 +931,15 @@ function App() {
             <p><kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">Ctrl+P</kbd> Toggle particle trail</p>
             <p><kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">Ctrl+Shift+P</kbd> Cycle themes</p>
             <p><kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">Ctrl+H</kbd> Toggle collision heatmap</p>
+            <p><kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">Ctrl+S</kbd> View collision statistics</p>
           </div>
         </div>
+
+        <CollisionStatisticsPanel
+          isOpen={showStatisticsPanel}
+          onClose={() => setShowStatisticsPanel(false)}
+          statistics={computeCollisionStatistics()}
+        />
 
         {showDailyChallenge && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -954,6 +1051,14 @@ function App() {
             </div>
 
             <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setShowStatisticsPanel(true)}
+                title="View Collision Statistics"
+              >
+                <ChartBar size={20} weight="fill" />
+              </Button>
               <ParticleThemeSwitcher
                 currentTheme={trailTheme}
                 unlockedPowerUps={state.unlockedPowerUps}
@@ -1059,6 +1164,12 @@ function App() {
           isLastLevel={!isTournament && !isChallenge && currentLevel.id === LEVELS.length}
         />
       )}
+
+      <CollisionStatisticsPanel
+        isOpen={showStatisticsPanel}
+        onClose={() => setShowStatisticsPanel(false)}
+        statistics={computeCollisionStatistics()}
+      />
     </div>
   )
 }
