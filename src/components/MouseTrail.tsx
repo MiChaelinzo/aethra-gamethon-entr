@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
+import { TrailTheme } from '../lib/types'
+import { getThemeConfig } from '../lib/trailThemes'
 
 interface Particle {
   id: number
@@ -13,13 +15,16 @@ interface Particle {
   maxLife: number
   rotation: number
   rotationSpeed: number
-  shape: 'circle' | 'square' | 'star'
+  shape: 'circle' | 'square' | 'star' | 'diamond' | 'hexagon'
+  angle?: number
+  distance?: number
 }
 
 interface MouseTrailProps {
   isActive: boolean
   biome: string
   intensity?: 'low' | 'medium' | 'high'
+  theme?: TrailTheme
 }
 
 const BIOME_COLORS: Record<string, string[]> = {
@@ -33,7 +38,7 @@ const BIOME_COLORS: Record<string, string[]> = {
   menu: ['#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe']
 }
 
-export function MouseTrail({ isActive, biome, intensity = 'medium' }: MouseTrailProps) {
+export function MouseTrail({ isActive, biome, intensity = 'medium', theme = 'default' }: MouseTrailProps) {
   const [particles, setParticles] = useState<Particle[]>([])
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [isMoving, setIsMoving] = useState(false)
@@ -42,8 +47,9 @@ export function MouseTrail({ isActive, biome, intensity = 'medium' }: MouseTrail
   const animationFrameRef = useRef<number | undefined>(undefined)
   const moveTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
-  const particleCount = intensity === 'high' ? 3 : intensity === 'medium' ? 2 : 1
-  const colors = BIOME_COLORS[biome] || BIOME_COLORS.menu
+  const particleCount = intensity === 'high' ? 4 : intensity === 'medium' ? 3 : 2
+  const themeConfig = getThemeConfig(theme)
+  const colors = themeConfig.colors.length > 0 ? themeConfig.colors : BIOME_COLORS[biome] || BIOME_COLORS.menu
 
   useEffect(() => {
     if (!isActive) {
@@ -90,11 +96,55 @@ export function MouseTrail({ isActive, biome, intensity = 'medium' }: MouseTrail
       const newParticles: Particle[] = []
       
       for (let i = 0; i < particleCount; i++) {
-        const angle = Math.random() * Math.PI * 2
-        const speed = Math.random() * 2 + 1
-        const size = Math.random() * 8 + 4
-        const life = Math.random() * 30 + 40
-        const shapes: ('circle' | 'square' | 'star')[] = ['circle', 'circle', 'square', 'star']
+        let angle: number
+        let speed: number
+        let size: number
+        let life: number
+        
+        switch (themeConfig.specialEffect) {
+          case 'burst':
+            angle = (Math.PI * 2 * i) / particleCount + Math.random() * 0.5
+            speed = Math.random() * (themeConfig.particleSpeed.max - themeConfig.particleSpeed.min) + themeConfig.particleSpeed.min
+            size = Math.random() * (themeConfig.particleSize.max - themeConfig.particleSize.min) + themeConfig.particleSize.min
+            life = Math.random() * (themeConfig.particleLife.max - themeConfig.particleLife.min) + themeConfig.particleLife.min
+            break
+          
+          case 'wave':
+            angle = Math.sin(Date.now() / 500 + i) * Math.PI
+            speed = Math.random() * (themeConfig.particleSpeed.max - themeConfig.particleSpeed.min) + themeConfig.particleSpeed.min
+            size = Math.random() * (themeConfig.particleSize.max - themeConfig.particleSize.min) + themeConfig.particleSize.min
+            life = Math.random() * (themeConfig.particleLife.max - themeConfig.particleLife.min) + themeConfig.particleLife.min
+            break
+          
+          case 'comet':
+            const baseAngle = Math.atan2(mousePos.y - lastPosRef.current.y, mousePos.x - lastPosRef.current.x)
+            angle = baseAngle + Math.PI + (Math.random() - 0.5) * 0.3
+            speed = Math.random() * (themeConfig.particleSpeed.max - themeConfig.particleSpeed.min) + themeConfig.particleSpeed.min
+            size = Math.random() * (themeConfig.particleSize.max - themeConfig.particleSize.min) + themeConfig.particleSize.min
+            life = Math.random() * (themeConfig.particleLife.max - themeConfig.particleLife.min) + themeConfig.particleLife.min
+            break
+          
+          case 'flame':
+            angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.8
+            speed = Math.random() * (themeConfig.particleSpeed.max - themeConfig.particleSpeed.min) + themeConfig.particleSpeed.min
+            size = Math.random() * (themeConfig.particleSize.max - themeConfig.particleSize.min) + themeConfig.particleSize.min
+            life = Math.random() * (themeConfig.particleLife.max - themeConfig.particleLife.min) + themeConfig.particleLife.min
+            break
+          
+          case 'spiral':
+            const spiralAngle = (Date.now() / 100 + i * 60) % 360
+            angle = (spiralAngle * Math.PI) / 180
+            speed = Math.random() * (themeConfig.particleSpeed.max - themeConfig.particleSpeed.min) + themeConfig.particleSpeed.min
+            size = Math.random() * (themeConfig.particleSize.max - themeConfig.particleSize.min) + themeConfig.particleSize.min
+            life = Math.random() * (themeConfig.particleLife.max - themeConfig.particleLife.min) + themeConfig.particleLife.min
+            break
+          
+          default:
+            angle = Math.random() * Math.PI * 2
+            speed = Math.random() * (themeConfig.particleSpeed.max - themeConfig.particleSpeed.min) + themeConfig.particleSpeed.min
+            size = Math.random() * (themeConfig.particleSize.max - themeConfig.particleSize.min) + themeConfig.particleSize.min
+            life = Math.random() * (themeConfig.particleLife.max - themeConfig.particleLife.min) + themeConfig.particleLife.min
+        }
         
         newParticles.push({
           id: particleIdRef.current++,
@@ -107,16 +157,18 @@ export function MouseTrail({ isActive, biome, intensity = 'medium' }: MouseTrail
           life,
           maxLife: life,
           rotation: Math.random() * 360,
-          rotationSpeed: (Math.random() - 0.5) * 10,
-          shape: shapes[Math.floor(Math.random() * shapes.length)]
+          rotationSpeed: Math.random() * (themeConfig.rotationSpeed.max - themeConfig.rotationSpeed.min) + themeConfig.rotationSpeed.min,
+          shape: themeConfig.particleShapes[Math.floor(Math.random() * themeConfig.particleShapes.length)],
+          angle: themeConfig.specialEffect === 'spiral' ? angle : undefined,
+          distance: themeConfig.specialEffect === 'spiral' ? 0 : undefined
         })
       }
 
-      setParticles(prev => [...prev, ...newParticles].slice(-150))
+      setParticles(prev => [...prev, ...newParticles].slice(-200))
     }
 
     addParticles()
-  }, [mousePos, isMoving, isActive, particleCount, colors])
+  }, [mousePos, isMoving, isActive, particleCount, colors, themeConfig])
 
   useEffect(() => {
     if (!isActive) return
@@ -124,15 +176,38 @@ export function MouseTrail({ isActive, biome, intensity = 'medium' }: MouseTrail
     const animate = () => {
       setParticles(prev => {
         return prev
-          .map(particle => ({
-            ...particle,
-            x: particle.x + particle.velocityX,
-            y: particle.y + particle.velocityY,
-            velocityY: particle.velocityY + 0.15,
-            life: particle.life - 1,
-            size: particle.size * 0.98,
-            rotation: particle.rotation + particle.rotationSpeed
-          }))
+          .map(particle => {
+            let newX = particle.x + particle.velocityX
+            let newY = particle.y + particle.velocityY
+            let newVelocityY = particle.velocityY
+            
+            if (themeConfig.specialEffect === 'flame') {
+              newVelocityY = particle.velocityY - 0.1
+              newX += (Math.random() - 0.5) * 1.5
+            } else if (themeConfig.specialEffect === 'wave') {
+              newY += Math.sin(particle.x / 30 + Date.now() / 500) * 0.5
+              newVelocityY = particle.velocityY + 0.05
+            } else if (themeConfig.specialEffect === 'spiral') {
+              const distance = (particle.distance || 0) + 0.5
+              const currentAngle = (particle.angle || 0) + 0.05
+              newX = particle.x + Math.cos(currentAngle) * distance
+              newY = particle.y + Math.sin(currentAngle) * distance
+              particle.angle = currentAngle
+              particle.distance = distance
+            } else {
+              newVelocityY = particle.velocityY + 0.15
+            }
+            
+            return {
+              ...particle,
+              x: newX,
+              y: newY,
+              velocityY: newVelocityY,
+              life: particle.life - 1,
+              size: particle.size * 0.98,
+              rotation: particle.rotation + particle.rotationSpeed
+            }
+          })
           .filter(particle => particle.life > 0 && particle.size > 0.5)
       })
 
@@ -146,7 +221,7 @@ export function MouseTrail({ isActive, biome, intensity = 'medium' }: MouseTrail
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [isActive])
+  }, [isActive, themeConfig.specialEffect])
 
   if (!isActive) return null
 
@@ -157,8 +232,8 @@ export function MouseTrail({ isActive, biome, intensity = 'medium' }: MouseTrail
       width: particle.size,
       height: particle.size,
       backgroundColor: particle.color,
-      opacity: (particle.life / particle.maxLife) * 0.8,
-      boxShadow: `0 0 ${particle.size * 2}px ${particle.color}`,
+      opacity: (particle.life / particle.maxLife) * 0.9,
+      boxShadow: `0 0 ${particle.size * themeConfig.glowIntensity}px ${particle.color}`,
       transform: `rotate(${particle.rotation}deg)`
     }
 
@@ -166,7 +241,23 @@ export function MouseTrail({ isActive, biome, intensity = 'medium' }: MouseTrail
       case 'square':
         return { ...baseStyles, borderRadius: '20%' }
       case 'star':
-        return { ...baseStyles, clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' }
+        return { 
+          ...baseStyles, 
+          clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
+          borderRadius: '0'
+        }
+      case 'diamond':
+        return { 
+          ...baseStyles, 
+          clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+          borderRadius: '0'
+        }
+      case 'hexagon':
+        return { 
+          ...baseStyles, 
+          clipPath: 'polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%)',
+          borderRadius: '0'
+        }
       default:
         return { ...baseStyles, borderRadius: '50%' }
     }

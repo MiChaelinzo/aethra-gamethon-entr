@@ -4,6 +4,8 @@ export type BadgeType = 'champion' | 'runner-up' | 'third-place' | 'top-10' | 'p
 
 export type VisualizerStyle = 'bars' | 'waveform' | 'circular'
 
+export type TrailTheme = 'default' | 'supernova' | 'tsunami' | 'earthquake' | 'meteor' | 'phoenix'
+
 export interface Tile {
   id: string
   type: TileType

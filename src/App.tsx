@@ -81,6 +81,7 @@ function App() {
   const [visualizerStyle, setVisualizerStyle] = useKV<VisualizerStyle>('ecorise-visualizer-style', 'bars')
   const [mouseTrailEnabled, setMouseTrailEnabled] = useKV<boolean>('ecorise-mouse-trail', true)
   const [mouseTrailIntensity, setMouseTrailIntensity] = useKV<'low' | 'medium' | 'high'>('ecorise-trail-intensity', 'medium')
+  const [mouseTrailTheme, setMouseTrailTheme] = useKV<import('./lib/types').TrailTheme>('ecorise-trail-theme', 'default')
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
@@ -92,6 +93,7 @@ function App() {
   const currentVisualizerStyle = visualizerStyle ?? 'bars'
   const trailEnabled = mouseTrailEnabled ?? true
   const trailIntensity = mouseTrailIntensity ?? 'medium'
+  const trailTheme = mouseTrailTheme ?? 'default'
   
   const currentLevel = isChallenge && currentChallenge
     ? {
@@ -704,14 +706,17 @@ function App() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
         <MusicVisualizer isPlaying={musicPlaying} biome="menu" style={currentVisualizerStyle} />
-        <MouseTrail isActive={trailEnabled} biome="menu" intensity={trailIntensity} />
+        <MouseTrail isActive={trailEnabled} biome="menu" intensity={trailIntensity} theme={trailTheme} />
         
         <div className="fixed top-4 right-4 z-50 flex gap-2">
           <MouseTrailControl
             isEnabled={trailEnabled}
             intensity={trailIntensity}
+            theme={trailTheme}
+            unlockedPowerUps={state.unlockedPowerUps}
             onToggle={setMouseTrailEnabled}
             onIntensityChange={setMouseTrailIntensity}
+            onThemeChange={setMouseTrailTheme}
           />
           <MusicControl 
             isPlaying={musicPlaying} 
@@ -791,7 +796,7 @@ function App() {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <MusicVisualizer isPlaying={musicPlaying} biome={currentLevel?.biome || 'menu'} style={currentVisualizerStyle} />
-      <MouseTrail isActive={trailEnabled && !!isInGame} biome={currentLevel?.biome || 'menu'} intensity={trailIntensity} />
+      <MouseTrail isActive={trailEnabled && !!isInGame} biome={currentLevel?.biome || 'menu'} intensity={trailIntensity} theme={trailTheme} />
       
       <motion.div
         className={`absolute inset-0 bg-gradient-to-br ${backgroundGradient} transition-opacity duration-[2000ms]`}
@@ -839,8 +844,11 @@ function App() {
               <MouseTrailControl
                 isEnabled={trailEnabled}
                 intensity={trailIntensity}
+                theme={trailTheme}
+                unlockedPowerUps={state.unlockedPowerUps}
                 onToggle={setMouseTrailEnabled}
                 onIntensityChange={setMouseTrailIntensity}
+                onThemeChange={setMouseTrailTheme}
               />
               <Button variant="outline" onClick={handleShuffle} disabled={isProcessing}>
                 <Shuffle className="mr-2" />
