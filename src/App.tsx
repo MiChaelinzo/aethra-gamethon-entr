@@ -16,6 +16,8 @@ import { BadgeShowcase } from './components/BadgeShowcase'
 import { ConfettiCelebration } from './components/ConfettiCelebration'
 import { MusicControl } from './components/MusicControl'
 import { MusicVisualizer } from './components/MusicVisualizer'
+import { MouseTrail } from './components/MouseTrail'
+import { MouseTrailControl } from './components/MouseTrailControl'
 import { Button } from './components/ui/button'
 import { ArrowLeft, Shuffle } from '@phosphor-icons/react'
 import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge, VisualizerStyle } from './lib/types'
@@ -77,6 +79,8 @@ function App() {
   const [showStreakConfetti, setShowStreakConfetti] = useState(false)
   const [isMusicPlaying, setIsMusicPlaying] = useKV<boolean>('ecorise-music-playing', true)
   const [visualizerStyle, setVisualizerStyle] = useKV<VisualizerStyle>('ecorise-visualizer-style', 'bars')
+  const [mouseTrailEnabled, setMouseTrailEnabled] = useKV<boolean>('ecorise-mouse-trail', true)
+  const [mouseTrailIntensity, setMouseTrailIntensity] = useKV<'low' | 'medium' | 'high'>('ecorise-trail-intensity', 'medium')
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
@@ -86,6 +90,8 @@ function App() {
   const badges = playerBadges ?? []
   const musicPlaying = isMusicPlaying ?? true
   const currentVisualizerStyle = visualizerStyle ?? 'bars'
+  const trailEnabled = mouseTrailEnabled ?? true
+  const trailIntensity = mouseTrailIntensity ?? 'medium'
   
   const currentLevel = isChallenge && currentChallenge
     ? {
@@ -698,8 +704,15 @@ function App() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
         <MusicVisualizer isPlaying={musicPlaying} biome="menu" style={currentVisualizerStyle} />
+        <MouseTrail isActive={trailEnabled} biome="menu" intensity={trailIntensity} />
         
-        <div className="fixed top-4 right-4 z-50">
+        <div className="fixed top-4 right-4 z-50 flex gap-2">
+          <MouseTrailControl
+            isEnabled={trailEnabled}
+            intensity={trailIntensity}
+            onToggle={setMouseTrailEnabled}
+            onIntensityChange={setMouseTrailIntensity}
+          />
           <MusicControl 
             isPlaying={musicPlaying} 
             onToggle={handleToggleMusic}
@@ -778,6 +791,7 @@ function App() {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <MusicVisualizer isPlaying={musicPlaying} biome={currentLevel?.biome || 'menu'} style={currentVisualizerStyle} />
+      <MouseTrail isActive={trailEnabled && !!isInGame} biome={currentLevel?.biome || 'menu'} intensity={trailIntensity} />
       
       <motion.div
         className={`absolute inset-0 bg-gradient-to-br ${backgroundGradient} transition-opacity duration-[2000ms]`}
@@ -821,6 +835,12 @@ function App() {
                 onToggle={handleToggleMusic}
                 visualizerStyle={currentVisualizerStyle}
                 onStyleChange={setVisualizerStyle}
+              />
+              <MouseTrailControl
+                isEnabled={trailEnabled}
+                intensity={trailIntensity}
+                onToggle={setMouseTrailEnabled}
+                onIntensityChange={setMouseTrailIntensity}
               />
               <Button variant="outline" onClick={handleShuffle} disabled={isProcessing}>
                 <Shuffle className="mr-2" />
