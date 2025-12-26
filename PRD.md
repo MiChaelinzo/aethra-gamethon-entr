@@ -223,6 +223,22 @@ Avoid lengthy animations that slow gameplay—keep tile matching snappy (150-200
   - Card content: p-4 internally
   - Stat displays: space-y-3 for vertical rhythm
 
+### Visualizer Particle Effects
+- **Functionality**: Dynamic particle system that enhances the music visualizer with animated particles matching each visualizer theme's color scheme. Particles react to audio intensity in real-time, with style-specific behaviors (bars: rising particles from bottom, circular: radiating from center, waveform: diamond shapes with rotation). Includes ambient background effects like pulsing glows, trailing streams, floating orbs, and orbital particles that complement each visualizer style.
+- **Purpose**: Creates immersive visual atmosphere that responds to music, reinforces biome identity through color-matched particles, provides audio-reactive feedback that makes the music feel more tangible and engaging
+- **Trigger**: Particles automatically spawn and animate while music is playing, intensity increases with audio levels
+- **Progression**: Music plays → Particles begin spawning → Move according to style physics → React to audio intensity → Create layered ambient effects → Fade out when music stops
+- **Success criteria**: 
+  - **Bars Style**: Circular particles rise from bottom with gentle horizontal drift, 5 vertical gradient trails pulse with music, 10 spark particles shoot upward at intervals, horizontal glow bar at bottom pulses with beat, intensity controls spawn rate (2-7 particles per cycle)
+  - **Circular Style**: Particles radiate outward from center point in all directions with rotation animation, 8 orbiting particles circle the center at varying distances, large pulsing glow effect at origin point, intensity affects radial distance and scale
+  - **Waveform Style**: Diamond-shaped particles with rotation animation drift in wave patterns, 3 horizontal wave lines sweep across screen at different speeds, 20 floating particles move in sine wave trajectories, large central blur glow pulses with audio, intensity controls particle density and wave amplitude
+  - All particles use biome-specific color palettes from visualizer themes (primary, secondary, accent, gradient colors)
+  - Biome-specific particle sizing (forest/rainforest 1.1x, desert 1.2x, tundra 0.8x, ocean 0.9x)
+  - Particles have lifecycle (spawn → animate → fade out), max 200 active particles for performance
+  - Smooth fade-in animations on spawn, glowing shadows matching particle color
+  - Ambient effects include trailing glows, orbital systems, pulsing auras, and sweeping light beams
+  - All effects are non-interactive (pointer-events-none) and layer properly (z-index 30 for particles, 40 for visualizer bars)
+
 - **Mobile**: 
   - Grid sizes adapt to screen size (6x6 on mobile, up to 10x10 on desktop for later levels)
   - Stack stat panels vertically below game board instead of side-by-side

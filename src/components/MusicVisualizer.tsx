@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { getAudioAnalyser } from '../lib/backgroundMusic'
 import { VisualizerStyle } from '@/lib/types'
 import { getVisualizerColors } from '@/lib/visualizerThemes'
+import { VisualizerParticles } from './VisualizerParticles'
 
 interface MusicVisualizerProps {
   isPlaying: boolean
@@ -53,6 +54,7 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
   }, [isPlaying])
 
   const colors = getVisualizerColors(biome, style)
+  const avgIntensity = frequencyData.reduce((sum, val) => sum + val, 0) / frequencyData.length
 
   const renderBarsVisualizer = () => (
     <motion.div
@@ -397,16 +399,24 @@ export function MusicVisualizer({ isPlaying, biome = 'menu', style }: MusicVisua
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-32 pointer-events-none z-40 overflow-hidden">
-      <AnimatePresence mode="wait">
-        {isPlaying && (
-          <div key={style}>
-            {style === 'bars' && renderBarsVisualizer()}
-            {style === 'waveform' && renderWaveformVisualizer()}
-            {style === 'circular' && renderCircularVisualizer()}
-          </div>
-        )}
-      </AnimatePresence>
-    </div>
+    <>
+      <VisualizerParticles 
+        isPlaying={isPlaying} 
+        biome={biome} 
+        style={style} 
+        intensity={Math.max(0.3, avgIntensity)}
+      />
+      <div className="fixed bottom-0 left-0 right-0 h-32 pointer-events-none z-40 overflow-hidden">
+        <AnimatePresence mode="wait">
+          {isPlaying && (
+            <div key={style}>
+              {style === 'bars' && renderBarsVisualizer()}
+              {style === 'waveform' && renderWaveformVisualizer()}
+              {style === 'circular' && renderCircularVisualizer()}
+            </div>
+          )}
+        </AnimatePresence>
+      </div>
+    </>
   )
 }
