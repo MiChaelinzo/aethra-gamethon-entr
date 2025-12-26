@@ -47,6 +47,15 @@ export interface DailyChallenge {
   expiresAt: string
 }
 
+export interface PlayerBadge {
+  type: 'champion' | 'runner-up' | 'third-place' | 'top-10' | 'participant' | 'streak-master' | 'eco-warrior' | 'challenger'
+  tournamentName?: string
+  tournamentId?: string
+  rank?: number
+  detail?: string
+  earnedAt: string
+}
+
 export interface LeaderboardEntry {
   userId: string
   username: string
@@ -56,6 +65,7 @@ export interface LeaderboardEntry {
   challengesCompleted: number
   streak: number
   isOwner?: boolean
+  badges?: PlayerBadge[]
 }
 
 export interface ChallengeCompletion {
@@ -97,6 +107,7 @@ export interface TournamentEntry {
   completedAt: string
   rank?: number
   isOwner?: boolean
+  badges?: PlayerBadge[]
 }
 
 export interface TileInfo {

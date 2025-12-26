@@ -546,6 +546,7 @@ function App() {
         {showLeaderboard && (
           <Leaderboard
             entries={leaderboard}
+            tournamentEntries={tournaments}
             currentUserId={currentUserId}
             onClose={() => setShowLeaderboard(false)}
           />

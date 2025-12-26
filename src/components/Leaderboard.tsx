@@ -13,16 +13,22 @@ import {
   Leaf,
   Lightning
 } from '@phosphor-icons/react'
-import { LeaderboardEntry } from '@/lib/types'
+import { LeaderboardEntry, TournamentEntry } from '@/lib/types'
+import { BadgeCollection } from './TournamentBadge'
+import { PlayerProfile } from './PlayerProfile'
+import { calculatePlayerBadges } from '@/lib/badgeUtils'
 
 interface LeaderboardProps {
   entries: LeaderboardEntry[]
+  tournamentEntries?: TournamentEntry[]
   currentUserId: string
   onClose: () => void
 }
 
-export function Leaderboard({ entries, currentUserId, onClose }: LeaderboardProps) {
+export function Leaderboard({ entries, tournamentEntries = [], currentUserId, onClose }: LeaderboardProps) {
   const [sortBy, setSortBy] = useState<'score' | 'co2' | 'challenges' | 'streak'>('score')
+  const [selectedPlayer, setSelectedPlayer] = useState<LeaderboardEntry | null>(null)
+  const [selectedPlayerRank, setSelectedPlayerRank] = useState<number>(0)
 
   const sortedEntries = [...entries].sort((a, b) => {
     switch (sortBy) {
@@ -69,13 +75,24 @@ export function Leaderboard({ entries, currentUserId, onClose }: LeaderboardProp
       className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
       onClick={onClose}
     >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-2xl max-h-[90vh] overflow-hidden"
-      >
+      {selectedPlayer && (
+        <PlayerProfile
+          entry={selectedPlayer}
+          tournamentEntries={tournamentEntries}
+          rank={selectedPlayerRank}
+          isCurrentUser={selectedPlayer.userId === currentUserId}
+          onClose={() => setSelectedPlayer(null)}
+        />
+      )}
+      
+      {!selectedPlayer && (
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          onClick={(e) => e.stopPropagation()}
+          className="w-full max-w-2xl max-h-[90vh] overflow-hidden"
+        >
         <Card className="p-6 bg-gradient-to-br from-indigo-50 to-purple-50">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
@@ -118,6 +135,7 @@ export function Leaderboard({ entries, currentUserId, onClose }: LeaderboardProp
               {sortedEntries.map((entry, index) => {
                 const rank = index + 1
                 const isCurrentUser = entry.userId === currentUserId
+                const playerBadges = calculatePlayerBadges(entry, tournamentEntries)
 
                 return (
                   <motion.div
@@ -131,7 +149,11 @@ export function Leaderboard({ entries, currentUserId, onClose }: LeaderboardProp
                     <Card 
                       className={`p-4 ${getRankBadge(rank)} ${
                         isCurrentUser ? 'ring-2 ring-indigo-500 shadow-lg' : ''
-                      }`}
+                      } cursor-pointer hover:scale-[1.02] transition-transform`}
+                      onClick={() => {
+                        setSelectedPlayer(entry)
+                        setSelectedPlayerRank(rank)
+                      }}
                     >
                       <div className="flex items-center gap-4">
                         <div className="w-12 flex items-center justify-center">
@@ -155,7 +177,7 @@ export function Leaderboard({ entries, currentUserId, onClose }: LeaderboardProp
                               <Badge className="bg-purple-600 text-white">Owner</Badge>
                             )}
                           </div>
-                          <div className="flex items-center gap-4 text-sm">
+                          <div className="flex items-center gap-4 text-sm mb-2">
                             {sortBy === 'score' && (
                               <span className="font-medium">
                                 <Lightning size={14} className="inline mr-1" />
@@ -181,6 +203,11 @@ export function Leaderboard({ entries, currentUserId, onClose }: LeaderboardProp
                               </span>
                             )}
                           </div>
+                          {playerBadges.length > 0 && (
+                            <div className="flex items-center gap-2">
+                              <BadgeCollection badges={playerBadges} size="sm" maxDisplay={6} />
+                            </div>
+                          )}
                         </div>
 
                         <div className="text-right hidden md:block">
@@ -208,7 +235,8 @@ export function Leaderboard({ entries, currentUserId, onClose }: LeaderboardProp
             </AnimatePresence>
           </div>
         </Card>
-      </motion.div>
+        </motion.div>
+      )}
     </motion.div>
   )
 }

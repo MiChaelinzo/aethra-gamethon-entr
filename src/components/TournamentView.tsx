@@ -6,6 +6,8 @@ import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar'
 import { Trophy, Crown, Medal, Fire, X, Calendar, Target, Clock } from '@phosphor-icons/react'
 import { Tournament, TournamentEntry } from '@/lib/types'
 import { getTournamentTimeRemaining } from '@/lib/tournamentData'
+import { TournamentBadge } from './TournamentBadge'
+import { generateTournamentBadge } from '@/lib/badgeUtils'
 
 interface TournamentProps {
   tournament: Tournament
@@ -140,6 +142,7 @@ export function TournamentView({ tournament, entries, currentUserId, onStart, on
                 {sortedEntries.map((entry) => {
                   const prize = tournament.prizes.find(p => p.rank === entry.rank)
                   const isCurrentUser = entry.userId === currentUserId
+                  const badge = generateTournamentBadge(entry.rank!, tournament.name, tournament.id)
 
                   return (
                     <motion.div
@@ -164,7 +167,7 @@ export function TournamentView({ tournament, entries, currentUserId, onStart, on
                         </Avatar>
 
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 mb-1">
                             <span className="font-semibold truncate">
                               {entry.username}
                               {isCurrentUser && (
@@ -174,6 +177,12 @@ export function TournamentView({ tournament, entries, currentUserId, onStart, on
                             {entry.isOwner && (
                               <Badge variant="secondary" className="text-xs">Creator</Badge>
                             )}
+                            <TournamentBadge
+                              type={badge.type}
+                              tournamentName={tournament.name}
+                              rank={entry.rank}
+                              size="sm"
+                            />
                           </div>
                           <div className="text-sm text-muted-foreground">
                             {entry.score.toLocaleString()} pts • {entry.co2Reduced.toLocaleString()} kg CO₂

@@ -27,11 +27,18 @@ This is a tile-based puzzle game with multiple levels, persistent progress track
 - **Success criteria**: Leaderboard updates automatically after each game, shows player avatars and usernames, highlights current user's position, displays top 3 with special badges
 
 ### Weekly Tournament System
-- **Functionality**: Weekly competitive events with rotating biomes and special rules. Each tournament runs Monday-Sunday with unique challenges: Rainforest Revival, Arctic Preservation, Ocean Clean-Up, or Global Reforestation. Top 10 players receive CO2 bonus prizes (10,000 kg for 1st down to 1,000 kg for 10th). Players can replay unlimited times to improve their ranking.
-- **Purpose**: Creates recurring engagement, fosters competitive community, rewards skilled players, and provides fresh weekly content
+- **Functionality**: Weekly competitive events with rotating biomes and special rules. Each tournament runs Monday-Sunday with unique challenges: Rainforest Revival, Arctic Preservation, Ocean Clean-Up, or Global Reforestation. Top 10 players receive CO2 bonus prizes (10,000 kg for 1st down to 1,000 kg for 10th). Players can replay unlimited times to improve their ranking. **Tournament badges are awarded to top 10 finishers and displayed on player profiles throughout the leaderboard and tournament views.**
+- **Purpose**: Creates recurring engagement, fosters competitive community, rewards skilled players, provides fresh weekly content, and offers prestigious badges for achievement
 - **Trigger**: Player clicks "Weekly Tournament" button from main menu
-- **Progression**: View tournament details → See time remaining and special rules → Enter tournament → Complete challenge → Submit score → View top 10 rankings → Replay to improve rank → Receive prize at week end if in top 10
-- **Success criteria**: Tournament rotates weekly automatically, leaderboard shows top 10 with ranks, player's best score is kept, special rules affect gameplay (e.g., "Rainforest tiles worth 2x points"), prizes are awarded correctly, countdown timer shows time remaining, replays replace score only if higher
+- **Progression**: View tournament details → See time remaining and special rules → Enter tournament → Complete challenge → Submit score → View top 10 rankings with badges → Replay to improve rank → Receive badge and prize at week end if in top 10
+- **Success criteria**: Tournament rotates weekly automatically, leaderboard shows top 10 with ranks and badges, player's best score is kept, special rules affect gameplay (e.g., "Rainforest tiles worth 2x points"), prizes and badges are awarded correctly, countdown timer shows time remaining, replays replace score only if higher
+
+### Tournament Badge System
+- **Functionality**: Animated badge collection displayed on player profiles showing tournament placements (Champion 🥇, Runner-Up 🥈, Third Place 🥉, Top 10 🏆), achievement badges (Streak Master 🔥, Eco Warrior ♻️, Challenger ⚡), and participant badges. Each badge features unique colors, glowing animations, and tooltips with details. Players can click any profile to view their full badge collection and tournament history.
+- **Purpose**: Creates prestigious rewards for competitive play, provides social proof of skill, builds long-term progression system, and encourages engagement across all game modes
+- **Trigger**: Badges appear automatically on player cards in leaderboard and tournament views; clicking a player opens their full profile
+- **Progression**: Earn tournament placement or achievement → Badge appears on profile → Other players see badges → Click profile to view full collection → See tournament history and detailed stats
+- **Success criteria**: Badges display with smooth animations, show accurate rank/achievement, appear on all instances of player profile, clicking opens detailed profile modal with stats and badge gallery, tournament history shows past placements
 
 ### Power-Up Collection System
 - **Functionality**: Visual collection display showing all 5 power-ups (Supernova, Tsunami, Earthquake, Meteor, Phoenix), tracking which are locked/unlocked
