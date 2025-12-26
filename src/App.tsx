@@ -14,6 +14,7 @@ import { Leaderboard } from './components/Leaderboard'
 import { TournamentView } from './components/TournamentView'
 import { BadgeShowcase } from './components/BadgeShowcase'
 import { ConfettiCelebration } from './components/ConfettiCelebration'
+import { MusicControl } from './components/MusicControl'
 import { Button } from './components/ui/button'
 import { ArrowLeft, Shuffle } from '@phosphor-icons/react'
 import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge } from './lib/types'
@@ -32,6 +33,7 @@ import {
   shuffleGrid
 } from './lib/gameLogic'
 import { playSoundEffect } from './lib/soundEffects'
+import { playBackgroundMusic, stopBackgroundMusic } from './lib/backgroundMusic'
 
 const DEFAULT_GAME_STATE: GameState = {
   currentLevel: 0,
@@ -72,6 +74,7 @@ function App() {
   const [playerBadges, setPlayerBadges] = useKV<PlayerBadge[]>('ecorise-badges', [])
   const [currentUserId, setCurrentUserId] = useState<string>('')
   const [showStreakConfetti, setShowStreakConfetti] = useState(false)
+  const [isMusicPlaying, setIsMusicPlaying] = useKV<boolean>('ecorise-music-playing', true)
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
@@ -79,6 +82,7 @@ function App() {
   const leaderboard = leaderboardEntries ?? []
   const tournaments = tournamentEntries ?? []
   const badges = playerBadges ?? []
+  const musicPlaying = isMusicPlaying ?? true
   
   const currentLevel = isChallenge && currentChallenge
     ? {
@@ -111,6 +115,26 @@ function App() {
       setGrid(generateGrid(currentLevel.gridSize, currentLevel, state.unlockedPowerUps))
     }
   }, [currentLevel])
+
+  useEffect(() => {
+    if (musicPlaying) {
+      if (isInGame && currentLevel) {
+        playBackgroundMusic(currentLevel.biome as any)
+      } else {
+        playBackgroundMusic('menu')
+      }
+    } else {
+      stopBackgroundMusic()
+    }
+
+    return () => {
+      stopBackgroundMusic()
+    }
+  }, [isInGame, currentLevel?.biome, musicPlaying])
+
+  const handleToggleMusic = (playing: boolean) => {
+    setIsMusicPlaying(playing)
+  }
 
   useEffect(() => {
     const getUserId = async () => {
@@ -670,6 +694,13 @@ function App() {
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+        <div className="fixed top-4 right-4 z-50">
+          <MusicControl 
+            isPlaying={musicPlaying} 
+            onToggle={handleToggleMusic}
+          />
+        </div>
+
         {showDailyChallenge && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <div className="max-w-2xl w-full">
@@ -775,10 +806,16 @@ function App() {
               <p className="text-sm text-muted-foreground">{currentLevel?.description}</p>
             </div>
 
-            <Button variant="outline" onClick={handleShuffle} disabled={isProcessing}>
-              <Shuffle className="mr-2" />
-              Shuffle
-            </Button>
+            <div className="flex items-center gap-2">
+              <MusicControl 
+                isPlaying={musicPlaying} 
+                onToggle={handleToggleMusic}
+              />
+              <Button variant="outline" onClick={handleShuffle} disabled={isProcessing}>
+                <Shuffle className="mr-2" />
+                Shuffle
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">

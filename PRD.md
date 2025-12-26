@@ -52,6 +52,24 @@ This is a tile-based puzzle game with multiple levels, persistent progress track
   - **Power-Up**: Rising square wave with filter sweep (A3→A4, 300ms) - plays when power-up tiles are matched or unlocked
   - **Achievement**: Warm three-note chord (C5+E5+G5, 600ms) with high sparkle note - plays for Eco Warrior and Challenger badges
 
+### Background Music System
+- **Functionality**: Dynamic, procedurally-generated background music using Web Audio API that changes based on the current biome theme. Six distinct musical themes (Forest, Desert, Ocean, City, Tundra, Rainforest, Menu) with layered oscillators, filters, and unique melodic patterns. Volume control and play/pause controls accessible via a speaker icon button
+- **Purpose**: Creates immersive atmosphere for each biome, enhances emotional connection to gameplay, provides audio feedback for location changes, and makes each level feel distinctive and memorable
+- **Trigger**: Music automatically starts when entering a level or menu, transitions smoothly when changing biomes, can be manually controlled via the music button
+- **Progression**: Enter level/menu → Music fades in for current biome → Player explores with atmospheric audio → Change biome → Music crossfades to new theme → Player can pause/adjust volume anytime
+- **Success criteria**: 
+  - **Forest Theme**: Gentle ambient chord progression (C-F-G-C) with sine waves, soft bass, floating melody notes creating peaceful woodland atmosphere
+  - **Desert Theme**: Droning harmonics with shimmering high-frequency modulation using LFOs, creating heat-wave effect and vast open space feeling
+  - **Ocean Theme**: Rolling wave-like modulation on multiple sine waves with varying LFO rates, deep bass suggesting depth, creating flowing underwater ambiance
+  - **City Theme**: Rhythmic arpeggiator pattern with square waves suggesting technology and progress, urban energy with pulsing synth lines
+  - **Tundra Theme**: Crystalline high-frequency tones with windswept filtered noise, sparse arrangement evoking isolation and pristine ice
+  - **Rainforest Theme**: Rich layered triangle waves with occasional bird-call melodies, dense harmonic texture suggesting biodiversity
+  - **Menu Theme**: Calm ambient pad with subtle chord progression for selection screen
+  - Music control button in top-right corner with volume slider (0-100%) and play/pause toggle
+  - Smooth 1-2 second fade transitions between themes
+  - User preference persists across sessions
+  - Master volume set to 15% to not overpower sound effects
+
 ### Power-Up Collection System
 - **Functionality**: Visual collection display showing all 5 power-ups (Supernova, Tsunami, Earthquake, Meteor, Phoenix), tracking which are locked/unlocked
 - **Purpose**: Provides long-term progression goal, incentivizes daily challenge completion, creates collection mechanic
