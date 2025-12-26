@@ -1,6 +1,6 @@
 const audioContext = typeof window !== 'undefined' ? new (window.AudioContext || (window as any).webkitAudioContext)() : null
 
-export const playSoundEffect = (type: 'badge-unlock' | 'streak-master' | 'champion' | 'power-up' | 'achievement') => {
+export const playSoundEffect = (type: 'badge-unlock' | 'streak-master' | 'champion' | 'power-up' | 'achievement' | 'collision-burst' | 'collision-vortex' | 'collision-spark') => {
   if (!audioContext) return
 
   switch (type) {
@@ -18,6 +18,15 @@ export const playSoundEffect = (type: 'badge-unlock' | 'streak-master' | 'champi
       break
     case 'achievement':
       playAchievement()
+      break
+    case 'collision-burst':
+      playCollisionBurst()
+      break
+    case 'collision-vortex':
+      playCollisionVortex()
+      break
+    case 'collision-spark':
+      playCollisionSpark()
       break
   }
 }
@@ -228,3 +237,101 @@ const playAchievement = () => {
   sparkle.start(now + 0.2)
   sparkle.stop(now + 0.5)
 }
+
+const playCollisionBurst = () => {
+  if (!audioContext) return
+
+  const now = audioContext.currentTime
+  
+  const osc = audioContext.createOscillator()
+  const gainNode = audioContext.createGain()
+  const filter = audioContext.createBiquadFilter()
+  
+  osc.connect(filter)
+  filter.connect(gainNode)
+  gainNode.connect(audioContext.destination)
+  
+  osc.type = 'sine'
+  filter.type = 'bandpass'
+  filter.frequency.setValueAtTime(800, now)
+  filter.Q.setValueAtTime(5, now)
+  
+  osc.frequency.setValueAtTime(400, now)
+  osc.frequency.exponentialRampToValueAtTime(1200, now + 0.08)
+  
+  gainNode.gain.setValueAtTime(0.15, now)
+  gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.12)
+  
+  osc.start(now)
+  osc.stop(now + 0.12)
+}
+
+const playCollisionVortex = () => {
+  if (!audioContext) return
+
+  const now = audioContext.currentTime
+  
+  const osc1 = audioContext.createOscillator()
+  const osc2 = audioContext.createOscillator()
+  const gainNode = audioContext.createGain()
+  const filter = audioContext.createBiquadFilter()
+  
+  osc1.connect(filter)
+  osc2.connect(filter)
+  filter.connect(gainNode)
+  gainNode.connect(audioContext.destination)
+  
+  osc1.type = 'sawtooth'
+  osc2.type = 'sine'
+  filter.type = 'lowpass'
+  filter.frequency.setValueAtTime(1500, now)
+  filter.frequency.exponentialRampToValueAtTime(3000, now + 0.3)
+  
+  osc1.frequency.setValueAtTime(150, now)
+  osc1.frequency.exponentialRampToValueAtTime(600, now + 0.3)
+  
+  osc2.frequency.setValueAtTime(300, now)
+  osc2.frequency.exponentialRampToValueAtTime(1200, now + 0.3)
+  
+  gainNode.gain.setValueAtTime(0.2, now)
+  gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.35)
+  
+  osc1.start(now)
+  osc2.start(now)
+  osc1.stop(now + 0.35)
+  osc2.stop(now + 0.35)
+}
+
+const playCollisionSpark = () => {
+  if (!audioContext) return
+
+  const now = audioContext.currentTime
+  
+  const numSparks = 3
+  
+  for (let i = 0; i < numSparks; i++) {
+    const delay = i * 0.03
+    const osc = audioContext.createOscillator()
+    const gainNode = audioContext.createGain()
+    const filter = audioContext.createBiquadFilter()
+    
+    osc.connect(filter)
+    filter.connect(gainNode)
+    gainNode.connect(audioContext.destination)
+    
+    osc.type = 'square'
+    filter.type = 'highpass'
+    filter.frequency.setValueAtTime(1000, now + delay)
+    
+    const baseFreq = 800 + i * 200
+    osc.frequency.setValueAtTime(baseFreq, now + delay)
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 2, now + delay + 0.06)
+    
+    gainNode.gain.setValueAtTime(0.1, now + delay)
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + delay + 0.08)
+    
+    osc.start(now + delay)
+    osc.stop(now + delay + 0.08)
+  }
+}
+

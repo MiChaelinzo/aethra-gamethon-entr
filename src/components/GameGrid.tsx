@@ -1,6 +1,7 @@
 import { Tile as TileComponent } from './Tile'
 import { Tile as TileType } from '@/lib/types'
 import { MatchedTileTrails } from './MatchedTileTrails'
+import { TrailCollisionEffects } from './TrailCollisionEffects'
 
 interface GameGridProps {
   grid: TileType[]
@@ -30,6 +31,11 @@ export function GameGrid({ grid, size, selectedTile, matchedTiles = [], onTileCl
         ))}
       </div>
       <MatchedTileTrails
+        matchedTiles={matchedTiles}
+        gridSize={size}
+        isActive={matchedTiles.length > 0}
+      />
+      <TrailCollisionEffects
         matchedTiles={matchedTiles}
         gridSize={size}
         isActive={matchedTiles.length > 0}
