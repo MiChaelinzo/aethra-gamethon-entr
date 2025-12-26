@@ -15,6 +15,7 @@ import { TournamentView } from './components/TournamentView'
 import { BadgeShowcase } from './components/BadgeShowcase'
 import { ConfettiCelebration } from './components/ConfettiCelebration'
 import { MusicControl } from './components/MusicControl'
+import { MusicVisualizer } from './components/MusicVisualizer'
 import { Button } from './components/ui/button'
 import { ArrowLeft, Shuffle } from '@phosphor-icons/react'
 import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge } from './lib/types'
@@ -694,6 +695,8 @@ function App() {
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+        <MusicVisualizer isPlaying={musicPlaying} biome="menu" />
+        
         <div className="fixed top-4 right-4 z-50">
           <MusicControl 
             isPlaying={musicPlaying} 
@@ -770,6 +773,8 @@ function App() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      <MusicVisualizer isPlaying={musicPlaying} biome={currentLevel?.biome || 'menu'} />
+      
       <motion.div
         className={`absolute inset-0 bg-gradient-to-br ${backgroundGradient} transition-opacity duration-[2000ms]`}
         animate={{ opacity: gradientOpacity }}

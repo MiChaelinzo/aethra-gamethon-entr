@@ -11,12 +11,19 @@ interface MusicNode {
 let currentMusic: MusicNode | null = null
 let currentBiome: BiomeType | null = null
 let masterGain: GainNode | null = null
+let analyserNode: AnalyserNode | null = null
 let isPlaying = false
 
 if (audioContext) {
   masterGain = audioContext.createGain()
   masterGain.gain.value = 0.15
-  masterGain.connect(audioContext.destination)
+  
+  analyserNode = audioContext.createAnalyser()
+  analyserNode.smoothingTimeConstant = 0.8
+  analyserNode.fftSize = 64
+  
+  masterGain.connect(analyserNode)
+  analyserNode.connect(audioContext.destination)
 }
 
 const createOscillator = (
@@ -518,4 +525,12 @@ export const toggleMusic = (play: boolean) => {
   } else {
     stopBackgroundMusic()
   }
+}
+
+export const getAudioAnalyser = (): AnalyserNode | null => {
+  return analyserNode
+}
+
+export const getAudioContext = (): AudioContext | null => {
+  return audioContext
 }
