@@ -125,6 +125,7 @@ export interface TileInfo {
   type: TileType
   name: string
   icon: string
+  emoji: string
   color: string
   fact: string
   co2Impact: number

@@ -192,7 +192,7 @@ export function DailyChallenge({
                   🎁 Exclusive Reward
                 </div>
                 <div className="text-lg font-bold text-amber-700 flex items-center gap-2">
-                  {rewardInfo.icon} {rewardInfo.name}
+                  <span className="text-2xl">{rewardInfo.emoji}</span> {rewardInfo.name}
                   {hasUnlockedReward && (
                     <Badge variant="secondary" className="bg-green-200 text-green-800">
                       Unlocked!

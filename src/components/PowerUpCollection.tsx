@@ -36,7 +36,7 @@ export function PowerUpCollection({ unlockedPowerUps }: PowerUpCollectionProps) 
               title={isUnlocked ? info.name : 'Complete daily challenges to unlock'}
             >
               {isUnlocked ? (
-                <div className="text-2xl mb-1">{info.icon}</div>
+                <div className="text-3xl mb-1">{info.emoji}</div>
               ) : (
                 <div className="text-2xl mb-1 text-gray-400">
                   <Lock size={24} className="mx-auto" />

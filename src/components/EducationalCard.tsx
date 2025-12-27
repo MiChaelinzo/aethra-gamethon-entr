@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { TileInfo } from '@/lib/types'
-import { Tree, Wind, Recycle, Drop, Lightning } from '@phosphor-icons/react'
+import { Tree, Wind, Recycle, Drop, Lightning, Snowflake, Bird, Sparkle, FlowerLotus, Cat, Leaf, Sun, Waves, Mountains, Meteor, Fire } from '@phosphor-icons/react'
 
 interface EducationalCardProps {
   isOpen: boolean
@@ -14,6 +14,17 @@ const iconMap = {
   Recycle,
   Drop,
   Lightning,
+  Snowflake,
+  Bird,
+  Sparkle,
+  FlowerLotus,
+  Cat,
+  Leaf,
+  SunHorizon: Sun,
+  Waves,
+  Mountains,
+  Comet: Meteor,
+  FireSimple: Fire,
   SolarPanel: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
       <rect width="256" height="256" fill="none"/>
@@ -40,7 +51,7 @@ export function EducationalCard({ isOpen, onClose, tileInfo }: EducationalCardPr
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className={`w-12 h-12 ${tileInfo.color}`}>
-              <IconComponent />
+              {IconComponent && <IconComponent />}
             </div>
             <DialogTitle className="text-2xl">{tileInfo.name}</DialogTitle>
           </div>

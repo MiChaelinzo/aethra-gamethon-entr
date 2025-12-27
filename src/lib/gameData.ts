@@ -5,6 +5,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'tree',
     name: 'Reforestation',
     icon: 'Tree',
+    emoji: '🌲',
     color: 'text-green-600',
     fact: 'A single tree absorbs about 48 pounds of CO2 per year. Global reforestation could capture 25% of atmospheric CO2.',
     co2Impact: 48
@@ -13,6 +14,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'solar',
     name: 'Solar Power',
     icon: 'SolarPanel',
+    emoji: '☀️',
     color: 'text-yellow-500',
     fact: 'Solar panels reduce carbon emissions by 80% compared to fossil fuels. A typical home solar system offsets 3-4 tons of CO2 annually.',
     co2Impact: 3500
@@ -21,6 +23,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'wind',
     name: 'Wind Energy',
     icon: 'Wind',
+    emoji: '💨',
     color: 'text-blue-400',
     fact: 'One wind turbine can power 940 homes and prevent 4,000 tons of CO2 emissions yearly—equivalent to planting 100,000 trees.',
     co2Impact: 4000
@@ -29,6 +32,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'recycle',
     name: 'Recycling',
     icon: 'Recycle',
+    emoji: '♻️',
     color: 'text-teal-500',
     fact: 'Recycling one ton of paper saves 17 trees and prevents 1,400 pounds of CO2 emissions. Global recycling prevents 700M tons CO2/year.',
     co2Impact: 700
@@ -37,6 +41,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'water',
     name: 'Ocean Cleanup',
     icon: 'Drop',
+    emoji: '💧',
     color: 'text-cyan-500',
     fact: 'Healthy oceans absorb 30% of human CO2 emissions. Ocean cleanup helps restore marine ecosystems that capture billions of tons of carbon.',
     co2Impact: 2000
@@ -45,6 +50,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'energy',
     name: 'Energy Efficiency',
     icon: 'Lightning',
+    emoji: '⚡',
     color: 'text-purple-500',
     fact: 'LED bulbs use 75% less energy than incandescent. If every US home switched, we\'d prevent 44M tons of CO2 annually.',
     co2Impact: 850
@@ -53,6 +59,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'ice',
     name: 'Ice Crystal',
     icon: 'Snowflake',
+    emoji: '❄️',
     color: 'text-cyan-300',
     fact: 'Arctic ice reflects 80% of sunlight back to space. Preserving ice sheets is crucial for regulating Earth\'s temperature and preventing feedback loops.',
     co2Impact: 1200
@@ -61,6 +68,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'penguin',
     name: 'Wildlife Protection',
     icon: 'Bird',
+    emoji: '🐧',
     color: 'text-slate-700',
     fact: 'Arctic and Antarctic wildlife like penguins and polar bears are indicators of ecosystem health. Protecting them preserves biodiversity and carbon sinks.',
     co2Impact: 900
@@ -69,6 +77,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'aurora',
     name: 'Clean Air',
     icon: 'Sparkle',
+    emoji: '✨',
     color: 'text-violet-400',
     fact: 'The pristine Arctic air is threatened by pollution. Keeping polar regions clean prevents accelerated melting and preserves natural climate regulation.',
     co2Impact: 1500
@@ -77,6 +86,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'orchid',
     name: 'Rare Plants',
     icon: 'FlowerLotus',
+    emoji: '🌺',
     color: 'text-pink-500',
     fact: 'Rainforests contain 50% of Earth\'s plant species. A single hectare can hold 750 tree species—more than all of North America.',
     co2Impact: 2500
@@ -85,6 +95,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'jaguar',
     name: 'Biodiversity',
     icon: 'Cat',
+    emoji: '🐆',
     color: 'text-amber-600',
     fact: 'Rainforest predators like jaguars maintain ecosystem balance. One rainforest acre supports 1,500 species, creating Earth\'s richest carbon-capturing system.',
     co2Impact: 1800
@@ -93,6 +104,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'medicinal',
     name: 'Medicinal Plants',
     icon: 'Leaf',
+    emoji: '🍃',
     color: 'text-emerald-600',
     fact: '70% of cancer-fighting plants come from rainforests. Preserving these ecosystems protects both human health and planetary climate.',
     co2Impact: 2200
@@ -101,6 +113,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'supernova',
     name: 'Solar Supernova',
     icon: 'SunHorizon',
+    emoji: '☀️',
     color: 'text-yellow-400',
     fact: 'A supernova of renewable energy! This mega power-up clears all adjacent tiles and supercharges your restoration efforts with 10,000 kg of CO2 reduction.',
     co2Impact: 10000
@@ -109,6 +122,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'tsunami',
     name: 'Ocean Wave',
     icon: 'Waves',
+    emoji: '🌊',
     color: 'text-blue-500',
     fact: 'Ride the wave of change! This powerful tsunami clears an entire row or column and restores ocean ecosystems, preventing 8,500 kg of CO2 emissions.',
     co2Impact: 8500
@@ -117,6 +131,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'earthquake',
     name: 'Tectonic Shift',
     icon: 'Mountains',
+    emoji: '🏔️',
     color: 'text-amber-700',
     fact: 'Shake up the status quo! This geological power reshuffles the board strategically and plants 7,000 kg worth of carbon-capturing trees.',
     co2Impact: 7000
@@ -125,6 +140,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'meteor',
     name: 'Asteroid Impact',
     icon: 'Comet',
+    emoji: '☄️',
     color: 'text-purple-600',
     fact: 'Impact for good! This cosmic power clears all tiles of a chosen type, creating space for new growth and capturing 9,500 kg of CO2.',
     co2Impact: 9500
@@ -133,6 +149,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     type: 'phoenix',
     name: 'Phoenix Rebirth',
     icon: 'FireSimple',
+    emoji: '🔥',
     color: 'text-orange-500',
     fact: 'Rise from the ashes! The phoenix transforms the entire board, creating optimal matches and symbolizing Earth\'s renewal with 12,000 kg CO2 offset.',
     co2Impact: 12000
