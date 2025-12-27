@@ -23,6 +23,8 @@ import { ThemeSwitchBurst } from './components/ThemeSwitchBurst'
 import { CollisionMultiplier } from './components/CollisionMultiplier'
 import { HeatmapControl } from './components/HeatmapControl'
 import { CollisionStatisticsPanel } from './components/CollisionStatisticsPanel'
+import { TutorialOverlay } from './components/TutorialOverlay'
+import { QuickHelp } from './components/QuickHelp'
 import { Button } from './components/ui/button'
 import { Badge } from './components/ui/badge'
 import { ArrowLeft, Shuffle, ChartBar, Skull } from '@phosphor-icons/react'
@@ -106,6 +108,8 @@ function App() {
   const [collisionZonesData, setCollisionZonesData] = useKV<Record<string, CollisionZoneData>>('ecorise-collision-zones', {})
   const [showStatisticsPanel, setShowStatisticsPanel] = useState(false)
   const [collisionTimeData, setCollisionTimeData] = useKV<CollisionTimeEntry[]>('ecorise-collision-time-data', [])
+  const [hasSeenTutorial, setHasSeenTutorial] = useKV<boolean>('ecorise-seen-tutorial', false)
+  const [showTutorial, setShowTutorial] = useState(false)
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
@@ -158,6 +162,15 @@ function App() {
     : currentLevelSet.find(l => l.id === safeState.currentLevel)
   
   const isInGame = (safeState.currentLevel > 0 || isChallenge || isTournament) && currentLevel
+
+  useEffect(() => {
+    if (!hasSeenTutorial && !isInGame) {
+      const timer = setTimeout(() => {
+        setShowTutorial(true)
+      }, 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [hasSeenTutorial, isInGame])
 
   useEffect(() => {
     if (currentLevel && grid.length === 0) {
@@ -566,7 +579,9 @@ function App() {
   }
 
   const handleTileClick = async (tile: Tile) => {
-    if (isProcessing || !currentLevel) return
+    if (isProcessing || !currentLevel) {
+      return
+    }
 
     if (!seen.includes(tile.type)) {
       setSeenTileTypes((current) => [...(current ?? []), tile.type])
@@ -576,16 +591,23 @@ function App() {
 
     if (!selectedTile) {
       setSelectedTile(tile)
+      playSoundEffect('click')
       return
     }
 
     if (selectedTile.id === tile.id) {
       setSelectedTile(null)
+      playSoundEffect('click')
       return
     }
 
     if (!areAdjacent(selectedTile, tile)) {
       setSelectedTile(tile)
+      playSoundEffect('click')
+      toast('Tiles must be adjacent (horizontally or vertically)', {
+        icon: '↔️',
+        duration: 2000
+      })
       return
     }
 
@@ -594,12 +616,16 @@ function App() {
     const matches = findMatches(swapped, currentLevel.gridSize)
 
     if (matches.length === 0) {
-      toast.error('No matches! Try a different move.')
+      toast.error('No match found! This swap won\'t create 3+ matching tiles.', {
+        duration: 3000
+      })
+      playSoundEffect('invalid')
       setSelectedTile(null)
       setIsProcessing(false)
       return
     }
 
+    playSoundEffect('match')
     setGrid(swapped)
     setSelectedTile(null)
     
@@ -630,7 +656,17 @@ function App() {
       })
     }
 
-    const matchScore = matches.length * 50 * (combo + 1) * (powerUpMatch ? 3 : 1) * currentMultiplier
+    const baseScore = matches.length === 3 ? 100 : 
+                      matches.length === 4 ? 200 :
+                      matches.length === 5 ? 350 :
+                      matches.length * 80
+    
+    const comboMultiplier = Math.min(1 + (combo * 0.3), 3)
+    const powerUpMultiplier = powerUpMatch ? 2.5 : 1
+    const collisionBonus = currentMultiplier > 1 ? currentMultiplier : 1
+    
+    const matchScore = Math.floor(baseScore * comboMultiplier * powerUpMultiplier * collisionBonus)
+    
     const co2Reduction = matches.reduce((sum, match) => sum + TILE_INFO[match.type].co2Impact, 0)
     const pollutionReduction = matches.length * (powerUpMatch ? 15 : 5)
 
@@ -654,7 +690,11 @@ function App() {
     setCurrentMultiplier(1)
 
     if (matches.length >= 4 || powerUpMatch) {
-      toast.success(`${powerUpMatch ? 'MEGA ' : ''}Amazing! ${matches.length} match combo!`)
+      toast.success(`${powerUpMatch ? 'MEGA ' : ''}Amazing! ${matches.length} match combo! +${matchScore} points`)
+    } else if (combo > 0) {
+      toast(`Combo ×${combo + 1}! +${matchScore} points`, {
+        icon: '🔥'
+      })
     }
 
     await new Promise(resolve => setTimeout(resolve, powerUpMatch ? 1500 : 800))
@@ -1017,6 +1057,7 @@ function App() {
           >
             <ChartBar size={20} weight="fill" />
           </Button>
+          <QuickHelp onOpenFullTutorial={() => setShowTutorial(true)} />
           <ParticleThemeSwitcher
             currentTheme={trailTheme}
             unlockedPowerUps={state.unlockedPowerUps}
@@ -1040,6 +1081,12 @@ function App() {
             onStyleChange={setVisualizerStyle}
           />
         </div>
+
+        <TutorialOverlay
+          isOpen={showTutorial}
+          onClose={() => setShowTutorial(false)}
+          onComplete={() => setHasSeenTutorial(true)}
+        />
 
         <div className="fixed bottom-4 right-4 z-40">
           <div className="text-xs text-muted-foreground bg-card/80 backdrop-blur-sm px-3 py-2 rounded-lg border shadow-lg">
@@ -1186,6 +1233,7 @@ function App() {
               >
                 <ChartBar size={20} weight="fill" />
               </Button>
+              <QuickHelp onOpenFullTutorial={() => setShowTutorial(true)} />
               <ParticleThemeSwitcher
                 currentTheme={trailTheme}
                 unlockedPowerUps={state.unlockedPowerUps}
@@ -1297,6 +1345,12 @@ function App() {
         onClose={() => setShowStatisticsPanel(false)}
         statistics={computeCollisionStatistics()}
         timeBasedStatistics={computeTimeBasedStatistics()}
+      />
+
+      <TutorialOverlay
+        isOpen={showTutorial}
+        onClose={() => setShowTutorial(false)}
+        onComplete={() => setHasSeenTutorial(true)}
       />
     </div>
   )
