@@ -223,7 +223,7 @@ export function BadgeShowcase({ onClose, playerBadges = [], stats }: BadgeShowca
                                 ease: "easeInOut"
                               }}
                             >
-                              <Icon size={32} weight="fill" className="text-white" />
+                              {Icon && <Icon size={32} weight="fill" className="text-white" />}
                             </motion.div>
 
                             <div className="flex-1">
@@ -321,7 +321,7 @@ export function BadgeShowcase({ onClose, playerBadges = [], stats }: BadgeShowca
                           ease: "easeInOut"
                         }}
                       >
-                        <Icon size={48} weight="fill" className="text-white" />
+                        {Icon && <Icon size={48} weight="fill" className="text-white" />}
                       </motion.div>
                     )
                   })()}

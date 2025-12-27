@@ -104,6 +104,24 @@ export function TournamentBadge({
           label: '⚡ Challenger',
           description: detail || 'Challenge Master'
         }
+      case 'extreme-master':
+        return {
+          icon: Crown,
+          color: 'from-red-600 via-orange-600 to-red-800',
+          borderColor: 'border-red-600',
+          glowColor: 'shadow-red-600/50',
+          label: '💀 EXTREME Master',
+          description: detail || 'Conquered All EXTREME Levels'
+        }
+      default:
+        return {
+          icon: Star,
+          color: 'from-gray-400 via-gray-500 to-gray-600',
+          borderColor: 'border-gray-400',
+          glowColor: 'shadow-gray-400/50',
+          label: 'Badge',
+          description: 'Achievement Badge'
+        }
     }
   }
 

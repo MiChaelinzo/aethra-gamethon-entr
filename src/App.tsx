@@ -933,6 +933,7 @@ function App() {
     const previousStreak = badges.some(b => b.type === 'streak-master')
     const previousEcoWarrior = badges.some(b => b.type === 'eco-warrior')
     const previousChallenger = badges.some(b => b.type === 'challenger')
+    const previousExtremeMaster = badges.some(b => b.type === 'extreme-master')
     
     
     if (state.dailyChallengeStreak >= 7 && !previousStreak) {
@@ -957,6 +958,7 @@ function App() {
         detail: `${completions.length} challenges completed`,
         earnedAt: new Date().toISOString()
       })
+    }
 
     if (state.extremeCompletedLevels.length >= 8 && !previousExtremeMaster) {
       awardBadge({
