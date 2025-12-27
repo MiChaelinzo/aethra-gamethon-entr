@@ -1,11 +1,20 @@
 import { useState, useEffect } from 'react'
 import { Button } from './ui/button'
+import { Card } from './ui/card' // Assuming you have a Card component
 import { cn } from '@/lib/utils'
-import { motion, AnimatePresence
-interface TutorialStep {
-  title: string
+import { motion, AnimatePresence } from 'framer-motion' // FIXED: Added } from 'framer-motion'
+import { 
+  Lightbulb, 
+  Flame, 
+  Shuffle as ShuffleIcon, 
+  Trophy, 
+  Target, 
+  X, 
+  ArrowLeft, 
+  ArrowRight 
+} from '@phosphor-icons/react' // Assuming you use Phosphor icons based on usage
 
-  position?: 'center' | 
+interface TutorialStep {
   id: string
   title: string
   description: string
@@ -31,18 +40,11 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     id: 'objective',
     title: 'How to Match',
+    description: 'Swipe adjacent tiles to create matches of 3 or more. Matches clear pollution and generate energy.',
     icon: <Flame size={48} weight="fill" className="text-orange-500" />,
+    position: 'center'
   },
-    id: 'shuffle',
-    
-   
-  },
-    id: 'stats',
-    description: 'Watch your score, remaining moves, and pollution levels on the stats panel. Plan your moves to reach the target!',
-    highlight: 'stats',
-  },
-    
-   
+  {
     id: 'shuffle',
     title: 'Stuck? Use Shuffle',
     description: 'If you can\'t find any valid moves, click the Shuffle button in the top-right to rearrange the board. Use this wisely!',
@@ -68,7 +70,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     id: 'ready',
     title: 'You\'re Ready!',
-    description: 'Start matching tiles, reduce pollution, and restore the planet. Remember: swipe adjacent tiles to create matches of 3+. Good luck!',
+    description: 'Start matching tiles, reduce pollution, and restore the planet. Good luck!',
     icon: <Trophy size={48} weight="fill" className="text-primary" />,
     position: 'center'
   }
@@ -82,43 +84,44 @@ export function TutorialOverlay({ isOpen, onClose, onComplete }: TutorialOverlay
     if (isOpen) {
       setIsVisible(true)
       setCurrentStep(0)
+    } else {
+      // Small delay to allow exit animation
+      const timer = setTimeout(() => setIsVisible(false), 500)
+      return () => clearTimeout(timer)
     }
   }, [isOpen])
 
   const handleNext = () => {
     if (currentStep < TUTORIAL_STEPS.length - 1) {
       setCurrentStep(currentStep + 1)
-    setTimeo
+    } else {
+      handleComplete()
+    }
+  }
 
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1)
+    }
+  }
 
-  c
+  const handleSkip = () => {
+    handleComplete()
+  }
 
-      {isVisible && (
-          initial={{ opaci
-          exit={{ opacity: 0 }}
-     
-   
+  const handleComplete = () => {
+    onComplete()
+    onClose()
+  }
 
-            className="relative 
-            <Card class
-                
-                  initial={{
-   
-
-              <Button
-                size="i
-                
-                <X size={20}
-
-
-  if (!isOpen) return null
+  if (!isVisible && !isOpen) return null
 
   const currentStepData = TUTORIAL_STEPS[currentStep]
   const progress = ((currentStep + 1) / TUTORIAL_STEPS.length) * 100
 
   return (
-    <AnimatePresence>
-      {isVisible && (
+    <AnimatePresence mode="wait">
+      {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -126,13 +129,15 @@ export function TutorialOverlay({ isOpen, onClose, onComplete }: TutorialOverlay
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
         >
           <motion.div
+            key="modal-content"
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ type: 'spring', duration: 0.5 }}
             className="relative w-full max-w-2xl"
           >
-            <Card className="relative overflow-hidden border-2 shadow-2xl">
+            <Card className="relative overflow-hidden border-2 shadow-2xl bg-background">
+              {/* Progress Bar */}
               <div className="absolute top-0 left-0 w-full h-1 bg-muted">
                 <motion.div
                   className="h-full bg-primary"
@@ -142,6 +147,7 @@ export function TutorialOverlay({ isOpen, onClose, onComplete }: TutorialOverlay
                 />
               </div>
 
+              {/* Close Button */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -153,8 +159,9 @@ export function TutorialOverlay({ isOpen, onClose, onComplete }: TutorialOverlay
 
               <div className="p-8 pt-12">
                 <div className="flex flex-col items-center text-center space-y-6">
+                  {/* Icon Animation */}
                   <motion.div
-                    key={currentStepData.id}
+                    key={`icon-${currentStepData.id}`}
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     transition={{ type: 'spring', stiffness: 200, damping: 15 }}
@@ -163,6 +170,7 @@ export function TutorialOverlay({ isOpen, onClose, onComplete }: TutorialOverlay
                     {currentStepData.icon}
                   </motion.div>
 
+                  {/* Text Content */}
                   <motion.div
                     key={`content-${currentStepData.id}`}
                     initial={{ opacity: 0, y: 20 }}
@@ -176,6 +184,7 @@ export function TutorialOverlay({ isOpen, onClose, onComplete }: TutorialOverlay
                     </p>
                   </motion.div>
 
+                  {/* Dots Indicator */}
                   <div className="flex items-center gap-2 pt-4">
                     {TUTORIAL_STEPS.map((_, index) => (
                       <div
@@ -193,6 +202,7 @@ export function TutorialOverlay({ isOpen, onClose, onComplete }: TutorialOverlay
                   </div>
                 </div>
 
+                {/* Footer Buttons */}
                 <div className="flex items-center justify-between mt-8 pt-6 border-t">
                   <Button
                     variant="outline"
