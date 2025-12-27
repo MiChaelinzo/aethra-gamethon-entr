@@ -592,7 +592,6 @@ function App() {
         setCurrentTileInfo(TILE_INFO[tile.type])
         setShowEducational(true)
       }
-      return
     }
 
     if (selectedTile.id === tile.id) {
