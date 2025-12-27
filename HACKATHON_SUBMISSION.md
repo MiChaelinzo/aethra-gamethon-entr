@@ -1,131 +1,131 @@
 # 🌍 EcoRise - AETHRA GLOBAL GAMETHON 2025 Submission
 
-## 📝 Game Description
+### Title
 
 ### Title
 **EcoRise: Restore the Planet**
 
 ### Genre
-Educational Puzzle-Adventure Game (Match-3 Mechanics)
 
-### Core Concept
-An engaging climate-action puzzle game where players restore Earth's ecosystems by matching eco-solution tiles, learning about real environmental impact, and competing in daily challenges and weekly tournaments.
 
-### Target Audience
-- Ages 13+ (aligned with hackathon requirements)
-- Students interested in environmental science and sustainability
-- Casual gamers who enjoy puzzle mechanics with purpose
-- Educators looking for interactive climate education tools
+- Casual gamers 
 
-### Gameplay Overview
-Players match eco-solution tiles (solar panels, trees, wind turbines, recycling) to clean pollution and restore diverse biomes including forests, deserts, oceans, cities, tundras, and rainforests. Each successful match reduces CO₂ and transforms polluted landscapes into thriving ecosystems.
 
-### Compelling Pitch
-**"What if fighting climate change felt like your favorite puzzle game?"** EcoRise transforms environmental action into an addictive match-3 adventure where every move matters. Restore polluted landscapes, unlock rare power-ups, compete in global tournaments, and watch your cumulative CO₂ reduction grow with each level—all while learning real climate solutions that work.
+### Compelling Pitc
 
----
 
-## 🎮 Gameplay Mechanics
 
-### What Makes This Game Unique?
 
-1. **Real Environmental Impact Education**
-   - Every tile represents actual climate solutions (renewable energy, reforestation, ocean cleanup)
-   - Educational pop-ups teach real CO₂ reduction statistics
-   - Players see cumulative environmental impact measured in kg of CO₂ reduced
 
+   - Players see cumu
 2. **Dynamic Biome System**
-   - 6 unique biomes with specialized tiles (ice crystals in tundra, exotic orchids in rainforest)
-   - Visual transformation from polluted to restored environments
-   - Background gradients and music adapt to each ecosystem
 
-3. **Competitive Community Features**
+
    - Daily challenges with exclusive power-up rewards
-   - Weekly tournaments with top 10 rankings and prestigious badges
-   - Global leaderboard tracking scores, CO₂ reduction, and streak days
-   - Badge showcase system (Streak Master, Eco Warrior, Champion, etc.)
 
-4. **Particle Trail Collision System**
-   - Mouse trails that follow cursor with biome-specific themes
-   - Trail collisions create score multipliers (2x, 3x, 5x+)
-   - Collision heatmaps show most active zones over time
-   - Statistical analytics tracking collision patterns by hour/day/biome
 
-5. **Mega Power-Up Animations**
-   - 5 rare power-ups with full-screen spectacles (Supernova, Tsunami, Earthquake, Meteor, Phoenix)
-   - Synthesized sound effects for all achievements
-   - Procedural background music that changes per biome
+
+   - Collision heatmaps 
+
+   - 5 rare power-ups with full-
 
 ### Core Mechanics
-
 **Tile Matching**
-- Click adjacent tiles to swap positions
 - Match 3 or more identical tiles to collect eco-solutions
-- Power-up tiles (2-3% spawn rate) trigger mega-effects
 - Combo system multiplies scores for consecutive matches
 
-**Resource Management**
-- Limited moves per level (typically 15-30)
-- Pollution meter decreases with each match
-- Score targets vary by biome difficulty
+- Pollution meter decreases
 - Strategic planning required for optimal solutions
-
 **Progression System**
-- 8 progressive levels across 6 biomes
 - Daily challenges unlock exclusive power-ups
-- Weekly tournaments provide competitive goals
-- Badge collection for long-term achievement tracking
 
 ### Controls
-
 **Desktop**
-- Mouse click: Select and swap tiles
 - Keyboard shortcuts:
-  - `Ctrl+P`: Toggle particle trails
   - `Ctrl+Shift+P`: Cycle particle themes
-  - `Ctrl+H`: Toggle collision heatmap
   - `Ctrl+S`: View collision statistics
 
-**Mobile/Touch**
-- Tap: Select tiles
 - Tap adjacent: Swap and match
-- All controls optimized for touch with 56px+ targets
 
-### Win/Loss Conditions
 
-**Win Conditions**
 - Reach target score before running out of moves
-- Daily challenges: Complete specific objectives (e.g., "Match 10 solar panels")
 - Tournaments: Highest score in the week wins top placement
 
-**Loss Conditions**
-- Exceed move limit without reaching target score
-- No valid moves remaining on board (triggers auto-shuffle with warning)
-
+- No valid moves remaining on b
 **Success States**
-- Level completion with star ratings (1-3 stars based on score)
 - Badge unlocks (audio + confetti celebration)
-- Power-up acquisition from daily challenges
 - Tournament placement (top 10 receives badges)
 
-### Objectives
-- **Primary**: Restore 6 major biomes by completing 8 progressive levels
-- **Secondary**: Build a 7-day streak for Streak Master badge
-- **Competitive**: Place in top 10 of weekly tournaments
-- **Collection**: Unlock all 5 rare power-ups
-- **Mastery**: Reduce 100,000 kg of CO₂ for Eco Warrior badge
+- **Secondary**: B
 
+
+
+
+- **React 19** with TypeScript for robust component arc
+- **Vite 7** for fast development and optimized producti
+
+- **Spark Runtime SDK**
+### Platform(s)
+- **Responsive**: Desktop (1920x1080+), tab
+
+
+
+- Internet connection 
+
+- Desktop browser on 1080p+ display
+- Hardware acceleration enabled for optimal gr
+**Browser Compatibility**
+
+- No plugins
+
+## 📂 Submi
+### Playable Game File(s)
+- **Source Code Repos
+
+
+1. Visit the deployed URL
+3. No installation required
+
+# Clone the repo
+cd spark-template
+# Install dependencies
+
+
+# Open browser to http:
+
+```bash
+npm install
+
+npx serve dist
+
+**[Video link to be
+**Suggested video content:**
+- Demonstrate basic tile matching in Forest biome
+
+- Show tournament 
+- End with statistics panel showing global impact
+### Screenshots
+**Recommended screenshots to capture:**
+1. **Main Menu** - Level select screen showing 
+
+5. **Daily Cha
+7. **Badge Showcase** - Collection of earned badges with tooltips
+9. **Statistics Panel** - Charts showing collision analytics
+
+**Production URL**: [To be added after deploy
 ---
 
-## 🎨 Technical Details
+###
 
-### Engine/Tools Used
-- **React 19** with TypeScript for robust component architecture
-- **Framer Motion 12** for smooth animations and transitions
-- **Vite 7** for fast development and optimized production builds
-- **Tailwind CSS 4** with custom OKLCH color system
-- **Shadcn UI v4** component library for polished interface
-- **Web Audio API** for synthesized sound effects and procedural music
+- Each biome represents
+
+- Tile types represen
+- Suitable for classroom use or independent learning
+### Community Building ✅
+- Weekly tournaments create recurring engagement
+- Streak mechanics encourage daily connection
+### Real-World Problem Solving ✅
+- Makes environmental action feel achievable and rewarding
 - **Spark Runtime SDK** for persistent state management and user authentication
 
 ### Platform(s)
@@ -254,97 +254,97 @@ npx serve dist
 
 ### Innovative Mechanics ✅
 - Particle collision system with score multipliers
-- Collision heatmaps and statistical analytics
-- Procedural music generation based on biome
-- Dynamic ecosystem transformation visuals
 
----
 
-## 🏆 Key Features Summary
 
-### Implemented Features
 
-✅ **8 Progressive Levels** across 6 unique biomes  
-✅ **Daily Challenges** with exclusive power-up rewards  
-✅ **Weekly Tournaments** with top 10 rankings  
-✅ **Badge System** (10+ unique badges)  
-✅ **Global Leaderboard** with multiple sort options  
-✅ **5 Mega Power-Ups** with full-screen animations  
-✅ **Synthesized Sound Effects** (8+ distinct sounds)  
-✅ **Procedural Background Music** (7 biome themes)  
-✅ **Music Visualizer** (3 styles: bars, circular, waveform)  
-✅ **Particle Trail System** with mouse cursor interaction  
-✅ **Collision Multipliers** (2x, 3x, 5x+ bonuses)  
-✅ **Collision Heatmaps** showing activity zones  
-✅ **Statistics Dashboard** with time-based analytics  
-✅ **Educational Content** with real climate facts  
-✅ **Persistent Progress** across sessions  
-✅ **Mobile Responsive** design  
-✅ **Smooth Animations** using Framer Motion  
-✅ **Custom Color System** with OKLCH values  
 
----
 
-## 📊 Future Roadmap
 
-### Potential Expansions
-- Multiplayer cooperative mode for team-based restoration
-- AR integration for real-world environment scanning
-- Integration with real environmental organizations
-- Player-created custom levels and challenges
-- Social features (friend challenges, shared achievements)
-- Expanded biomes (coral reefs, wetlands, grasslands)
-- Seasonal events and limited-time power-ups
 
----
 
-## 👥 Credits
 
-**Development**: [Your name/team name]  
-**Framework**: React + TypeScript  
-**UI Components**: Shadcn UI  
-**Icons**: Phosphor Icons  
-**Fonts**: Space Grotesk, Crimson Pro (Google Fonts)  
-**Hosting**: [Your hosting platform]
 
----
 
-## 📜 License
 
-MIT License - Copyright GitHub, Inc.
 
----
 
-## 🔗 Links
 
-- **Live Game**: [URL to be added]
-- **Source Code**: [GitHub URL to be added]
-- **Video Demo**: [Video URL to be added]
-- **Discord**: https://discord.gg/tyna9bjWPj (AETHRA server)
 
----
 
-## 📝 Additional Notes for Judges
 
-### Why EcoRise Stands Out
 
-**Clarity**: The game's purpose is immediately obvious—match tiles to restore ecosystems. Mechanics are intuitive for anyone familiar with match-3 games.
 
-**Innovation**: While match-3 is familiar, the collision system, procedural audio, heatmap analytics, and tournament structure create fresh twists. The educational integration feels natural, not forced.
 
-**Impact Potential**: This game could genuinely inspire environmental awareness in students. Teachers could use it in classrooms. Players track real CO₂ metrics, connecting gameplay to real-world scale.
 
-**Feasibility**: Built with production-ready web technologies. Fully functional with no placeholder features. Scales from mobile to desktop. No external API dependencies beyond authentication.
 
-**Presentation**: Polished UI with cohesive design language. Smooth animations. Comprehensive feedback systems (visual, audio, statistical). Professional documentation and clear onboarding.
 
-### Development Journey
 
-This game represents [X hours] of development, focusing on:
-- Creating a satisfying core gameplay loop
-- Building competitive features that drive engagement
-- Polishing audio-visual feedback for maximum impact
-- Ensuring educational content enhances rather than interrupts play
-- Implementing analytics to show players their patterns and progress
 
-Thank you for considering EcoRise for AETHRA GLOBAL GAMETHON 2025! 🌍✨
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
