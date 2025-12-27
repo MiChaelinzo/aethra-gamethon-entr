@@ -348,7 +348,7 @@ Created for **AETHRA GLOBAL GAMETHON 2025**
 ## 📧 Contact
 
 **Discord:** @MiChaelinzo
-**Email:** michaelinzo@engineer.com
+**Email:** N/A
 **GitHub:** [[GitHub profile]](https://github.com/MiChaelinzo)
 
 ---
