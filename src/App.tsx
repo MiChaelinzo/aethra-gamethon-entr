@@ -605,11 +605,12 @@ function App() {
     if (!areAdjacent(selectedTile, tile)) {
       setSelectedTile(tile)
       playSoundEffect('click')
+      setCurrentTileInfo(TILE_INFO[tile.type])
       setShowEducational(true)
-      toast('Tiles must be adjacent (horizontally or vertically)', {
       toast('Tiles must be adjacent (horizontally or vertically)', {
         icon: '↔️',
         duration: 2000
+      })
       return
     }
 
