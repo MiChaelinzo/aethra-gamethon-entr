@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Button } from './ui/button'
-import { Card } from './ui/card'
 import { cn } from '@/lib/utils'
-import { X, ArrowRight, ArrowLeft, Lightbulb, Target, Shuffle as ShuffleIcon, Trophy, Flame } from '@phosphor-icons/react'
-import { motion, AnimatePresence } from 'framer-motion'
-
+import { motion, AnimatePresence
 interface TutorialStep {
+  title: string
+
+  position?: 'center' | 
   id: string
   title: string
   description: string
@@ -30,19 +30,19 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   },
   {
     id: 'objective',
-    title: 'Your Mission',
-    description: 'Match 3 or more adjacent tiles (horizontally or vertically) to reduce pollution and earn points. Reach the target score before running out of moves!',
-    icon: <Target size={48} weight="fill" className="text-primary" />,
-    position: 'center'
-  },
-  {
-    id: 'matching',
     title: 'How to Match',
-    description: 'Click two adjacent tiles to swap them. If they create a match of 3+, they\'ll disappear and you\'ll score points. No match? The swap won\'t happen.',
     icon: <Flame size={48} weight="fill" className="text-orange-500" />,
-    position: 'center'
   },
-  {
+    id: 'shuffle',
+    
+   
+  },
+    id: 'stats',
+    description: 'Watch your score, remaining moves, and pollution levels on the stats panel. Plan your moves to reach the target!',
+    highlight: 'stats',
+  },
+    
+   
     id: 'shuffle',
     title: 'Stuck? Use Shuffle',
     description: 'If you can\'t find any valid moves, click the Shuffle button in the top-right to rearrange the board. Use this wisely!',
@@ -88,28 +88,28 @@ export function TutorialOverlay({ isOpen, onClose, onComplete }: TutorialOverlay
   const handleNext = () => {
     if (currentStep < TUTORIAL_STEPS.length - 1) {
       setCurrentStep(currentStep + 1)
-    } else {
-      handleComplete()
-    }
-  }
+    setTimeo
 
-  const handlePrevious = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1)
-    }
-  }
 
-  const handleComplete = () => {
-    setIsVisible(false)
-    onComplete()
-    setTimeout(onClose, 300)
-  }
+  c
 
-  const handleSkip = () => {
-    setIsVisible(false)
-    onComplete()
-    setTimeout(onClose, 300)
-  }
+      {isVisible && (
+          initial={{ opaci
+          exit={{ opacity: 0 }}
+     
+   
+
+            className="relative 
+            <Card class
+                
+                  initial={{
+   
+
+              <Button
+                size="i
+                
+                <X size={20}
+
 
   if (!isOpen) return null
 
