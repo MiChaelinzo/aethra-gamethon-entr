@@ -608,10 +608,9 @@ function App() {
       setCurrentTileInfo(TILE_INFO[tile.type])
       setShowEducational(true)
       toast('Tiles must be adjacent (horizontally or vertically)', {
-        icon: '↔️',
         duration: 2000
       })
-      return
+      })
     }
 
     setIsProcessing(true)
