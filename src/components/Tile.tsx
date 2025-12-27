@@ -106,17 +106,29 @@ export function Tile({ tile, isSelected, isMatched = false, onClick }: TileProps
         `}
       >
         {isPowerUp && (
-          <motion.div
-            className="absolute inset-0 rounded-lg"
-            animate={{
-              boxShadow: [
-                '0 0 10px rgba(251, 146, 60, 0.5)',
-                '0 0 20px rgba(251, 146, 60, 0.8)',
-                '0 0 10px rgba(251, 146, 60, 0.5)'
-              ]
-            }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          />
+          <>
+            <motion.div
+              className="absolute inset-0 rounded-lg"
+              animate={{
+                boxShadow: [
+                  '0 0 10px rgba(251, 146, 60, 0.5)',
+                  '0 0 20px rgba(251, 146, 60, 0.8)',
+                  '0 0 10px rgba(251, 146, 60, 0.5)'
+                ]
+              }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+            <motion.div
+              className="absolute -top-2 -right-2 text-2xl z-20 drop-shadow-lg"
+              animate={{
+                scale: [1, 1.2, 1],
+                rotate: [0, 10, -10, 0]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              {info.emoji}
+            </motion.div>
+          </>
         )}
         
         <motion.div 

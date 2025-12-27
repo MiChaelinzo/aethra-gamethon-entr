@@ -587,11 +587,13 @@ function App() {
       setSelectedTile(tile)
       playSoundEffect('click')
       
+      setCurrentTileInfo(TILE_INFO[tile.type])
+      setShowEducational(true)
+      
       if (!seen.includes(tile.type)) {
         setSeenTileTypes((current) => [...(current ?? []), tile.type])
-        setCurrentTileInfo(TILE_INFO[tile.type])
-        setShowEducational(true)
       }
+      return
     }
 
     if (selectedTile.id === tile.id) {
@@ -603,6 +605,8 @@ function App() {
     if (!areAdjacent(selectedTile, tile)) {
       setSelectedTile(tile)
       playSoundEffect('click')
+      setCurrentTileInfo(TILE_INFO[tile.type])
+      setShowEducational(true)
       toast('Tiles must be adjacent (horizontally or vertically)', {
         icon: '↔️',
         duration: 2000
