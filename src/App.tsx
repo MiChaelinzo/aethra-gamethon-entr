@@ -24,9 +24,10 @@ import { CollisionMultiplier } from './components/CollisionMultiplier'
 import { HeatmapControl } from './components/HeatmapControl'
 import { CollisionStatisticsPanel } from './components/CollisionStatisticsPanel'
 import { Button } from './components/ui/button'
-import { ArrowLeft, Shuffle, ChartBar } from '@phosphor-icons/react'
-import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge, VisualizerStyle, TrailTheme, CollisionZoneData, BiomeCollisionStats, CollisionStatistics, CollisionTimeEntry, TimeBasedStatistics } from './lib/types'
-import { LEVELS, TILE_INFO, BIOME_GRADIENTS, POLLUTION_GRADIENT } from './lib/gameData'
+import { Badge } from './components/ui/badge'
+import { ArrowLeft, Shuffle, ChartBar, Skull } from '@phosphor-icons/react'
+import { Tile, GameState, TileInfo, DailyChallenge as DailyChallengeType, LeaderboardEntry, ChallengeCompletion, Tournament, TournamentEntry, PlayerBadge, VisualizerStyle, TrailTheme, CollisionZoneData, BiomeCollisionStats, CollisionStatistics, CollisionTimeEntry, TimeBasedStatistics, DifficultyMode } from './lib/types'
+import { LEVELS, EXTREME_LEVELS, TILE_INFO, BIOME_GRADIENTS, POLLUTION_GRADIENT } from './lib/gameData'
 import { TRAIL_THEMES } from './lib/trailThemes'
 import { getTodayChallenge, isChallengeActive } from './lib/challengeData'
 import { getCurrentTournament, isTournamentActive } from './lib/tournamentData'
@@ -52,7 +53,9 @@ const DEFAULT_GAME_STATE: GameState = {
   completedLevels: [],
   totalCO2Reduced: 0,
   unlockedPowerUps: [],
-  dailyChallengeStreak: 0
+  dailyChallengeStreak: 0,
+  difficultyMode: 'normal',
+  extremeCompletedLevels: []
 }
 
 function App() {
@@ -119,6 +122,8 @@ function App() {
   const heatmapOpacityValue = heatmapOpacity ?? 0.6
   const heatmapDecayValue = heatmapDecayRate ?? 0.95
   
+  const currentLevelSet = state.difficultyMode === 'extreme' ? EXTREME_LEVELS : LEVELS
+  
   const currentLevel = isChallenge && currentChallenge
     ? {
         id: 999,
@@ -141,7 +146,7 @@ function App() {
         movesLimit: currentTournament.movesLimit,
         tileTypes: currentTournament.tileTypes
       }
-    : LEVELS.find(l => l.id === state.currentLevel)
+    : currentLevelSet.find(l => l.id === state.currentLevel)
   
   const isInGame = (state.currentLevel > 0 || isChallenge || isTournament) && currentLevel
 
@@ -463,7 +468,7 @@ function App() {
   }, [state.score, state.totalCO2Reduced, completions.length, state.dailyChallengeStreak])
 
   const startLevel = (levelId: number) => {
-    const level = LEVELS.find(l => l.id === levelId)
+    const level = currentLevelSet.find(l => l.id === levelId)
     if (!level) return
 
     setIsChallenge(false)
@@ -836,11 +841,12 @@ function App() {
           }
         }
       } else {
+        const completedListKey = state.difficultyMode === 'extreme' ? 'extremeCompletedLevels' : 'completedLevels'
         setGameState((current) => ({
           ...(current ?? DEFAULT_GAME_STATE),
-          completedLevels: (current?.completedLevels ?? []).includes(currentLevel.id)
-            ? (current?.completedLevels ?? [])
-            : [...(current?.completedLevels ?? []), currentLevel.id]
+          [completedListKey]: (current?.[completedListKey] ?? []).includes(currentLevel.id)
+            ? (current?.[completedListKey] ?? [])
+            : [...(current?.[completedListKey] ?? []), currentLevel.id]
         }))
       }
       
@@ -871,7 +877,7 @@ function App() {
   }
 
   const handleNextLevel = () => {
-    const nextLevel = LEVELS.find(l => l.id === currentLevel!.id + 1)
+    const nextLevel = currentLevelSet.find(l => l.id === currentLevel!.id + 1)
     if (nextLevel) {
       startLevel(nextLevel.id)
     }
@@ -887,6 +893,13 @@ function App() {
     setIsTournament(false)
     setCurrentChallenge(null)
     setCurrentTournament(null)
+  }
+
+  const handleDifficultyChange = (mode: DifficultyMode) => {
+    setGameState((current) => ({
+      ...(current ?? DEFAULT_GAME_STATE),
+      difficultyMode: mode
+    }))
   }
 
   const awardBadge = (badge: PlayerBadge) => {
@@ -920,6 +933,7 @@ function App() {
     const previousStreak = badges.some(b => b.type === 'streak-master')
     const previousEcoWarrior = badges.some(b => b.type === 'eco-warrior')
     const previousChallenger = badges.some(b => b.type === 'challenger')
+    const previousExtremeMaster = badges.some(b => b.type === 'extreme-master')
     
     if (state.dailyChallengeStreak >= 7 && !previousStreak) {
       awardBadge({
@@ -944,7 +958,21 @@ function App() {
         earnedAt: new Date().toISOString()
       })
     }
-  }, [state.dailyChallengeStreak, state.totalCO2Reduced, completions.length])
+
+    if (state.extremeCompletedLevels.length >= 8 && !previousExtremeMaster) {
+      awardBadge({
+        type: 'extreme-master',
+        detail: 'All 8 EXTREME levels conquered',
+        earnedAt: new Date().toISOString()
+      })
+      toast.success('💀 EXTREME MASTER BADGE EARNED! You are a legend!', {
+        duration: 8000
+      })
+      setTimeout(() => {
+        setShowStreakConfetti(true)
+      }, 500)
+    }
+  }, [state.dailyChallengeStreak, state.totalCO2Reduced, completions.length, state.extremeCompletedLevels.length])
 
   const progressPercent = currentLevel 
     ? Math.min((state.score / currentLevel.targetScore) * 100, 100)
@@ -1072,8 +1100,8 @@ function App() {
         )}
 
         <LevelSelect
-          levels={LEVELS}
-          completedLevels={state.completedLevels}
+          levels={currentLevelSet}
+          completedLevels={state.difficultyMode === 'extreme' ? state.extremeCompletedLevels : state.completedLevels}
           onSelectLevel={startLevel}
           totalCO2Reduced={state.totalCO2Reduced}
           onOpenDailyChallenge={() => setShowDailyChallenge(true)}
@@ -1082,6 +1110,8 @@ function App() {
           onOpenBadgeShowcase={() => setShowBadgeShowcase(true)}
           unlockedPowerUps={state.unlockedPowerUps}
           currentStreak={state.dailyChallengeStreak}
+          difficultyMode={state.difficultyMode}
+          onDifficultyChange={handleDifficultyChange}
         />
       </div>
     )
@@ -1125,7 +1155,15 @@ function App() {
             </Button>
             
             <div className="text-center">
-              <h2 className="text-3xl font-bold mb-1">{currentLevel?.name}</h2>
+              <h2 className="text-3xl font-bold mb-1 flex items-center justify-center gap-3">
+                {currentLevel?.name}
+                {currentLevel?.difficulty === 'extreme' && (
+                  <Badge className="bg-gradient-to-r from-red-600 to-orange-600 text-white animate-pulse">
+                    <Skull weight="fill" size={16} className="mr-1" />
+                    EXTREME
+                  </Badge>
+                )}
+              </h2>
               <p className="text-sm text-muted-foreground">{currentLevel?.description}</p>
             </div>
 
@@ -1240,7 +1278,7 @@ function App() {
           co2Reduced={levelCO2}
           onNextLevel={isTournament ? handleBackToMenu : isChallenge ? handleBackToMenu : handleNextLevel}
           onRestart={isTournament ? startTournament : isChallenge ? startDailyChallenge : () => startLevel(currentLevel.id)}
-          isLastLevel={!isTournament && !isChallenge && currentLevel.id === LEVELS.length}
+          isLastLevel={!isTournament && !isChallenge && currentLevel.id === currentLevelSet[currentLevelSet.length - 1].id}
         />
       )}
 

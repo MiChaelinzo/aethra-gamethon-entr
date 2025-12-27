@@ -148,7 +148,8 @@ export const LEVELS: Level[] = [
     gridSize: 6,
     targetScore: 1200,
     movesLimit: 15,
-    tileTypes: ['tree', 'water', 'recycle', 'energy']
+    tileTypes: ['tree', 'water', 'recycle', 'energy'],
+    difficulty: 'normal'
   },
   {
     id: 2,
@@ -158,7 +159,8 @@ export const LEVELS: Level[] = [
     gridSize: 7,
     targetScore: 2000,
     movesLimit: 18,
-    tileTypes: ['solar', 'wind', 'recycle', 'energy']
+    tileTypes: ['solar', 'wind', 'recycle', 'energy'],
+    difficulty: 'normal'
   },
   {
     id: 3,
@@ -168,7 +170,8 @@ export const LEVELS: Level[] = [
     gridSize: 7,
     targetScore: 2800,
     movesLimit: 20,
-    tileTypes: ['water', 'wind', 'recycle', 'tree']
+    tileTypes: ['water', 'wind', 'recycle', 'tree'],
+    difficulty: 'normal'
   },
   {
     id: 4,
@@ -178,7 +181,8 @@ export const LEVELS: Level[] = [
     gridSize: 8,
     targetScore: 4000,
     movesLimit: 22,
-    tileTypes: ['solar', 'recycle', 'energy', 'tree', 'wind']
+    tileTypes: ['solar', 'recycle', 'energy', 'tree', 'wind'],
+    difficulty: 'normal'
   },
   {
     id: 5,
@@ -188,7 +192,8 @@ export const LEVELS: Level[] = [
     gridSize: 8,
     targetScore: 5200,
     movesLimit: 24,
-    tileTypes: ['ice', 'penguin', 'aurora', 'wind', 'energy']
+    tileTypes: ['ice', 'penguin', 'aurora', 'wind', 'energy'],
+    difficulty: 'normal'
   },
   {
     id: 6,
@@ -198,7 +203,8 @@ export const LEVELS: Level[] = [
     gridSize: 9,
     targetScore: 6800,
     movesLimit: 26,
-    tileTypes: ['orchid', 'jaguar', 'medicinal', 'tree', 'water']
+    tileTypes: ['orchid', 'jaguar', 'medicinal', 'tree', 'water'],
+    difficulty: 'normal'
   },
   {
     id: 7,
@@ -208,7 +214,8 @@ export const LEVELS: Level[] = [
     gridSize: 9,
     targetScore: 8500,
     movesLimit: 28,
-    tileTypes: ['ice', 'aurora', 'penguin', 'solar', 'wind']
+    tileTypes: ['ice', 'aurora', 'penguin', 'solar', 'wind'],
+    difficulty: 'normal'
   },
   {
     id: 8,
@@ -218,7 +225,99 @@ export const LEVELS: Level[] = [
     gridSize: 10,
     targetScore: 10500,
     movesLimit: 30,
-    tileTypes: ['orchid', 'medicinal', 'jaguar', 'tree', 'recycle']
+    tileTypes: ['orchid', 'medicinal', 'jaguar', 'tree', 'recycle'],
+    difficulty: 'normal'
+  }
+]
+
+export const EXTREME_LEVELS: Level[] = [
+  {
+    id: 101,
+    name: 'Inferno Forest',
+    biome: 'forest',
+    description: 'EXTREME: Save the forest from catastrophic wildfires with limited moves!',
+    gridSize: 6,
+    targetScore: 5000,
+    movesLimit: 12,
+    tileTypes: ['tree', 'water', 'recycle', 'energy'],
+    difficulty: 'extreme'
+  },
+  {
+    id: 102,
+    name: 'Solar Apocalypse',
+    biome: 'desert',
+    description: 'EXTREME: Harness solar power in a scorched wasteland with brutal targets!',
+    gridSize: 7,
+    targetScore: 8500,
+    movesLimit: 14,
+    tileTypes: ['solar', 'wind', 'recycle', 'energy'],
+    difficulty: 'extreme'
+  },
+  {
+    id: 103,
+    name: 'Tsunami Crisis',
+    biome: 'ocean',
+    description: 'EXTREME: Restore the devastated ocean against impossible odds!',
+    gridSize: 7,
+    targetScore: 12000,
+    movesLimit: 16,
+    tileTypes: ['water', 'wind', 'recycle', 'tree'],
+    difficulty: 'extreme'
+  },
+  {
+    id: 104,
+    name: 'Megacity Meltdown',
+    biome: 'city',
+    description: 'EXTREME: Transform a collapsing urban hellscape with precision moves!',
+    gridSize: 8,
+    targetScore: 18000,
+    movesLimit: 18,
+    tileTypes: ['solar', 'recycle', 'energy', 'tree', 'wind'],
+    difficulty: 'extreme'
+  },
+  {
+    id: 105,
+    name: 'Arctic Armageddon',
+    biome: 'tundra',
+    description: 'EXTREME: Stop the polar ice caps from vanishing in this brutal challenge!',
+    gridSize: 8,
+    targetScore: 24000,
+    movesLimit: 20,
+    tileTypes: ['ice', 'penguin', 'aurora', 'wind', 'energy'],
+    difficulty: 'extreme'
+  },
+  {
+    id: 106,
+    name: 'Rainforest Requiem',
+    biome: 'rainforest',
+    description: 'EXTREME: The Amazon is dying—save it with masterful strategy!',
+    gridSize: 9,
+    targetScore: 32000,
+    movesLimit: 22,
+    tileTypes: ['orchid', 'jaguar', 'medicinal', 'tree', 'water'],
+    difficulty: 'extreme'
+  },
+  {
+    id: 107,
+    name: 'Polar Extinction',
+    biome: 'tundra',
+    description: 'EXTREME: Face the ultimate arctic challenge with crushing difficulty!',
+    gridSize: 9,
+    targetScore: 42000,
+    movesLimit: 24,
+    tileTypes: ['ice', 'aurora', 'penguin', 'solar', 'wind'],
+    difficulty: 'extreme'
+  },
+  {
+    id: 108,
+    name: 'Biodiversity Collapse',
+    biome: 'rainforest',
+    description: 'EXTREME: The hardest challenge—restore a dying rainforest ecosystem!',
+    gridSize: 10,
+    targetScore: 55000,
+    movesLimit: 26,
+    tileTypes: ['orchid', 'medicinal', 'jaguar', 'tree', 'recycle'],
+    difficulty: 'extreme'
   }
 ]
 

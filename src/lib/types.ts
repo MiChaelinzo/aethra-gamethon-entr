@@ -1,6 +1,6 @@
 export type TileType = 'tree' | 'solar' | 'wind' | 'recycle' | 'water' | 'energy' | 'ice' | 'penguin' | 'aurora' | 'orchid' | 'jaguar' | 'medicinal' | 'supernova' | 'tsunami' | 'earthquake' | 'meteor' | 'phoenix'
 
-export type BadgeType = 'champion' | 'runner-up' | 'third-place' | 'top-10' | 'participant' | 'streak-master' | 'eco-warrior' | 'challenger'
+export type BadgeType = 'champion' | 'runner-up' | 'third-place' | 'top-10' | 'participant' | 'streak-master' | 'eco-warrior' | 'challenger' | 'extreme-master'
 
 export type VisualizerStyle = 'bars' | 'waveform' | 'circular'
 
@@ -15,6 +15,8 @@ export interface Tile {
   isPowerUp?: boolean
 }
 
+export type DifficultyMode = 'normal' | 'extreme'
+
 export interface Level {
   id: number
   name: string
@@ -24,6 +26,7 @@ export interface Level {
   targetScore: number
   movesLimit: number
   tileTypes?: TileType[]
+  difficulty?: DifficultyMode
 }
 
 export interface GameState {
@@ -36,6 +39,8 @@ export interface GameState {
   unlockedPowerUps: TileType[]
   dailyChallengeStreak: number
   lastChallengeDate?: string
+  difficultyMode: DifficultyMode
+  extremeCompletedLevels: number[]
 }
 
 export interface DailyChallenge {
@@ -54,7 +59,7 @@ export interface DailyChallenge {
 }
 
 export interface PlayerBadge {
-  type: 'champion' | 'runner-up' | 'third-place' | 'top-10' | 'participant' | 'streak-master' | 'eco-warrior' | 'challenger'
+  type: 'champion' | 'runner-up' | 'third-place' | 'top-10' | 'participant' | 'streak-master' | 'eco-warrior' | 'challenger' | 'extreme-master'
   tournamentName?: string
   tournamentId?: string
   rank?: number

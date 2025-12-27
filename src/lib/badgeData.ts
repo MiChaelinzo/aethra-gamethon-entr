@@ -173,6 +173,29 @@ export const BADGE_CATALOG: BadgeInfo[] = [
       'Each challenge unlocks a unique power-up',
       'Practice makes perfect'
     ]
+  },
+  {
+    type: 'extreme-master',
+    name: 'Extreme Master',
+    icon: '💀',
+    description: 'Only the most skilled players can conquer all extreme difficulty levels - you are legendary.',
+    howToEarn: 'Complete all 8 levels on EXTREME difficulty mode',
+    color: 'from-red-600 via-orange-600 to-yellow-500',
+    rarity: 'legendary',
+    category: 'achievement',
+    requirements: [
+      'Complete all 8 EXTREME mode levels',
+      'Each level has much higher target scores',
+      'Fewer moves allowed per level',
+      'Requires mastery of all game mechanics'
+    ],
+    tips: [
+      'Master power-up combinations for maximum effect',
+      'Plan multiple moves ahead',
+      'Focus on collision multipliers',
+      'Use the heatmap to identify hot zones',
+      'Practice normal mode first to perfect strategy'
+    ]
   }
 ]
 

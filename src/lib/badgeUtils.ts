@@ -94,10 +94,11 @@ export function calculatePlayerBadges(
       'runner-up': 2,
       'third-place': 3,
       'top-10': 4,
-      'eco-warrior': 5,
-      'streak-master': 6,
-      'challenger': 7,
-      'participant': 8
+      'extreme-master': 5,
+      'eco-warrior': 6,
+      'streak-master': 7,
+      'challenger': 8,
+      'participant': 9
     }
     return priority[a.type] - priority[b.type]
   })
