@@ -43,8 +43,8 @@ export const getCurrentTournament = (): Tournament => {
       description: 'Save the lungs of our planet! Compete to restore the Amazon and other vital rainforests.',
       biome: 'rainforest',
       gridSize: 8,
-      targetScore: 8000,
-      movesLimit: 35,
+      targetScore: 12000,
+      movesLimit: 28,
       tileTypes: ['tree' as TileType, 'water' as TileType, 'orchid' as TileType, 'jaguar' as TileType, 'medicinal' as TileType, 'energy' as TileType],
       specialRules: 'Rainforest tiles worth 2x points!'
     },
@@ -53,8 +53,8 @@ export const getCurrentTournament = (): Tournament => {
       description: 'Protect the frozen frontier! Battle to save polar ecosystems from climate change.',
       biome: 'tundra',
       gridSize: 8,
-      targetScore: 7500,
-      movesLimit: 40,
+      targetScore: 11000,
+      movesLimit: 32,
       tileTypes: ['ice' as TileType, 'penguin' as TileType, 'aurora' as TileType, 'water' as TileType, 'wind' as TileType, 'solar' as TileType],
       specialRules: 'Ice combos trigger bonus cascades!'
     },
@@ -63,8 +63,8 @@ export const getCurrentTournament = (): Tournament => {
       description: 'Clear the seas! Compete to remove pollution and restore marine habitats.',
       biome: 'ocean',
       gridSize: 9,
-      targetScore: 9000,
-      movesLimit: 30,
+      targetScore: 14000,
+      movesLimit: 25,
       tileTypes: ['water' as TileType, 'energy' as TileType, 'wind' as TileType, 'recycle' as TileType, 'solar' as TileType],
       specialRules: 'Wave power-ups appear more frequently!'
     },
@@ -73,8 +73,8 @@ export const getCurrentTournament = (): Tournament => {
       description: 'Plant the future! Race to restore forests worldwide and capture carbon.',
       biome: 'forest',
       gridSize: 8,
-      targetScore: 8500,
-      movesLimit: 35,
+      targetScore: 13000,
+      movesLimit: 28,
       tileTypes: ['tree' as TileType, 'water' as TileType, 'solar' as TileType, 'wind' as TileType, 'recycle' as TileType, 'energy' as TileType],
       specialRules: 'Tree matches grant extra moves!'
     }

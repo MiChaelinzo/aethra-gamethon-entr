@@ -146,8 +146,8 @@ export const LEVELS: Level[] = [
     biome: 'forest',
     description: 'Restore the dying forest by planting trees and cleaning the air.',
     gridSize: 6,
-    targetScore: 500,
-    movesLimit: 20,
+    targetScore: 1200,
+    movesLimit: 15,
     tileTypes: ['tree', 'water', 'recycle', 'energy']
   },
   {
@@ -156,8 +156,8 @@ export const LEVELS: Level[] = [
     biome: 'desert',
     description: 'Transform the wasteland with renewable solar energy.',
     gridSize: 7,
-    targetScore: 800,
-    movesLimit: 25,
+    targetScore: 2000,
+    movesLimit: 18,
     tileTypes: ['solar', 'wind', 'recycle', 'energy']
   },
   {
@@ -166,8 +166,8 @@ export const LEVELS: Level[] = [
     biome: 'ocean',
     description: 'Clean the waters and restore marine life.',
     gridSize: 7,
-    targetScore: 1000,
-    movesLimit: 30,
+    targetScore: 2800,
+    movesLimit: 20,
     tileTypes: ['water', 'wind', 'recycle', 'tree']
   },
   {
@@ -176,8 +176,8 @@ export const LEVELS: Level[] = [
     biome: 'city',
     description: 'Transform the polluted city into a sustainable urban paradise.',
     gridSize: 8,
-    targetScore: 1500,
-    movesLimit: 35,
+    targetScore: 4000,
+    movesLimit: 22,
     tileTypes: ['solar', 'recycle', 'energy', 'tree', 'wind']
   },
   {
@@ -186,8 +186,8 @@ export const LEVELS: Level[] = [
     biome: 'tundra',
     description: 'Preserve the melting ice caps and protect arctic ecosystems.',
     gridSize: 8,
-    targetScore: 1800,
-    movesLimit: 38,
+    targetScore: 5200,
+    movesLimit: 24,
     tileTypes: ['ice', 'penguin', 'aurora', 'wind', 'energy']
   },
   {
@@ -196,8 +196,8 @@ export const LEVELS: Level[] = [
     biome: 'rainforest',
     description: 'Save the lungs of the Earth from deforestation and pollution.',
     gridSize: 9,
-    targetScore: 2200,
-    movesLimit: 40,
+    targetScore: 6800,
+    movesLimit: 26,
     tileTypes: ['orchid', 'jaguar', 'medicinal', 'tree', 'water']
   },
   {
@@ -206,8 +206,8 @@ export const LEVELS: Level[] = [
     biome: 'tundra',
     description: 'Battle climate change in the frozen north with renewable solutions.',
     gridSize: 9,
-    targetScore: 2500,
-    movesLimit: 42,
+    targetScore: 8500,
+    movesLimit: 28,
     tileTypes: ['ice', 'aurora', 'penguin', 'solar', 'wind']
   },
   {
@@ -216,8 +216,8 @@ export const LEVELS: Level[] = [
     biome: 'rainforest',
     description: 'Restore biodiversity in the endangered tropical paradise.',
     gridSize: 10,
-    targetScore: 3000,
-    movesLimit: 45,
+    targetScore: 10500,
+    movesLimit: 30,
     tileTypes: ['orchid', 'medicinal', 'jaguar', 'tree', 'recycle']
   }
 ]
