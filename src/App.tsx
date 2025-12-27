@@ -1019,7 +1019,7 @@ function App() {
           </Button>
           <ParticleThemeSwitcher
             currentTheme={trailTheme}
-            unlockedPowerUps={safeState.unlockedPowerUps}
+            unlockedPowerUps={state.unlockedPowerUps}
             onThemeChange={setMouseTrailTheme}
             isTrailEnabled={trailEnabled}
             onToggleTrail={setMouseTrailEnabled}
@@ -1028,7 +1028,7 @@ function App() {
             isEnabled={trailEnabled}
             intensity={trailIntensity}
             theme={trailTheme}
-            unlockedPowerUps={safeState.unlockedPowerUps}
+            unlockedPowerUps={state.unlockedPowerUps}
             onToggle={setMouseTrailEnabled}
             onIntensityChange={setMouseTrailIntensity}
             onThemeChange={setMouseTrailTheme}
@@ -1063,10 +1063,10 @@ function App() {
             <div className="max-w-2xl w-full">
               <DailyChallenge
                 challenge={todayChallenge}
-                streak={safeState.dailyChallengeStreak}
+                streak={state.dailyChallengeStreak}
                 isCompleted={isChallengeCompleted}
                 onStart={startDailyChallenge}
-                hasUnlockedReward={safeState.unlockedPowerUps.includes(todayChallenge.rewardPowerUp)}
+                hasUnlockedReward={state.unlockedPowerUps.includes(todayChallenge.rewardPowerUp)}
               />
               <div className="flex justify-center mt-4">
                 <Button variant="outline" onClick={() => setShowDailyChallenge(false)}>
@@ -1103,7 +1103,7 @@ function App() {
             stats={{
               totalCO2Reduced: state.totalCO2Reduced,
               challengesCompleted: completions.length,
-              currentStreak: safeState.dailyChallengeStreak,
+              currentStreak: state.dailyChallengeStreak,
               tournamentsEntered: tournaments.filter(t => t.userId === currentUserId).length
             }}
           />
@@ -1111,16 +1111,16 @@ function App() {
 
         <LevelSelect
           levels={currentLevelSet}
-          completedLevels={safeState.difficultyMode === 'extreme' ? safeState.extremeCompletedLevels : safeState.completedLevels}
+          completedLevels={state.difficultyMode === 'extreme' ? (state.extremeCompletedLevels ?? []) : (state.completedLevels ?? [])}
           onSelectLevel={startLevel}
           totalCO2Reduced={state.totalCO2Reduced}
           onOpenDailyChallenge={() => setShowDailyChallenge(true)}
           onOpenLeaderboard={() => setShowLeaderboard(true)}
           onOpenTournament={() => setShowTournament(true)}
           onOpenBadgeShowcase={() => setShowBadgeShowcase(true)}
-          unlockedPowerUps={safeState.unlockedPowerUps}
-          currentStreak={safeState.dailyChallengeStreak}
-          difficultyMode={safeState.difficultyMode}
+          unlockedPowerUps={state.unlockedPowerUps ?? []}
+          currentStreak={state.dailyChallengeStreak}
+          difficultyMode={state.difficultyMode}
           onDifficultyChange={handleDifficultyChange}
         />
       </div>
@@ -1188,7 +1188,7 @@ function App() {
               </Button>
               <ParticleThemeSwitcher
                 currentTheme={trailTheme}
-                unlockedPowerUps={safeState.unlockedPowerUps}
+                unlockedPowerUps={state.unlockedPowerUps}
                 onThemeChange={setMouseTrailTheme}
                 isTrailEnabled={trailEnabled}
                 onToggleTrail={setMouseTrailEnabled}
@@ -1211,7 +1211,7 @@ function App() {
                 isEnabled={trailEnabled}
                 intensity={trailIntensity}
                 theme={trailTheme}
-                unlockedPowerUps={safeState.unlockedPowerUps}
+                unlockedPowerUps={state.unlockedPowerUps}
                 onToggle={setMouseTrailEnabled}
                 onIntensityChange={setMouseTrailIntensity}
                 onThemeChange={setMouseTrailTheme}
