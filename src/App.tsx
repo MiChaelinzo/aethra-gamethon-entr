@@ -583,16 +583,15 @@ function App() {
       return
     }
 
-    if (!seen.includes(tile.type)) {
-      setSeenTileTypes((current) => [...(current ?? []), tile.type])
-    }
-    
-    setCurrentTileInfo(TILE_INFO[tile.type])
-    setShowEducational(true)
-
     if (!selectedTile) {
       setSelectedTile(tile)
       playSoundEffect('click')
+      
+      if (!seen.includes(tile.type)) {
+        setSeenTileTypes((current) => [...(current ?? []), tile.type])
+        setCurrentTileInfo(TILE_INFO[tile.type])
+        setShowEducational(true)
+      }
       return
     }
 
