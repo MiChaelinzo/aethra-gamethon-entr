@@ -122,7 +122,16 @@ function App() {
   const heatmapOpacityValue = heatmapOpacity ?? 0.6
   const heatmapDecayValue = heatmapDecayRate ?? 0.95
   
-  const currentLevelSet = state.difficultyMode === 'extreme' ? EXTREME_LEVELS : LEVELS
+  const safeState = {
+    ...state,
+    completedLevels: state.completedLevels ?? [],
+    extremeCompletedLevels: state.extremeCompletedLevels ?? [],
+    unlockedPowerUps: state.unlockedPowerUps ?? [],
+    dailyChallengeStreak: state.dailyChallengeStreak ?? 0,
+    difficultyMode: state.difficultyMode ?? 'normal'
+  }
+  
+  const currentLevelSet = safeState.difficultyMode === 'extreme' ? EXTREME_LEVELS : LEVELS
   
   const currentLevel = isChallenge && currentChallenge
     ? {
@@ -146,13 +155,13 @@ function App() {
         movesLimit: currentTournament.movesLimit,
         tileTypes: currentTournament.tileTypes
       }
-    : currentLevelSet.find(l => l.id === state.currentLevel)
+    : currentLevelSet.find(l => l.id === safeState.currentLevel)
   
-  const isInGame = (state.currentLevel > 0 || isChallenge || isTournament) && currentLevel
+  const isInGame = (safeState.currentLevel > 0 || isChallenge || isTournament) && currentLevel
 
   useEffect(() => {
     if (currentLevel && grid.length === 0) {
-      setGrid(generateGrid(currentLevel.gridSize, currentLevel, state.unlockedPowerUps))
+      setGrid(generateGrid(currentLevel.gridSize, currentLevel, safeState.unlockedPowerUps))
     }
   }, [currentLevel])
 
@@ -280,7 +289,7 @@ function App() {
       if (e.ctrlKey && e.shiftKey && e.key === 'P') {
         e.preventDefault()
         const availableThemes = ['default', 'supernova', 'tsunami', 'earthquake', 'meteor', 'phoenix'].filter(
-          t => t === 'default' || state.unlockedPowerUps.includes(t as any)
+          t => t === 'default' || safeState.unlockedPowerUps.includes(t as any)
         )
         const currentIndex = availableThemes.indexOf(trailTheme)
         const nextIndex = (currentIndex + 1) % availableThemes.length
@@ -313,7 +322,7 @@ function App() {
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [trailEnabled, trailTheme, state.unlockedPowerUps, showHeatmap])
+  }, [trailEnabled, trailTheme, safeState.unlockedPowerUps, showHeatmap])
 
   const computeCollisionStatistics = (): CollisionStatistics => {
     const zones = collisionZonesData ?? {}
@@ -437,7 +446,7 @@ function App() {
               score: state.score,
               co2Reduced: state.totalCO2Reduced,
               challengesCompleted: completions.length,
-              streak: state.dailyChallengeStreak,
+              streak: safeState.dailyChallengeStreak,
               isOwner: user.isOwner
             }
             return updated
@@ -452,7 +461,7 @@ function App() {
               score: state.score,
               co2Reduced: state.totalCO2Reduced,
               challengesCompleted: completions.length,
-              streak: state.dailyChallengeStreak,
+              streak: safeState.dailyChallengeStreak,
               isOwner: user.isOwner
             }
           ])
@@ -465,7 +474,7 @@ function App() {
     if (state.score > 0) {
       updateLeaderboard()
     }
-  }, [state.score, state.totalCO2Reduced, completions.length, state.dailyChallengeStreak])
+  }, [state.score, state.totalCO2Reduced, completions.length, safeState.dailyChallengeStreak])
 
   const startLevel = (levelId: number) => {
     const level = currentLevelSet.find(l => l.id === levelId)
@@ -482,7 +491,7 @@ function App() {
       moves: 0,
       pollution: 100
     }))
-    setGrid(generateGrid(level.gridSize, level, state.unlockedPowerUps))
+    setGrid(generateGrid(level.gridSize, level, safeState.unlockedPowerUps))
     setCombo(0)
     setLevelCO2(0)
     setShowLevelComplete(false)
@@ -516,7 +525,7 @@ function App() {
       targetScore: challenge.targetScore,
       movesLimit: challenge.movesLimit,
       tileTypes: challenge.tileTypes
-    }, state.unlockedPowerUps))
+    }, safeState.unlockedPowerUps))
     setCombo(0)
     setLevelCO2(0)
     setShowLevelComplete(false)
@@ -550,7 +559,7 @@ function App() {
       targetScore: tournament.targetScore,
       movesLimit: tournament.movesLimit,
       tileTypes: tournament.tileTypes
-    }, state.unlockedPowerUps))
+    }, safeState.unlockedPowerUps))
     setCombo(0)
     setLevelCO2(0)
     setShowLevelComplete(false)
@@ -659,7 +668,7 @@ function App() {
 
     let newGrid = removeMatches(currentGrid, matches)
     newGrid = dropTiles(newGrid, currentLevel.gridSize)
-    newGrid = fillEmpty(newGrid, currentLevel.gridSize, currentLevel, state.unlockedPowerUps)
+    newGrid = fillEmpty(newGrid, currentLevel.gridSize, currentLevel, safeState.unlockedPowerUps)
     setGrid(newGrid)
 
     await new Promise(resolve => setTimeout(resolve, 300))
@@ -801,7 +810,7 @@ function App() {
             isConsecutive = daysDiff === 1
           }
           
-          const newStreak = isConsecutive ? (state.dailyChallengeStreak ?? 0) + 1 : 1
+          const newStreak = isConsecutive ? (safeState.dailyChallengeStreak ?? 0) + 1 : 1
           
           setGameState((current) => ({
             ...(current ?? DEFAULT_GAME_STATE),
@@ -841,7 +850,7 @@ function App() {
           }
         }
       } else {
-        const completedListKey = state.difficultyMode === 'extreme' ? 'extremeCompletedLevels' : 'completedLevels'
+        const completedListKey = safeState.difficultyMode === 'extreme' ? 'extremeCompletedLevels' : 'completedLevels'
         setGameState((current) => ({
           ...(current ?? DEFAULT_GAME_STATE),
           [completedListKey]: (current?.[completedListKey] ?? []).includes(currentLevel.id)
@@ -936,10 +945,10 @@ function App() {
     const previousExtremeMaster = badges.some(b => b.type === 'extreme-master')
     
     
-    if (state.dailyChallengeStreak >= 7 && !previousStreak) {
+    if (safeState.dailyChallengeStreak >= 7 && !previousStreak) {
       awardBadge({
         type: 'streak-master',
-        detail: `${state.dailyChallengeStreak} day streak`,
+        detail: `${safeState.dailyChallengeStreak} day streak`,
         earnedAt: new Date().toISOString()
       })
     }
@@ -960,7 +969,7 @@ function App() {
       })
     }
 
-    if (state.extremeCompletedLevels.length >= 8 && !previousExtremeMaster) {
+    if (safeState.extremeCompletedLevels.length >= 8 && !previousExtremeMaster) {
       awardBadge({
         type: 'extreme-master',
         detail: 'All 8 EXTREME levels conquered',
@@ -973,7 +982,7 @@ function App() {
         setShowStreakConfetti(true)
       }, 500)
     }
-  }, [state.dailyChallengeStreak, state.totalCO2Reduced, completions.length, state.extremeCompletedLevels.length])
+  }, [safeState.dailyChallengeStreak, state.totalCO2Reduced, completions.length, safeState.extremeCompletedLevels.length])
 
   const progressPercent = currentLevel 
     ? Math.min((state.score / currentLevel.targetScore) * 100, 100)
@@ -1010,7 +1019,7 @@ function App() {
           </Button>
           <ParticleThemeSwitcher
             currentTheme={trailTheme}
-            unlockedPowerUps={state.unlockedPowerUps}
+            unlockedPowerUps={safeState.unlockedPowerUps}
             onThemeChange={setMouseTrailTheme}
             isTrailEnabled={trailEnabled}
             onToggleTrail={setMouseTrailEnabled}
@@ -1019,7 +1028,7 @@ function App() {
             isEnabled={trailEnabled}
             intensity={trailIntensity}
             theme={trailTheme}
-            unlockedPowerUps={state.unlockedPowerUps}
+            unlockedPowerUps={safeState.unlockedPowerUps}
             onToggle={setMouseTrailEnabled}
             onIntensityChange={setMouseTrailIntensity}
             onThemeChange={setMouseTrailTheme}
@@ -1054,10 +1063,10 @@ function App() {
             <div className="max-w-2xl w-full">
               <DailyChallenge
                 challenge={todayChallenge}
-                streak={state.dailyChallengeStreak}
+                streak={safeState.dailyChallengeStreak}
                 isCompleted={isChallengeCompleted}
                 onStart={startDailyChallenge}
-                hasUnlockedReward={state.unlockedPowerUps.includes(todayChallenge.rewardPowerUp)}
+                hasUnlockedReward={safeState.unlockedPowerUps.includes(todayChallenge.rewardPowerUp)}
               />
               <div className="flex justify-center mt-4">
                 <Button variant="outline" onClick={() => setShowDailyChallenge(false)}>
@@ -1094,7 +1103,7 @@ function App() {
             stats={{
               totalCO2Reduced: state.totalCO2Reduced,
               challengesCompleted: completions.length,
-              currentStreak: state.dailyChallengeStreak,
+              currentStreak: safeState.dailyChallengeStreak,
               tournamentsEntered: tournaments.filter(t => t.userId === currentUserId).length
             }}
           />
@@ -1102,16 +1111,16 @@ function App() {
 
         <LevelSelect
           levels={currentLevelSet}
-          completedLevels={state.difficultyMode === 'extreme' ? state.extremeCompletedLevels : state.completedLevels}
+          completedLevels={safeState.difficultyMode === 'extreme' ? safeState.extremeCompletedLevels : safeState.completedLevels}
           onSelectLevel={startLevel}
           totalCO2Reduced={state.totalCO2Reduced}
           onOpenDailyChallenge={() => setShowDailyChallenge(true)}
           onOpenLeaderboard={() => setShowLeaderboard(true)}
           onOpenTournament={() => setShowTournament(true)}
           onOpenBadgeShowcase={() => setShowBadgeShowcase(true)}
-          unlockedPowerUps={state.unlockedPowerUps}
-          currentStreak={state.dailyChallengeStreak}
-          difficultyMode={state.difficultyMode}
+          unlockedPowerUps={safeState.unlockedPowerUps}
+          currentStreak={safeState.dailyChallengeStreak}
+          difficultyMode={safeState.difficultyMode}
           onDifficultyChange={handleDifficultyChange}
         />
       </div>
@@ -1179,7 +1188,7 @@ function App() {
               </Button>
               <ParticleThemeSwitcher
                 currentTheme={trailTheme}
-                unlockedPowerUps={state.unlockedPowerUps}
+                unlockedPowerUps={safeState.unlockedPowerUps}
                 onThemeChange={setMouseTrailTheme}
                 isTrailEnabled={trailEnabled}
                 onToggleTrail={setMouseTrailEnabled}
@@ -1202,7 +1211,7 @@ function App() {
                 isEnabled={trailEnabled}
                 intensity={trailIntensity}
                 theme={trailTheme}
-                unlockedPowerUps={state.unlockedPowerUps}
+                unlockedPowerUps={safeState.unlockedPowerUps}
                 onToggle={setMouseTrailEnabled}
                 onIntensityChange={setMouseTrailIntensity}
                 onThemeChange={setMouseTrailTheme}
