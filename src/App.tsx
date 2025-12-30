@@ -1153,72 +1153,71 @@ function App() {
             timeBasedStatistics={computeTimeBasedStatistics()}
           />
 
-          {showDailyChallenge && (
-            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-              <div className="max-w-2xl w-full">
-                <DailyChallenge
-                  challenge={todayChallenge}
-                  streak={state.dailyChallengeStreak}
-                  isCompleted={isChallengeCompleted}
-                  onStart={startDailyChallenge}
-                  hasUnlockedReward={state.unlockedPowerUps.includes(todayChallenge.rewardPowerUp)}
-                />
-                <div className="flex justify-center mt-4">
-                  <Button variant="outline" onClick={() => setShowDailyChallenge(false)}>
-                    Close
-                  </Button>
-                </div>
+        {showDailyChallenge && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="max-w-2xl w-full">
+              <DailyChallenge
+                challenge={todayChallenge}
+                streak={state.dailyChallengeStreak}
+                isCompleted={isChallengeCompleted}
+                onStart={startDailyChallenge}
+                hasUnlockedReward={state.unlockedPowerUps.includes(todayChallenge.rewardPowerUp)}
+              />
+              <div className="flex justify-center mt-4">
+                <Button variant="outline" onClick={() => setShowDailyChallenge(false)}>
+                  Close
+                </Button>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {showLeaderboard && (
-            <Leaderboard
-              entries={leaderboard}
-              tournamentEntries={tournaments}
-              currentUserId={currentUserId}
-              onClose={() => setShowLeaderboard(false)}
-            />
-          )}
-
-          {showTournament && (
-            <TournamentView
-              tournament={activeTournament}
-              entries={tournaments}
-              currentUserId={currentUserId}
-              onStart={startTournament}
-              onClose={() => setShowTournament(false)}
-            />
-          )}
-
-          {showBadgeShowcase && (
-            <BadgeShowcase
-              onClose={() => setShowBadgeShowcase(false)}
-              playerBadges={badges}
-              stats={{
-                totalCO2Reduced: state.totalCO2Reduced,
-                challengesCompleted: completions.length,
-                currentStreak: state.dailyChallengeStreak,
-                tournamentsEntered: tournaments.filter(t => t.userId === currentUserId).length
-              }}
-            />
-          )}
-
-          <LevelSelect
-            levels={currentLevelSet}
-            completedLevels={state.difficultyMode === 'extreme' ? (state.extremeCompletedLevels ?? []) : (state.completedLevels ?? [])}
-            onSelectLevel={startLevel}
-            totalCO2Reduced={state.totalCO2Reduced}
-            onOpenDailyChallenge={() => setShowDailyChallenge(true)}
-            onOpenLeaderboard={() => setShowLeaderboard(true)}
-            onOpenTournament={() => setShowTournament(true)}
-            onOpenBadgeShowcase={() => setShowBadgeShowcase(true)}
-            unlockedPowerUps={state.unlockedPowerUps ?? []}
-            currentStreak={state.dailyChallengeStreak}
-            difficultyMode={state.difficultyMode}
-            onDifficultyChange={handleDifficultyChange}
+        {showLeaderboard && (
+          <Leaderboard
+            entries={leaderboard}
+            tournamentEntries={tournaments}
+            currentUserId={currentUserId}
+            onClose={() => setShowLeaderboard(false)}
           />
-        </div>
+        )}
+
+        {showTournament && (
+          <TournamentView
+            tournament={activeTournament}
+            entries={tournaments}
+            currentUserId={currentUserId}
+            onStart={startTournament}
+            onClose={() => setShowTournament(false)}
+          />
+        )}
+
+        {showBadgeShowcase && (
+          <BadgeShowcase
+            onClose={() => setShowBadgeShowcase(false)}
+            playerBadges={badges}
+            stats={{
+              totalCO2Reduced: state.totalCO2Reduced,
+              challengesCompleted: completions.length,
+              currentStreak: state.dailyChallengeStreak,
+              tournamentsEntered: tournaments.filter(t => t.userId === currentUserId).length
+            }}
+          />
+        )}
+
+        <LevelSelect
+          levels={currentLevelSet}
+          completedLevels={state.difficultyMode === 'extreme' ? (state.extremeCompletedLevels ?? []) : (state.completedLevels ?? [])}
+          onSelectLevel={startLevel}
+          totalCO2Reduced={state.totalCO2Reduced}
+          onOpenDailyChallenge={() => setShowDailyChallenge(true)}
+          onOpenLeaderboard={() => setShowLeaderboard(true)}
+          onOpenTournament={() => setShowTournament(true)}
+          onOpenBadgeShowcase={() => setShowBadgeShowcase(true)}
+          unlockedPowerUps={state.unlockedPowerUps ?? []}
+          currentStreak={state.dailyChallengeStreak}
+          difficultyMode={state.difficultyMode}
+          onDifficultyChange={handleDifficultyChange}
+        />
       </div>
     )
   }
