@@ -610,7 +610,7 @@ function App() {
       toast('Tiles must be adjacent (horizontally or vertically)', {
         duration: 2000
       })
-      })
+      return
     }
 
     setIsProcessing(true)
