@@ -25,6 +25,7 @@ import { HeatmapControl } from './components/HeatmapControl'
 import { CollisionStatisticsPanel } from './components/CollisionStatisticsPanel'
 import { TutorialOverlay } from './components/TutorialOverlay'
 import { QuickHelp } from './components/QuickHelp'
+import { UserProfile } from './components/UserProfile'
 import { Button } from './components/ui/button'
 import { Badge } from './components/ui/badge'
 import { ArrowLeft, Shuffle, ChartBar, Skull } from '@phosphor-icons/react'
@@ -61,7 +62,13 @@ const DEFAULT_GAME_STATE: GameState = {
 }
 
 function App() {
-  const [gameState, setGameState] = useKV<GameState>('ecorise-game-state', DEFAULT_GAME_STATE)
+  const [currentUserId, setCurrentUserId] = useState<string>('')
+  const [currentUser, setCurrentUser] = useState<{login: string; avatarUrl: string; id: string} | null>(null)
+  const [isLoadingUser, setIsLoadingUser] = useState(true)
+  
+  const userKey = (key: string) => currentUserId ? `${key}-${currentUserId}` : key
+  
+  const [gameState, setGameState] = useKV<GameState>(userKey('ecorise-game-state'), DEFAULT_GAME_STATE)
   const [grid, setGrid] = useState<Tile[]>([])
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null)
   const [matchedTiles, setMatchedTiles] = useState<Tile[]>([])
@@ -71,7 +78,7 @@ function App() {
   const [currentTileInfo, setCurrentTileInfo] = useState<TileInfo | null>(null)
   const [showLevelComplete, setShowLevelComplete] = useState(false)
   const [levelCO2, setLevelCO2] = useState(0)
-  const [seenTileTypes, setSeenTileTypes] = useKV<string[]>('ecorise-seen-tiles', [])
+  const [seenTileTypes, setSeenTileTypes] = useKV<string[]>(userKey('ecorise-seen-tiles'), [])
   const [showBiomeEffect, setShowBiomeEffect] = useState(false)
   const [activePowerUp, setActivePowerUp] = useState<string | null>(null)
   const [showDailyChallenge, setShowDailyChallenge] = useState(false)
@@ -82,17 +89,16 @@ function App() {
   const [isTournament, setIsTournament] = useState(false)
   const [currentChallenge, setCurrentChallenge] = useState<DailyChallengeType | null>(null)
   const [currentTournament, setCurrentTournament] = useState<Tournament | null>(null)
-  const [challengeCompletions, setChallengeCompletions] = useKV<ChallengeCompletion[]>('ecorise-challenges', [])
+  const [challengeCompletions, setChallengeCompletions] = useKV<ChallengeCompletion[]>(userKey('ecorise-challenges'), [])
   const [leaderboardEntries, setLeaderboardEntries] = useKV<LeaderboardEntry[]>('ecorise-leaderboard', [])
   const [tournamentEntries, setTournamentEntries] = useKV<TournamentEntry[]>('ecorise-tournaments', [])
-  const [playerBadges, setPlayerBadges] = useKV<PlayerBadge[]>('ecorise-badges', [])
-  const [currentUserId, setCurrentUserId] = useState<string>('')
+  const [playerBadges, setPlayerBadges] = useKV<PlayerBadge[]>(userKey('ecorise-badges'), [])
   const [showStreakConfetti, setShowStreakConfetti] = useState(false)
-  const [isMusicPlaying, setIsMusicPlaying] = useKV<boolean>('ecorise-music-playing', true)
-  const [visualizerStyle, setVisualizerStyle] = useKV<VisualizerStyle>('ecorise-visualizer-style', 'bars')
-  const [mouseTrailEnabled, setMouseTrailEnabled] = useKV<boolean>('ecorise-mouse-trail', true)
-  const [mouseTrailIntensity, setMouseTrailIntensity] = useKV<'low' | 'medium' | 'high'>('ecorise-trail-intensity', 'medium')
-  const [mouseTrailTheme, setMouseTrailTheme] = useKV<import('./lib/types').TrailTheme>('ecorise-trail-theme', 'default')
+  const [isMusicPlaying, setIsMusicPlaying] = useKV<boolean>(userKey('ecorise-music-playing'), true)
+  const [visualizerStyle, setVisualizerStyle] = useKV<VisualizerStyle>(userKey('ecorise-visualizer-style'), 'bars')
+  const [mouseTrailEnabled, setMouseTrailEnabled] = useKV<boolean>(userKey('ecorise-mouse-trail'), true)
+  const [mouseTrailIntensity, setMouseTrailIntensity] = useKV<'low' | 'medium' | 'high'>(userKey('ecorise-trail-intensity'), 'medium')
+  const [mouseTrailTheme, setMouseTrailTheme] = useKV<import('./lib/types').TrailTheme>(userKey('ecorise-trail-theme'), 'default')
   const [keyboardBurstTrigger, setKeyboardBurstTrigger] = useState(0)
   const [collisionMultipliers, setCollisionMultipliers] = useState<Array<{
     id: string
@@ -102,13 +108,13 @@ function App() {
     timestamp: number
   }>>([])
   const [currentMultiplier, setCurrentMultiplier] = useState(1)
-  const [heatmapEnabled, setHeatmapEnabled] = useKV<boolean>('ecorise-heatmap-enabled', false)
-  const [heatmapOpacity, setHeatmapOpacity] = useKV<number>('ecorise-heatmap-opacity', 0.6)
-  const [heatmapDecayRate, setHeatmapDecayRate] = useKV<number>('ecorise-heatmap-decay', 0.95)
-  const [collisionZonesData, setCollisionZonesData] = useKV<Record<string, CollisionZoneData>>('ecorise-collision-zones', {})
+  const [heatmapEnabled, setHeatmapEnabled] = useKV<boolean>(userKey('ecorise-heatmap-enabled'), false)
+  const [heatmapOpacity, setHeatmapOpacity] = useKV<number>(userKey('ecorise-heatmap-opacity'), 0.6)
+  const [heatmapDecayRate, setHeatmapDecayRate] = useKV<number>(userKey('ecorise-heatmap-decay'), 0.95)
+  const [collisionZonesData, setCollisionZonesData] = useKV<Record<string, CollisionZoneData>>(userKey('ecorise-collision-zones'), {})
   const [showStatisticsPanel, setShowStatisticsPanel] = useState(false)
-  const [collisionTimeData, setCollisionTimeData] = useKV<CollisionTimeEntry[]>('ecorise-collision-time-data', [])
-  const [hasSeenTutorial, setHasSeenTutorial] = useKV<boolean>('ecorise-seen-tutorial', false)
+  const [collisionTimeData, setCollisionTimeData] = useKV<CollisionTimeEntry[]>(userKey('ecorise-collision-time-data'), [])
+  const [hasSeenTutorial, setHasSeenTutorial] = useKV<boolean>(userKey('ecorise-seen-tutorial'), false)
   const [showTutorial, setShowTutorial] = useState(false)
 
   const state = gameState ?? DEFAULT_GAME_STATE
@@ -281,9 +287,16 @@ function App() {
         const user = await window.spark.user()
         if (user) {
           setCurrentUserId(String(user.id))
+          setCurrentUser({
+            login: user.login,
+            avatarUrl: user.avatarUrl,
+            id: String(user.id)
+          })
         }
       } catch (error) {
         console.error('Failed to get user:', error)
+      } finally {
+        setIsLoadingUser(false)
       }
     }
     getUserId()
@@ -1038,6 +1051,24 @@ function App() {
     ? Math.max(0.15, Math.min(0.4, progressPercent / 100 * 0.4))
     : 0.1
 
+  if (isLoadingUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <motion.div
+            className="inline-block mb-4"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          >
+            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full" />
+          </motion.div>
+          <h2 className="text-2xl font-bold mb-2">Loading EcoRise...</h2>
+          <p className="text-muted-foreground">Connecting with GitHub</p>
+        </div>
+      </div>
+    )
+  }
+
   if (!isInGame) {
     const todayChallenge = getTodayChallenge()
     const isChallengeCompleted = completions.some(c => c.challengeId === todayChallenge.id)
@@ -1049,39 +1080,53 @@ function App() {
         <MusicVisualizer isPlaying={musicPlaying} biome="menu" style={currentVisualizerStyle} />
         <MouseTrail isActive={trailEnabled} biome="menu" intensity={trailIntensity} theme={trailTheme} />
         
-        <div className="fixed top-4 right-4 z-50 flex gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setShowStatisticsPanel(true)}
-            className="bg-card/80 backdrop-blur-sm hover:bg-card"
-            title="View Collision Statistics"
-          >
-            <ChartBar size={20} weight="fill" />
-          </Button>
-          <QuickHelp onOpenFullTutorial={() => setShowTutorial(true)} />
-          <ParticleThemeSwitcher
-            currentTheme={trailTheme}
-            unlockedPowerUps={state.unlockedPowerUps}
-            onThemeChange={setMouseTrailTheme}
-            isTrailEnabled={trailEnabled}
-            onToggleTrail={setMouseTrailEnabled}
-          />
-          <MouseTrailControl
-            isEnabled={trailEnabled}
-            intensity={trailIntensity}
-            theme={trailTheme}
-            unlockedPowerUps={state.unlockedPowerUps}
-            onToggle={setMouseTrailEnabled}
-            onIntensityChange={setMouseTrailIntensity}
-            onThemeChange={setMouseTrailTheme}
-          />
-          <MusicControl 
-            isPlaying={musicPlaying} 
-            onToggle={handleToggleMusic}
-            visualizerStyle={currentVisualizerStyle}
-            onStyleChange={setVisualizerStyle}
-          />
+        <div className="fixed top-4 left-4 right-4 z-50 flex justify-between items-start gap-4">
+          {currentUser && (
+            <UserProfile
+              user={currentUser}
+              stats={{
+                totalCO2Reduced: state.totalCO2Reduced,
+                currentStreak: state.dailyChallengeStreak,
+                completedLevels: (state.completedLevels?.length ?? 0) + (state.extremeCompletedLevels?.length ?? 0),
+                badges: badges.length
+              }}
+            />
+          )}
+          
+          <div className="flex gap-2 ml-auto">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setShowStatisticsPanel(true)}
+              className="bg-card/80 backdrop-blur-sm hover:bg-card"
+              title="View Collision Statistics"
+            >
+              <ChartBar size={20} weight="fill" />
+            </Button>
+            <QuickHelp onOpenFullTutorial={() => setShowTutorial(true)} />
+            <ParticleThemeSwitcher
+              currentTheme={trailTheme}
+              unlockedPowerUps={state.unlockedPowerUps}
+              onThemeChange={setMouseTrailTheme}
+              isTrailEnabled={trailEnabled}
+              onToggleTrail={setMouseTrailEnabled}
+            />
+            <MouseTrailControl
+              isEnabled={trailEnabled}
+              intensity={trailIntensity}
+              theme={trailTheme}
+              unlockedPowerUps={state.unlockedPowerUps}
+              onToggle={setMouseTrailEnabled}
+              onIntensityChange={setMouseTrailIntensity}
+              onThemeChange={setMouseTrailTheme}
+            />
+            <MusicControl 
+              isPlaying={musicPlaying} 
+              onToggle={handleToggleMusic}
+              visualizerStyle={currentVisualizerStyle}
+              onStyleChange={setVisualizerStyle}
+            />
+          </div>
         </div>
 
         <TutorialOverlay
@@ -1100,78 +1145,80 @@ function App() {
           </div>
         </div>
 
-        <CollisionStatisticsPanel
-          isOpen={showStatisticsPanel}
-          onClose={() => setShowStatisticsPanel(false)}
-          statistics={computeCollisionStatistics()}
-          timeBasedStatistics={computeTimeBasedStatistics()}
-        />
+        <div className="pt-28 pb-4 px-4">
+          <CollisionStatisticsPanel
+            isOpen={showStatisticsPanel}
+            onClose={() => setShowStatisticsPanel(false)}
+            statistics={computeCollisionStatistics()}
+            timeBasedStatistics={computeTimeBasedStatistics()}
+          />
 
-        {showDailyChallenge && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="max-w-2xl w-full">
-              <DailyChallenge
-                challenge={todayChallenge}
-                streak={state.dailyChallengeStreak}
-                isCompleted={isChallengeCompleted}
-                onStart={startDailyChallenge}
-                hasUnlockedReward={state.unlockedPowerUps.includes(todayChallenge.rewardPowerUp)}
-              />
-              <div className="flex justify-center mt-4">
-                <Button variant="outline" onClick={() => setShowDailyChallenge(false)}>
-                  Close
-                </Button>
+          {showDailyChallenge && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <div className="max-w-2xl w-full">
+                <DailyChallenge
+                  challenge={todayChallenge}
+                  streak={state.dailyChallengeStreak}
+                  isCompleted={isChallengeCompleted}
+                  onStart={startDailyChallenge}
+                  hasUnlockedReward={state.unlockedPowerUps.includes(todayChallenge.rewardPowerUp)}
+                />
+                <div className="flex justify-center mt-4">
+                  <Button variant="outline" onClick={() => setShowDailyChallenge(false)}>
+                    Close
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {showLeaderboard && (
-          <Leaderboard
-            entries={leaderboard}
-            tournamentEntries={tournaments}
-            currentUserId={currentUserId}
-            onClose={() => setShowLeaderboard(false)}
+          {showLeaderboard && (
+            <Leaderboard
+              entries={leaderboard}
+              tournamentEntries={tournaments}
+              currentUserId={currentUserId}
+              onClose={() => setShowLeaderboard(false)}
+            />
+          )}
+
+          {showTournament && (
+            <TournamentView
+              tournament={activeTournament}
+              entries={tournaments}
+              currentUserId={currentUserId}
+              onStart={startTournament}
+              onClose={() => setShowTournament(false)}
+            />
+          )}
+
+          {showBadgeShowcase && (
+            <BadgeShowcase
+              onClose={() => setShowBadgeShowcase(false)}
+              playerBadges={badges}
+              stats={{
+                totalCO2Reduced: state.totalCO2Reduced,
+                challengesCompleted: completions.length,
+                currentStreak: state.dailyChallengeStreak,
+                tournamentsEntered: tournaments.filter(t => t.userId === currentUserId).length
+              }}
+            />
+          )}
+
+          <LevelSelect
+            levels={currentLevelSet}
+            completedLevels={state.difficultyMode === 'extreme' ? (state.extremeCompletedLevels ?? []) : (state.completedLevels ?? [])}
+            onSelectLevel={startLevel}
+            totalCO2Reduced={state.totalCO2Reduced}
+            onOpenDailyChallenge={() => setShowDailyChallenge(true)}
+            onOpenLeaderboard={() => setShowLeaderboard(true)}
+            onOpenTournament={() => setShowTournament(true)}
+            onOpenBadgeShowcase={() => setShowBadgeShowcase(true)}
+            unlockedPowerUps={state.unlockedPowerUps ?? []}
+            currentStreak={state.dailyChallengeStreak}
+            difficultyMode={state.difficultyMode}
+            onDifficultyChange={handleDifficultyChange}
           />
-        )}
-
-        {showTournament && (
-          <TournamentView
-            tournament={activeTournament}
-            entries={tournaments}
-            currentUserId={currentUserId}
-            onStart={startTournament}
-            onClose={() => setShowTournament(false)}
-          />
-        )}
-
-        {showBadgeShowcase && (
-          <BadgeShowcase
-            onClose={() => setShowBadgeShowcase(false)}
-            playerBadges={badges}
-            stats={{
-              totalCO2Reduced: state.totalCO2Reduced,
-              challengesCompleted: completions.length,
-              currentStreak: state.dailyChallengeStreak,
-              tournamentsEntered: tournaments.filter(t => t.userId === currentUserId).length
-            }}
-          />
-        )}
-
-        <LevelSelect
-          levels={currentLevelSet}
-          completedLevels={state.difficultyMode === 'extreme' ? (state.extremeCompletedLevels ?? []) : (state.completedLevels ?? [])}
-          onSelectLevel={startLevel}
-          totalCO2Reduced={state.totalCO2Reduced}
-          onOpenDailyChallenge={() => setShowDailyChallenge(true)}
-          onOpenLeaderboard={() => setShowLeaderboard(true)}
-          onOpenTournament={() => setShowTournament(true)}
-          onOpenBadgeShowcase={() => setShowBadgeShowcase(true)}
-          unlockedPowerUps={state.unlockedPowerUps ?? []}
-          currentStreak={state.dailyChallengeStreak}
-          difficultyMode={state.difficultyMode}
-          onDifficultyChange={handleDifficultyChange}
-        />
+        </div>
       </div>
     )
   }
