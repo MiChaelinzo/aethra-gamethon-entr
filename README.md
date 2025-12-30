@@ -340,15 +340,16 @@ Created for **AETHRA GLOBAL GAMETHON 2025**
 
 ## 📄 License
 
-[Add your license here]
+[[MIT]
+](https://github.com/MiChaelinzo/aethra-gamethon-entr/blob/main/LICENSE)
 
 ---
 
 ## 📧 Contact
 
-**Discord:** [Your Discord username]
-**Email:** [Your email]
-**GitHub:** [Your GitHub profile]
+**Discord:** @MiChaelinzo
+**Email:** N/A
+**GitHub:** [[GitHub profile]](https://github.com/MiChaelinzo)
 
 ---
 
