@@ -45,6 +45,13 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     position: 'center'
   },
   {
+    id: 'hints',
+    title: 'Need Help? Use Hints',
+    description: 'Stuck and can\'t find a move? Click the Hint button (💡) or press Ctrl+I to highlight a valid move on the board!',
+    icon: <Lightbulb size={48} weight="fill" className="text-yellow-400" />,
+    position: 'center'
+  },
+  {
     id: 'shuffle',
     title: 'Stuck? Use Shuffle',
     description: 'If you can\'t find any valid moves, click the Shuffle button in the top-right to rearrange the board. Use this wisely!',

@@ -26,6 +26,8 @@ import { CollisionStatisticsPanel } from './components/CollisionStatisticsPanel'
 import { TutorialOverlay } from './components/TutorialOverlay'
 import { QuickHelp } from './components/QuickHelp'
 import { UserProfile } from './components/UserProfile'
+import { HintButton } from './components/HintButton'
+import { HintIndicator } from './components/HintIndicator'
 import { Button } from './components/ui/button'
 import { Badge } from './components/ui/badge'
 import { ArrowLeft, Shuffle, ChartBar, Skull } from '@phosphor-icons/react'
@@ -43,7 +45,9 @@ import {
   dropTiles,
   fillEmpty,
   hasValidMoves,
-  shuffleGrid
+  shuffleGrid,
+  findBestMove,
+  ValidMove
 } from './lib/gameLogic'
 import { playSoundEffect } from './lib/soundEffects'
 import { playBackgroundMusic, stopBackgroundMusic } from './lib/backgroundMusic'
@@ -116,6 +120,9 @@ function App() {
   const [collisionTimeData, setCollisionTimeData] = useKV<CollisionTimeEntry[]>(userKey('ecorise-collision-time-data'), [])
   const [hasSeenTutorial, setHasSeenTutorial] = useKV<boolean>(userKey('ecorise-seen-tutorial'), false)
   const [showTutorial, setShowTutorial] = useState(false)
+  const [currentHint, setCurrentHint] = useState<ValidMove | null>(null)
+  const [showHint, setShowHint] = useState(false)
+  const [hintsUsed, setHintsUsed] = useState(0)
 
   const state = gameState ?? DEFAULT_GAME_STATE
   const seen = seenTileTypes ?? []
@@ -344,11 +351,16 @@ function App() {
           icon: '📊'
         })
       }
+
+      if (e.ctrlKey && e.key === 'i' && isInGame) {
+        e.preventDefault()
+        handleShowHint()
+      }
     }
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [trailEnabled, trailTheme, safeState.unlockedPowerUps, showHeatmap])
+  }, [trailEnabled, trailTheme, safeState.unlockedPowerUps, showHeatmap, isInGame])
 
   const computeCollisionStatistics = (): CollisionStatistics => {
     const zones = collisionZonesData ?? {}
@@ -502,6 +514,42 @@ function App() {
     }
   }, [state.score, state.totalCO2Reduced, completions.length, safeState.dailyChallengeStreak])
 
+  useEffect(() => {
+    if (showHint && currentHint) {
+      const timer = setTimeout(() => {
+        setShowHint(false)
+        setCurrentHint(null)
+      }, 8000)
+      return () => clearTimeout(timer)
+    }
+  }, [showHint, currentHint])
+
+  const handleShowHint = () => {
+    if (isProcessing || !currentLevel) return
+
+    const bestMove = findBestMove(grid, currentLevel.gridSize)
+    
+    if (bestMove) {
+      setCurrentHint(bestMove)
+      setShowHint(true)
+      setHintsUsed(prev => prev + 1)
+      playSoundEffect('click')
+      
+      const matchText = bestMove.matchCount >= 4 
+        ? `Great move! This will match ${bestMove.matchCount} tiles!`
+        : `Valid move found! Matches ${bestMove.matchCount} tiles.`
+      
+      toast.success(matchText, {
+        duration: 3000,
+        icon: bestMove.matchCount >= 4 ? '⭐' : '💡'
+      })
+    } else {
+      toast.error('No valid moves found! Try shuffling the board.', {
+        duration: 3000
+      })
+    }
+  }
+
   const startLevel = (levelId: number) => {
     const level = currentLevelSet.find(l => l.id === levelId)
     if (!level) return
@@ -510,6 +558,9 @@ function App() {
     setIsTournament(false)
     setCurrentChallenge(null)
     setCurrentTournament(null)
+    setShowHint(false)
+    setCurrentHint(null)
+    setHintsUsed(0)
     setGameState((current) => ({
       ...(current ?? DEFAULT_GAME_STATE),
       currentLevel: levelId,
@@ -535,6 +586,9 @@ function App() {
     setIsTournament(false)
     setCurrentTournament(null)
     setShowDailyChallenge(false)
+    setShowHint(false)
+    setCurrentHint(null)
+    setHintsUsed(0)
     setGameState((current) => ({
       ...(current ?? DEFAULT_GAME_STATE),
       currentLevel: 999,
@@ -569,6 +623,9 @@ function App() {
     setIsChallenge(false)
     setCurrentChallenge(null)
     setShowTournament(false)
+    setShowHint(false)
+    setCurrentHint(null)
+    setHintsUsed(0)
     setGameState((current) => ({
       ...(current ?? DEFAULT_GAME_STATE),
       currentLevel: 998,
@@ -625,6 +682,9 @@ function App() {
       })
       return
     }
+
+    setShowHint(false)
+    setCurrentHint(null)
 
     setIsProcessing(true)
     const swapped = swapTiles(grid, selectedTile, tile)
@@ -1142,6 +1202,7 @@ function App() {
             <p><kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">Ctrl+Shift+P</kbd> Cycle themes</p>
             <p><kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">Ctrl+H</kbd> Toggle collision heatmap</p>
             <p><kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">Ctrl+S</kbd> View collision statistics</p>
+            <p><kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">Ctrl+I</kbd> Show hint (in game)</p>
           </div>
         </div>
 
@@ -1313,6 +1374,10 @@ function App() {
                 onIntensityChange={setMouseTrailIntensity}
                 onThemeChange={setMouseTrailTheme}
               />
+              <HintButton
+                onClick={handleShowHint}
+                disabled={isProcessing}
+              />
               <Button variant="outline" onClick={handleShuffle} disabled={isProcessing}>
                 <Shuffle className="mr-2" />
                 Shuffle
@@ -1321,7 +1386,7 @@ function App() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
-            <div>
+            <div className="relative">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentLevel?.id}
@@ -1340,6 +1405,11 @@ function App() {
                     heatmapEnabled={showHeatmap}
                     heatmapOpacity={heatmapOpacityValue}
                     heatmapDecayRate={heatmapDecayValue}
+                  />
+                  <HintIndicator
+                    hint={currentHint}
+                    isActive={showHint}
+                    gridSize={currentLevel?.gridSize || 6}
                   />
                 </motion.div>
               </AnimatePresence>

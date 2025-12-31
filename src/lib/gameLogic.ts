@@ -233,3 +233,57 @@ export function shuffleGrid(grid: Tile[], size: number): Tile[] {
     type: types[index]
   }))
 }
+
+export interface ValidMove {
+  tile1: Tile
+  tile2: Tile
+  matchCount: number
+}
+
+export function findValidMoves(grid: Tile[], size: number): ValidMove[] {
+  const validMoves: ValidMove[] = []
+  
+  for (let row = 0; row < size; row++) {
+    for (let col = 0; col < size; col++) {
+      const tile = grid[row * size + col]
+      
+      if (col < size - 1) {
+        const right = grid[row * size + col + 1]
+        const swapped = swapTiles(grid, tile, right)
+        const matches = findMatches(swapped, size)
+        if (matches.length > 0) {
+          validMoves.push({
+            tile1: tile,
+            tile2: right,
+            matchCount: matches.length
+          })
+        }
+      }
+      
+      if (row < size - 1) {
+        const below = grid[(row + 1) * size + col]
+        const swapped = swapTiles(grid, tile, below)
+        const matches = findMatches(swapped, size)
+        if (matches.length > 0) {
+          validMoves.push({
+            tile1: tile,
+            tile2: below,
+            matchCount: matches.length
+          })
+        }
+      }
+    }
+  }
+  
+  return validMoves
+}
+
+export function findBestMove(grid: Tile[], size: number): ValidMove | null {
+  const validMoves = findValidMoves(grid, size)
+  
+  if (validMoves.length === 0) return null
+  
+  validMoves.sort((a, b) => b.matchCount - a.matchCount)
+  
+  return validMoves[0]
+}
