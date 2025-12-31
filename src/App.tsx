@@ -1218,6 +1218,7 @@ function App() {
           difficultyMode={state.difficultyMode}
           onDifficultyChange={handleDifficultyChange}
         />
+        </div>
       </div>
     )
   }
