@@ -47,24 +47,35 @@ export function EducationalCard({ isOpen, onClose, tileInfo }: EducationalCardPr
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
-            <div className={`w-12 h-12 ${tileInfo.color}`}>
+            <div className={`w-14 h-14 flex-shrink-0 ${tileInfo.color}`}>
               {IconComponent && <IconComponent />}
             </div>
-            <DialogTitle className="text-2xl">{tileInfo.name}</DialogTitle>
+            <div className="flex-1">
+              <DialogTitle className="text-2xl mb-1">{tileInfo.name}</DialogTitle>
+              <div className="text-xs font-semibold text-primary flex items-center gap-2">
+                <span>{tileInfo.emoji}</span>
+                <span>Climate Solution</span>
+              </div>
+            </div>
           </div>
-          <DialogDescription className="educational-text text-base leading-relaxed pt-2">
+        </DialogHeader>
+        <div className="space-y-4">
+          <DialogDescription className="educational-text text-base leading-relaxed text-foreground">
             {tileInfo.fact}
           </DialogDescription>
-        </DialogHeader>
-        <div className="bg-primary/10 rounded-lg p-4 mt-4">
-          <div className="text-sm font-semibold text-muted-foreground mb-1">
-            Impact per Unit
-          </div>
-          <div className="text-2xl font-bold text-primary">
-            {tileInfo.co2Impact.toLocaleString()} lbs CO₂
+          <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg p-4 border border-primary/20">
+            <div className="text-sm font-semibold text-muted-foreground mb-1">
+              Impact per Unit
+            </div>
+            <div className="text-3xl font-bold text-primary">
+              {tileInfo.co2Impact.toLocaleString()} lbs CO₂
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
+              Reduced per match
+            </div>
           </div>
         </div>
       </DialogContent>

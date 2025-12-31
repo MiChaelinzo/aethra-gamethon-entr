@@ -7,7 +7,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'Tree',
     emoji: '🌲',
     color: 'text-green-600',
-    fact: 'A single tree absorbs about 48 pounds of CO2 per year. Global reforestation could capture 25% of atmospheric CO2.',
+    fact: 'A single mature tree absorbs about 48 pounds of CO2 per year and releases enough oxygen for 2 people annually. Global reforestation of 900 million hectares could capture 25% of atmospheric CO2 and provide habitat for 68% of threatened species. Trees also cool cities by up to 5°C, reduce air pollution by 60%, and prevent soil erosion that releases additional carbon.',
     co2Impact: 48
   },
   solar: {
@@ -16,7 +16,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'SolarPanel',
     emoji: '☀️',
     color: 'text-yellow-500',
-    fact: 'Solar panels reduce carbon emissions by 80% compared to fossil fuels. A typical home solar system offsets 3-4 tons of CO2 annually.',
+    fact: 'Solar panels reduce carbon emissions by 80% compared to fossil fuels and generate zero pollution during operation. A typical 6kW home solar system offsets 3-4 tons of CO2 annually—equivalent to planting 100 trees. The sun provides enough energy in one hour to power Earth for an entire year. Solar installations have prevented 1.3 billion tons of CO2 since 2000 and create 3x more jobs per dollar invested than fossil fuels.',
     co2Impact: 3500
   },
   wind: {
@@ -25,7 +25,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'Wind',
     emoji: '💨',
     color: 'text-blue-400',
-    fact: 'One wind turbine can power 940 homes and prevent 4,000 tons of CO2 emissions yearly—equivalent to planting 100,000 trees.',
+    fact: 'One modern wind turbine can power 940 homes and prevent 4,000 tons of CO2 emissions yearly—equivalent to planting 100,000 trees or removing 900 cars from roads. Wind energy uses 99% less water than coal plants and creates zero air pollution. Offshore wind farms can coexist with marine ecosystems while generating 2x more power than land-based turbines. Global wind power has avoided 1.2 billion tons of CO2 annually.',
     co2Impact: 4000
   },
   recycle: {
@@ -34,7 +34,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'Recycle',
     emoji: '♻️',
     color: 'text-teal-500',
-    fact: 'Recycling one ton of paper saves 17 trees and prevents 1,400 pounds of CO2 emissions. Global recycling prevents 700M tons CO2/year.',
+    fact: 'Recycling one ton of paper saves 17 trees, 7,000 gallons of water, and prevents 1,400 pounds of CO2 emissions. Global recycling prevents 700 million tons of CO2 yearly—like removing 150 million cars. Recycling aluminum saves 95% of energy needed to produce new cans and can be recycled infinitely. If we recycled all global waste, we\'d cut emissions by 20% and save resources equivalent to 400 billion barrels of oil annually.',
     co2Impact: 700
   },
   water: {
@@ -43,7 +43,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'Drop',
     emoji: '💧',
     color: 'text-cyan-500',
-    fact: 'Healthy oceans absorb 30% of human CO2 emissions. Ocean cleanup helps restore marine ecosystems that capture billions of tons of carbon.',
+    fact: 'Healthy oceans absorb 30% of human CO2 emissions and produce 50% of Earth\'s oxygen—more than all forests combined. Ocean cleanup helps restore marine ecosystems that capture 2 billion tons of carbon yearly through phytoplankton and seagrass. Protecting 30% of oceans could safeguard 10 million species and store 4.8 billion tons of CO2 annually. Marine conservation also supports 3 billion people who depend on oceans for food and livelihood.',
     co2Impact: 2000
   },
   energy: {
@@ -52,7 +52,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'Lightning',
     emoji: '⚡',
     color: 'text-purple-500',
-    fact: 'LED bulbs use 75% less energy than incandescent. If every US home switched, we\'d prevent 44M tons of CO2 annually.',
+    fact: 'LED bulbs use 75% less energy than incandescent and last 25 times longer. If every US home switched to LEDs, we\'d prevent 44 million tons of CO2 annually—enough to power 5 million homes. Energy-efficient appliances can cut home energy use by 30-50%, saving $500+ yearly. Smart thermostats reduce heating/cooling emissions by 23%. Global energy efficiency improvements could cut emissions by 40% by 2040 while saving $18 trillion.',
     co2Impact: 850
   },
   ice: {
@@ -61,7 +61,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'Snowflake',
     emoji: '❄️',
     color: 'text-cyan-300',
-    fact: 'Arctic ice reflects 80% of sunlight back to space. Preserving ice sheets is crucial for regulating Earth\'s temperature and preventing feedback loops.',
+    fact: 'Arctic ice reflects 80% of sunlight back to space, cooling Earth\'s climate. Since 1979, we\'ve lost 13% of Arctic ice per decade—an area 3x the size of Texas. Ice loss creates a feedback loop: darker ocean absorbs more heat, accelerating warming by 50%. Preserving ice sheets prevents 3-6 meter sea level rise that would displace 410 million people. Polar regions store 68% of Earth\'s freshwater and regulate global weather patterns.',
     co2Impact: 1200
   },
   penguin: {
@@ -70,7 +70,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'Bird',
     emoji: '🐧',
     color: 'text-slate-700',
-    fact: 'Arctic and Antarctic wildlife like penguins and polar bears are indicators of ecosystem health. Protecting them preserves biodiversity and carbon sinks.',
+    fact: 'Arctic and Antarctic wildlife like penguins, polar bears, and seals are climate indicators—their populations reflect ecosystem health. Emperor penguin colonies have declined 50% due to ice loss. Protecting polar wildlife preserves food chains that support 5,000+ species and carbon-storing ecosystems. Marine mammals maintain ocean health by cycling nutrients that feed CO2-absorbing phytoplankton. Wildlife corridors prevent 465 million tons of CO2 emissions by maintaining forest connectivity.',
     co2Impact: 900
   },
   aurora: {
@@ -79,7 +79,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'Sparkle',
     emoji: '✨',
     color: 'text-violet-400',
-    fact: 'The pristine Arctic air is threatened by pollution. Keeping polar regions clean prevents accelerated melting and preserves natural climate regulation.',
+    fact: 'Pristine Arctic air is threatened by pollution traveling from industrial regions 3,000+ miles away. Air pollution kills 7 million people yearly and accelerates ice melting by depositing dark particles that absorb heat. Keeping polar regions clean prevents accelerated warming and preserves natural climate regulation. Clean air initiatives globally prevent 2.4 million premature deaths yearly and avoid $5 trillion in health costs while reducing CO2 by 1.2 billion tons annually.',
     co2Impact: 1500
   },
   orchid: {
@@ -88,7 +88,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'FlowerLotus',
     emoji: '🌺',
     color: 'text-pink-500',
-    fact: 'Rainforests contain 50% of Earth\'s plant species. A single hectare can hold 750 tree species—more than all of North America.',
+    fact: 'Rainforests contain 50% of Earth\'s plant species despite covering only 6% of land. A single hectare holds 750 tree species and 1,500 flowering plants—more biodiversity than all of North America. These plants store 250 billion tons of carbon and produce 20% of global oxygen. 80% of our food originated from rainforest plants. Losing one plant species can collapse entire ecosystems, releasing stored carbon and eliminating potential medicines that could cure diseases.',
     co2Impact: 2500
   },
   jaguar: {
@@ -97,7 +97,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'Cat',
     emoji: '🐆',
     color: 'text-amber-600',
-    fact: 'Rainforest predators like jaguars maintain ecosystem balance. One rainforest acre supports 1,500 species, creating Earth\'s richest carbon-capturing system.',
+    fact: 'Apex predators like jaguars maintain ecosystem balance by controlling herbivore populations that would otherwise overgraze and destroy carbon-storing forests. One rainforest acre supports 1,500 species, creating Earth\'s richest carbon-capturing system. Jaguars need 25-38 square miles of habitat, so protecting them safeguards millions of acres storing 200+ tons of carbon per acre. Rainforest biodiversity provides $125 billion in ecosystem services yearly including climate regulation, water purification, and crop pollination.',
     co2Impact: 1800
   },
   medicinal: {
@@ -106,7 +106,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'Leaf',
     emoji: '🍃',
     color: 'text-emerald-600',
-    fact: '70% of cancer-fighting plants come from rainforests. Preserving these ecosystems protects both human health and planetary climate.',
+    fact: '70% of cancer-fighting drugs come from rainforest plants, yet we\'ve studied less than 1% of tropical species for medicinal properties. Rainforest medicines treat diabetes, heart disease, arthritis, and cancer, saving millions of lives. Preserving these ecosystems protects both human health and planetary climate—rainforests store 150 billion tons of carbon. We\'re losing potential cures for Alzheimer\'s, HIV, and other diseases at a rate of 137 species per day. Traditional Indigenous knowledge of 80,000+ medicinal plants is invaluable for climate adaptation.',
     co2Impact: 2200
   },
   supernova: {
@@ -115,7 +115,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'SunHorizon',
     emoji: '☀️',
     color: 'text-yellow-400',
-    fact: 'A supernova of renewable energy! This mega power-up clears all adjacent tiles and supercharges your restoration efforts with 10,000 kg of CO2 reduction.',
+    fact: 'A supernova of renewable energy! This mega power-up represents the explosive potential of solar technology. Recent breakthroughs in perovskite solar cells achieve 33% efficiency (vs 20% traditional), and space-based solar could beam unlimited clean energy to Earth. This clears all adjacent tiles and delivers 10,000 kg of CO2 reduction—equivalent to 208 trees or removing 2 cars from roads for a year. Solar megaprojects are now cheaper than coal in 91% of the world.',
     co2Impact: 10000
   },
   tsunami: {
@@ -124,7 +124,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'Waves',
     emoji: '🌊',
     color: 'text-blue-500',
-    fact: 'Ride the wave of change! This powerful tsunami clears an entire row or column and restores ocean ecosystems, preventing 8,500 kg of CO2 emissions.',
+    fact: 'Ride the wave of change! This powerful tsunami represents the ocean\'s role as Earth\'s climate regulator and largest carbon sink. Oceans have absorbed 93% of excess heat from climate change, preventing catastrophic land temperature rises. This power clears an entire row/column and delivers 8,500 kg of CO2 reduction. Tidal and wave energy could provide 10% of global electricity needs. Protecting blue carbon ecosystems (mangroves, seagrass, salt marshes) stores carbon 40x faster than forests.',
     co2Impact: 8500
   },
   earthquake: {
@@ -133,7 +133,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'Mountains',
     emoji: '🏔️',
     color: 'text-amber-700',
-    fact: 'Shake up the status quo! This geological power reshuffles the board strategically and plants 7,000 kg worth of carbon-capturing trees.',
+    fact: 'Shake up the status quo! This geological power represents transformative climate action—fundamental shifts in how we live. Natural rock weathering absorbs 0.3 billion tons of CO2 yearly; enhanced weathering could capture 2+ billion tons. This reshuffles the board strategically while planting 7,000 kg worth of carbon-capturing trees—equivalent to reforesting 0.5 acres. Mountains store 60% of Earth\'s freshwater and mountain ecosystems provide resources for 1.1 billion people while storing massive carbon reserves.',
     co2Impact: 7000
   },
   meteor: {
@@ -142,7 +142,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'Comet',
     emoji: '☄️',
     color: 'text-purple-600',
-    fact: 'Impact for good! This cosmic power clears all tiles of a chosen type, creating space for new growth and capturing 9,500 kg of CO2.',
+    fact: 'Impact for good! This cosmic power represents breakthrough climate technologies that change everything at once. Just as asteroids shaped Earth\'s evolution, climate innovation reshapes our future. This clears all tiles of one type and captures 9,500 kg of CO2—like removing 2,375 incandescent bulbs or planting 198 trees. Revolutionary carbon capture technologies now extract CO2 at $100/ton and falling. Space mining could provide resources without Earth extraction, eliminating mining emissions entirely.',
     co2Impact: 9500
   },
   phoenix: {
@@ -151,7 +151,7 @@ export const TILE_INFO: Record<TileType, TileInfo> = {
     icon: 'FireSimple',
     emoji: '🔥',
     color: 'text-orange-500',
-    fact: 'Rise from the ashes! The phoenix transforms the entire board, creating optimal matches and symbolizing Earth\'s renewal with 12,000 kg CO2 offset.',
+    fact: 'Rise from the ashes! The phoenix symbolizes Earth\'s incredible resilience and ability to regenerate when given the chance. After the 1991 Mt. Pinatubo eruption cooled Earth by 0.5°C, ecosystems recovered. This transforms the entire board for optimal matches while offsetting 12,000 kg of CO2—equivalent to 250 trees or taking 3 cars off roads for a year. Nature-based solutions can provide 37% of climate mitigation needed by 2030. Regenerative agriculture can turn farms from carbon sources to carbon sinks.',
     co2Impact: 12000
   }
 }
