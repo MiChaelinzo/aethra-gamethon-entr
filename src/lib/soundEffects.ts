@@ -1,6 +1,6 @@
 const audioContext = typeof window !== 'undefined' ? new (window.AudioContext || (window as any).webkitAudioContext)() : null
 
-export const playSoundEffect = (type: 'badge-unlock' | 'streak-master' | 'champion' | 'power-up' | 'achievement' | 'collision-burst' | 'collision-vortex' | 'collision-spark' | 'click' | 'match' | 'invalid') => {
+export const playSoundEffect = (type: 'badge-unlock' | 'streak-master' | 'streak-3day' | 'streak-14day' | 'streak-30day' | 'champion' | 'power-up' | 'achievement' | 'collision-burst' | 'collision-vortex' | 'collision-spark' | 'click' | 'match' | 'invalid') => {
   if (!audioContext) return
 
   switch (type) {
@@ -9,6 +9,15 @@ export const playSoundEffect = (type: 'badge-unlock' | 'streak-master' | 'champi
       break
     case 'streak-master':
       playStreakMaster()
+      break
+    case 'streak-3day':
+      playStreak3Day()
+      break
+    case 'streak-14day':
+      playStreak14Day()
+      break
+    case 'streak-30day':
+      playStreak30Day()
       break
     case 'champion':
       playChampion()
@@ -123,6 +132,145 @@ const playStreakMaster = () => {
   
   bassOsc.start(now)
   bassOsc.stop(now + 0.7)
+}
+
+const playStreak3Day = () => {
+  if (!audioContext) return
+
+  const now = audioContext.currentTime
+  
+  const frequencies = [440, 554.37, 659.25]
+  
+  frequencies.forEach((freq, index) => {
+    const osc = audioContext.createOscillator()
+    const gainNode = audioContext.createGain()
+    
+    osc.connect(gainNode)
+    gainNode.connect(audioContext.destination)
+    
+    osc.type = 'triangle'
+    osc.frequency.setValueAtTime(freq, now + index * 0.1)
+    osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + index * 0.1 + 0.2)
+    
+    gainNode.gain.setValueAtTime(0, now + index * 0.1)
+    gainNode.gain.linearRampToValueAtTime(0.15, now + index * 0.1 + 0.02)
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + index * 0.1 + 0.3)
+    
+    osc.start(now + index * 0.1)
+    osc.stop(now + index * 0.1 + 0.3)
+  })
+}
+
+const playStreak14Day = () => {
+  if (!audioContext) return
+
+  const now = audioContext.currentTime
+  
+  const chord1 = [523.25, 659.25, 783.99]
+  const chord2 = [659.25, 830.61, 987.77]
+  
+  chord1.forEach((freq, index) => {
+    const osc = audioContext.createOscillator()
+    const gainNode = audioContext.createGain()
+    const filter = audioContext.createBiquadFilter()
+    
+    osc.connect(filter)
+    filter.connect(gainNode)
+    gainNode.connect(audioContext.destination)
+    
+    osc.type = 'sine'
+    filter.type = 'lowpass'
+    filter.frequency.setValueAtTime(2000, now)
+    filter.frequency.exponentialRampToValueAtTime(4000, now + 0.3)
+    
+    osc.frequency.setValueAtTime(freq, now)
+    
+    gainNode.gain.setValueAtTime(0, now)
+    gainNode.gain.linearRampToValueAtTime(0.12, now + 0.02)
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.4)
+    
+    osc.start(now)
+    osc.stop(now + 0.4)
+  })
+  
+  setTimeout(() => {
+    chord2.forEach((freq) => {
+      const osc = audioContext.createOscillator()
+      const gainNode = audioContext.createGain()
+      
+      osc.connect(gainNode)
+      gainNode.connect(audioContext.destination)
+      
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(freq, now + 0.2)
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + 0.5)
+      
+      gainNode.gain.setValueAtTime(0, now + 0.2)
+      gainNode.gain.linearRampToValueAtTime(0.15, now + 0.22)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.6)
+      
+      osc.start(now + 0.2)
+      osc.stop(now + 0.6)
+    })
+  }, 0)
+}
+
+const playStreak30Day = () => {
+  if (!audioContext) return
+
+  const now = audioContext.currentTime
+  
+  const fanfare = [
+    { freq: 523.25, start: 0, duration: 0.15 },
+    { freq: 659.25, start: 0.08, duration: 0.15 },
+    { freq: 783.99, start: 0.16, duration: 0.15 },
+    { freq: 1046.50, start: 0.24, duration: 0.2 },
+    { freq: 1318.51, start: 0.32, duration: 0.3 },
+    { freq: 1567.98, start: 0.4, duration: 0.4 }
+  ]
+  
+  fanfare.forEach(note => {
+    const osc = audioContext.createOscillator()
+    const gainNode = audioContext.createGain()
+    const filter = audioContext.createBiquadFilter()
+    
+    osc.connect(filter)
+    filter.connect(gainNode)
+    gainNode.connect(audioContext.destination)
+    
+    osc.type = 'sawtooth'
+    filter.type = 'lowpass'
+    filter.frequency.setValueAtTime(1500, now + note.start)
+    filter.frequency.exponentialRampToValueAtTime(3000, now + note.start + note.duration)
+    filter.Q.setValueAtTime(2, now + note.start)
+    
+    osc.frequency.setValueAtTime(note.freq, now + note.start)
+    osc.frequency.exponentialRampToValueAtTime(note.freq * 1.2, now + note.start + note.duration)
+    
+    gainNode.gain.setValueAtTime(0, now + note.start)
+    gainNode.gain.linearRampToValueAtTime(0.15, now + note.start + 0.01)
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + note.start + note.duration)
+    
+    osc.start(now + note.start)
+    osc.stop(now + note.start + note.duration)
+  })
+  
+  const shimmer = audioContext.createOscillator()
+  const shimmerGain = audioContext.createGain()
+  
+  shimmer.connect(shimmerGain)
+  shimmerGain.connect(audioContext.destination)
+  
+  shimmer.type = 'sine'
+  shimmer.frequency.setValueAtTime(2093, now + 0.5)
+  shimmer.frequency.exponentialRampToValueAtTime(3136, now + 0.9)
+  
+  shimmerGain.gain.setValueAtTime(0, now + 0.5)
+  shimmerGain.gain.linearRampToValueAtTime(0.12, now + 0.52)
+  shimmerGain.gain.exponentialRampToValueAtTime(0.01, now + 1.0)
+  
+  shimmer.start(now + 0.5)
+  shimmer.stop(now + 1.0)
 }
 
 const playChampion = () => {

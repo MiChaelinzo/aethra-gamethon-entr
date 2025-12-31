@@ -14,6 +14,7 @@ import { Leaderboard } from './components/Leaderboard'
 import { TournamentView } from './components/TournamentView'
 import { BadgeShowcase } from './components/BadgeShowcase'
 import { ConfettiCelebration } from './components/ConfettiCelebration'
+import { StreakCelebration } from './components/StreakCelebration'
 import { MusicControl } from './components/MusicControl'
 import { MusicVisualizer } from './components/MusicVisualizer'
 import { MouseTrail } from './components/MouseTrail'
@@ -98,6 +99,7 @@ function App() {
   const [tournamentEntries, setTournamentEntries] = useKV<TournamentEntry[]>('ecorise-tournaments', [])
   const [playerBadges, setPlayerBadges] = useKV<PlayerBadge[]>(userKey('ecorise-badges'), [])
   const [showStreakConfetti, setShowStreakConfetti] = useState(false)
+  const [streakCelebrationCount, setStreakCelebrationCount] = useState(0)
   const [isMusicPlaying, setIsMusicPlaying] = useKV<boolean>(userKey('ecorise-music-playing'), true)
   const [visualizerStyle, setVisualizerStyle] = useKV<VisualizerStyle>(userKey('ecorise-visualizer-style'), 'bars')
   const [mouseTrailEnabled, setMouseTrailEnabled] = useKV<boolean>(userKey('ecorise-mouse-trail'), true)
@@ -953,12 +955,26 @@ function App() {
           if (newStreak >= 7 && !badges.some(b => b.type === 'streak-master')) {
             setTimeout(() => {
               setShowStreakConfetti(true)
+              setStreakCelebrationCount(newStreak)
               playSoundEffect('streak-master')
               toast.success('🔥 STREAK MASTER BADGE EARNED! 7 days in a row!', {
                 duration: 6000
               })
             }, 1500)
           } else if (isConsecutive) {
+            setShowStreakConfetti(true)
+            setStreakCelebrationCount(newStreak)
+            
+            if (newStreak >= 30) {
+              playSoundEffect('streak-30day')
+            } else if (newStreak >= 14) {
+              playSoundEffect('streak-14day')
+            } else if (newStreak >= 7) {
+              playSoundEffect('streak-master')
+            } else if (newStreak >= 3) {
+              playSoundEffect('streak-3day')
+            }
+            
             toast.success(`🔥 ${newStreak} day streak! ${newStreak >= 7 ? 'Amazing!' : `${7 - newStreak} more for Streak Master badge!`}`, {
               duration: 4000
             })
@@ -1066,6 +1082,8 @@ function App() {
         detail: `${safeState.dailyChallengeStreak} day streak`,
         earnedAt: new Date().toISOString()
       })
+      setShowStreakConfetti(true)
+      setStreakCelebrationCount(safeState.dailyChallengeStreak)
     }
 
     if (state.totalCO2Reduced >= 100000 && !previousEcoWarrior) {
@@ -1095,6 +1113,7 @@ function App() {
       })
       setTimeout(() => {
         setShowStreakConfetti(true)
+        setStreakCelebrationCount(100)
       }, 500)
     }
   }, [safeState.dailyChallengeStreak, state.totalCO2Reduced, completions.length, safeState.extremeCompletedLevels.length])
@@ -1306,11 +1325,10 @@ function App() {
         onComplete={() => setActivePowerUp(null)}
       />
 
-      <ConfettiCelebration
+      <StreakCelebration
         isActive={showStreakConfetti}
+        streakCount={streakCelebrationCount}
         onComplete={() => setShowStreakConfetti(false)}
-        duration={5000}
-        particleCount={100}
       />
       
       <div className="relative z-10 min-h-screen p-4 md:p-8">
