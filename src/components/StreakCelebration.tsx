@@ -11,7 +11,7 @@ interface ConfettiPiece {
   velocityX: number
   velocityY: number
   rotationSpeed: number
-  shape: 'circle' | 'square' | 'triangle' | 'star' | 'flame'
+  shape: 'circle' | 'square' | 'triangle' | 'star'
 }
 
 interface Firework {
@@ -22,7 +22,6 @@ interface Firework {
   particles: Array<{
     angle: number
     velocity: number
-    size: number
   }>
 }
 
@@ -33,72 +32,61 @@ interface StreakCelebrationProps {
 }
 
 const STREAK_COLORS = {
-  3: ['oklch(0.85 0.15 90)', 'oklch(0.80 0.18 45)', 'oklch(0.75 0.20 65)'],
-  7: ['oklch(0.70 0.22 15)', 'oklch(0.75 0.20 340)', 'oklch(0.80 0.18 25)'],
-  14: ['oklch(0.65 0.15 230)', 'oklch(0.70 0.20 280)', 'oklch(0.75 0.18 310)'],
-  30: ['oklch(0.75 0.20 135)', 'oklch(0.70 0.22 155)', 'oklch(0.65 0.18 175)'],
-  default: [
-    'oklch(0.75 0.20 135)',
-    'oklch(0.52 0.14 155)',
-    'oklch(0.65 0.15 230)',
-    'oklch(0.80 0.18 45)',
-    'oklch(0.70 0.22 340)',
-    'oklch(0.85 0.15 90)',
-  ]
+  3: ['#FCD34D', '#F59E0B', '#D97706'], // Gold/Orange
+  7: ['#6EE7B7', '#10B981', '#059669'], // Emerald
+  14: ['#60A5FA', '#2563EB', '#1D4ED8'], // Blue
+  30: ['#C084FC', '#9333EA', '#7E22CE'], // Purple
+  50: ['#F472B6', '#DB2777', '#BE185D'], // Pink
+  100: ['#E879F9', '#D946EF', '#A21CAF'], // Fuchsia
+  default: ['#9CA3AF', '#4B5563', '#1F2937'] // Gray
 }
 
-const STREAK_EMOJIS = {
-  1: '🌱',
+const STREAK_EMOJIS: Record<number, string> = {
+  1: '👍',
   3: '🔥',
   7: '⚡',
   14: '💎',
-  30: '👑',
+  30: '🚀',
   50: '🌟',
-  100: '🏆'
+  100: '👑'
 }
 
-const STREAK_MESSAGES = {
-  1: 'Great Start!',
-  3: 'On Fire!',
-  7: 'Streak Master!',
-  14: 'Unstoppable!',
-  30: 'Legendary!',
-  50: 'Absolutely Insane!',
-  100: 'Climate Champion!'
+const STREAK_MESSAGES: Record<number, string> = {
+  1: 'Good Start!',
+  3: 'Heating Up!',
+  7: 'Unstoppable!',
+  14: 'Crushing It!',
+  30: 'To The Moon!',
+  50: 'Legendary!',
+  100: 'Godlike Status!'
 }
 
-const generateConfettiPiece = (index: number, total: number, colors: string[]): ConfettiPiece => {
-  const angle = (index / total) * Math.PI * 2 + (Math.random() - 0.5) * 0.5
-  const velocity = 8 + Math.random() * 12
-  
+const generateConfettiPiece = (id: number, count: number, colors: string[]): ConfettiPiece => {
+  const shapes: ConfettiPiece['shape'][] = ['circle', 'square', 'triangle', 'star']
   return {
-    id: index,
-    x: 50,
-    y: 50,
+    id,
+    x: Math.random() * 100, // percentage
+    y: -10 - Math.random() * 40, // start above screen
     rotation: Math.random() * 360,
     color: colors[Math.floor(Math.random() * colors.length)],
-    size: 8 + Math.random() * 12,
-    velocityX: Math.cos(angle) * velocity,
-    velocityY: Math.sin(angle) * velocity - 15,
-    rotationSpeed: (Math.random() - 0.5) * 20,
-    shape: ['circle', 'square', 'triangle', 'star', 'flame'][Math.floor(Math.random() * 5)] as ConfettiPiece['shape']
+    size: 8 + Math.random() * 10,
+    velocityX: (Math.random() - 0.5) * 2, // horizontal drift
+    velocityY: 5 + Math.random() * 5, // fall speed
+    rotationSpeed: (Math.random() - 0.5) * 10,
+    shape: shapes[Math.floor(Math.random() * shapes.length)]
   }
 }
 
 const generateFirework = (id: number): Firework => {
-  const x = 20 + Math.random() * 60
-  const y = 20 + Math.random() * 40
-  const colors = ['oklch(0.85 0.20 15)', 'oklch(0.80 0.22 45)', 'oklch(0.90 0.15 90)']
-  
+  const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF']
   return {
     id,
-    x,
-    y,
+    x: 20 + Math.random() * 60, // Keep away from edges
+    y: 20 + Math.random() * 40,
     color: colors[Math.floor(Math.random() * colors.length)],
-    particles: Array.from({ length: 30 }, (_, i) => ({
-      angle: (i / 30) * Math.PI * 2,
-      velocity: 5 + Math.random() * 8,
-      size: 3 + Math.random() * 5
+    particles: Array.from({ length: 12 }, (_, i) => ({
+      angle: (i / 12) * Math.PI * 2,
+      velocity: 2 + Math.random() * 3
     }))
   }
 }
@@ -110,374 +98,185 @@ export function StreakCelebration({
 }: StreakCelebrationProps) {
   const [confetti, setConfetti] = useState<ConfettiPiece[]>([])
   const [fireworks, setFireworks] = useState<Firework[]>([])
-  const [showRays, setShowRays] = useState(false)
-
-  const getStreakEmoji = () => {
-    if (streakCount >= 100) return STREAK_EMOJIS[100]
-    if (streakCount >= 50) return STREAK_EMOJIS[50]
-    if (streakCount >= 30) return STREAK_EMOJIS[30]
-    if (streakCount >= 14) return STREAK_EMOJIS[14]
-    if (streakCount >= 7) return STREAK_EMOJIS[7]
-    if (streakCount >= 3) return STREAK_EMOJIS[3]
-    return STREAK_EMOJIS[1]
+  
+  const getStreakData = (map: Record<number, any>, defaultVal: any) => {
+    const tiers = [100, 50, 30, 14, 7, 3, 1]
+    const tier = tiers.find(t => streakCount >= t) || 1
+    return map[tier] || defaultVal
   }
 
-  const getStreakMessage = () => {
-    if (streakCount >= 100) return STREAK_MESSAGES[100]
-    if (streakCount >= 50) return STREAK_MESSAGES[50]
-    if (streakCount >= 30) return STREAK_MESSAGES[30]
-    if (streakCount >= 14) return STREAK_MESSAGES[14]
-    if (streakCount >= 7) return STREAK_MESSAGES[7]
-    if (streakCount >= 3) return STREAK_MESSAGES[3]
-    return STREAK_MESSAGES[1]
-  }
-
-  const getStreakColors = () => {
-    if (streakCount >= 30) return STREAK_COLORS[30]
-    if (streakCount >= 14) return STREAK_COLORS[14]
-    if (streakCount >= 7) return STREAK_COLORS[7]
-    if (streakCount >= 3) return STREAK_COLORS[3]
-    return STREAK_COLORS.default
-  }
+  const currentEmoji = getStreakData(STREAK_EMOJIS, '🎉')
+  const currentMessage = getStreakData(STREAK_MESSAGES, 'Keep it up!')
+  const currentColors = (() => {
+    const tiers = [100, 50, 30, 14, 7, 3]
+    const tier = tiers.find(t => streakCount >= t)
+    return tier ? STREAK_COLORS[tier as keyof typeof STREAK_COLORS] : STREAK_COLORS.default
+  })()
 
   const duration = streakCount >= 7 ? 6000 : 4000
-  const particleCount = Math.min(100 + streakCount * 2, 200)
   const shouldShowFireworks = streakCount >= 7
 
   useEffect(() => {
     if (isActive) {
-      const colors = getStreakColors()
-      const pieces = Array.from({ length: particleCount }, (_, i) => 
-        generateConfettiPiece(i, particleCount, colors)
+      // Initialize Confetti
+      const pieceCount = Math.min(100 + streakCount * 2, 200)
+      const pieces = Array.from({ length: pieceCount }, (_, i) => 
+        generateConfettiPiece(i, pieceCount, currentColors)
       )
       setConfetti(pieces)
-      setShowRays(true)
 
+      // Handle Fireworks
+      let fireworkInterval: NodeJS.Timeout
       if (shouldShowFireworks) {
-        const fireworkIntervals: NodeJS.Timeout[] = []
-        const fireworkCount = Math.min(Math.floor(streakCount / 7), 5)
+        let count = 0
+        const maxFireworks = Math.min(Math.floor(streakCount / 5), 8)
         
-        for (let i = 0; i < fireworkCount; i++) {
-          const interval = setInterval(() => {
-            setFireworks(prev => [...prev, generateFirework(Date.now() + Math.random())])
-          }, 800 + i * 200)
-          fireworkIntervals.push(interval)
-        }
-
-        setTimeout(() => {
-          fireworkIntervals.forEach(clearInterval)
-        }, duration - 1000)
+        fireworkInterval = setInterval(() => {
+          if (count >= maxFireworks) {
+            clearInterval(fireworkInterval)
+            return
+          }
+          setFireworks(prev => [...prev, generateFirework(Date.now() + Math.random())])
+          count++
+        }, 500)
       }
 
+      // Cleanup timer
       const timer = setTimeout(() => {
         setConfetti([])
         setFireworks([])
-        setShowRays(false)
         onComplete?.()
       }, duration)
 
       return () => {
         clearTimeout(timer)
+        if (fireworkInterval) clearInterval(fireworkInterval)
         setConfetti([])
         setFireworks([])
       }
-    } else {
-      setConfetti([])
-      setFireworks([])
-      setShowRays(false)
     }
-  }, [isActive, streakCount])
+  }, [isActive, streakCount, shouldShowFireworks, duration, onComplete])
 
+  // Clean up old fireworks
   useEffect(() => {
     if (fireworks.length > 0) {
       const timer = setTimeout(() => {
         setFireworks(prev => prev.slice(1))
-      }, 1500)
+      }, 1000)
       return () => clearTimeout(timer)
     }
   }, [fireworks])
 
-  const getShapePath = (shape: ConfettiPiece['shape'], size: number) => {
-    switch (shape) {
-      case 'triangle':
-        return `polygon(50% 0%, 0% 100%, 100% 100%)`
-      case 'star':
-        return `polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)`
-      case 'flame':
-        return `polygon(50% 0%, 65% 20%, 80% 45%, 70% 70%, 60% 100%, 50% 85%, 40% 100%, 30% 70%, 20% 45%, 35% 20%)`
-      default:
-        return undefined
-    }
-  }
-
-  const getGradientColors = () => {
-    const colors = getStreakColors()
-    return colors.slice(0, 3).join(', ')
-  }
-
   return (
     <AnimatePresence>
       {isActive && (
-        <div className="fixed inset-0 pointer-events-none z-[100] overflow-hidden">
-          {showRays && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none overflow-hidden">
+          {/* Backdrop */}
+          <motion.div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          />
+
+          {/* Rays Effect */}
+          <motion.div 
+            className="absolute inset-0 flex items-center justify-center opacity-30"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          >
+            <div className="w-[200vw] h-[200vh] bg-[conic-gradient(from_0deg,transparent_0deg,white_20deg,transparent_40deg,white_60deg,transparent_80deg,white_100deg,transparent_120deg,white_140deg,transparent_160deg,white_180deg,transparent_200deg,white_220deg,transparent_240deg,white_260deg,transparent_280deg,white_300deg,transparent_320deg,white_340deg,transparent_360deg)]" />
+          </motion.div>
+
+          {/* Confetti */}
+          {confetti.map((piece) => (
             <motion.div
-              className="absolute inset-0"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ 
-                opacity: [0, 0.6, 0.4],
-                scale: [0.8, 1.2, 1.5],
-                rotate: [0, 180]
-              }}
-              exit={{ opacity: 0 }}
-              transition={{ 
-                duration: duration / 1000,
-                ease: "easeOut"
-              }}
-            >
-              {Array.from({ length: 12 }).map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute top-1/2 left-1/2 w-[200%] h-2 origin-left"
-                  style={{
-                    background: `linear-gradient(90deg, ${getStreakColors()[i % getStreakColors().length]} 0%, transparent 100%)`,
-                    transform: `rotate(${(i * 360) / 12}deg)`,
-                    opacity: 0.15,
-                  }}
-                  animate={{
-                    scaleX: [0, 1, 0.7],
-                    opacity: [0, 0.15, 0]
-                  }}
-                  transition={{
-                    duration: 2,
-                    delay: i * 0.1,
-                    repeat: Infinity,
-                    repeatDelay: 1
-                  }}
-                />
-              ))}
-            </motion.div>
-          )}
-
-          {confetti.map((piece) => {
-            const clipPath = getShapePath(piece.shape, piece.size)
-            
-            return (
-              <motion.div
-                key={piece.id}
-                className="absolute"
-                style={{
-                  width: piece.size,
-                  height: piece.size,
-                  left: `${piece.x}%`,
-                  top: `${piece.y}%`,
-                }}
-                initial={{
-                  x: 0,
-                  y: 0,
-                  rotate: piece.rotation,
-                  opacity: 1,
-                }}
-                animate={{
-                  x: piece.velocityX * 50,
-                  y: piece.velocityY * 50 + 600,
-                  rotate: piece.rotation + piece.rotationSpeed * 100,
-                  opacity: [1, 1, 1, 0.8, 0],
-                }}
-                transition={{
-                  duration: duration / 1000,
-                  ease: [0.25, 0.46, 0.45, 0.94],
-                }}
-              >
-                <div
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: piece.color,
-                    borderRadius: piece.shape === 'circle' ? '50%' : piece.shape === 'square' ? '2px' : '0',
-                    clipPath: clipPath || undefined,
-                    boxShadow: `0 0 ${piece.size / 2}px ${piece.color}`,
-                  }}
-                />
-              </motion.div>
-            )
-          })}
-
-          {fireworks.map((firework) => (
-            <div
-              key={firework.id}
+              key={piece.id}
               className="absolute"
-              style={{
-                left: `${firework.x}%`,
-                top: `${firework.y}%`,
+              initial={{ 
+                x: `${piece.x}vw`, 
+                y: `${piece.y}vh`, 
+                rotate: piece.rotation,
+                opacity: 1 
               }}
-            >
-              {firework.particles.map((particle, i) => (
+              animate={{ 
+                y: '120vh',
+                x: `${piece.x + (piece.velocityX * 20)}vw`,
+                rotate: piece.rotation + (piece.rotationSpeed * 20)
+              }}
+              transition={{ 
+                duration: Math.random() * 2 + 2, 
+                ease: "linear" 
+              }}
+              style={{
+                width: piece.size,
+                height: piece.size,
+                backgroundColor: piece.color,
+                borderRadius: piece.shape === 'circle' ? '50%' : piece.shape === 'square' ? '2px' : '0',
+                clipPath: piece.shape === 'triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : 
+                          piece.shape === 'star' ? 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' : undefined
+              }}
+            />
+          ))}
+
+          {/* Fireworks */}
+          {fireworks.map((fw) => (
+            <div key={fw.id} className="absolute" style={{ left: `${fw.x}%`, top: `${fw.y}%` }}>
+              {fw.particles.map((p, i) => (
                 <motion.div
                   key={i}
                   className="absolute w-2 h-2 rounded-full"
-                  style={{
-                    backgroundColor: firework.color,
-                    boxShadow: `0 0 8px ${firework.color}`,
+                  style={{ backgroundColor: fw.color, boxShadow: `0 0 10px ${fw.color}` }}
+                  initial={{ x: 0, y: 0, opacity: 1, scale: 0 }}
+                  animate={{ 
+                    x: Math.cos(p.angle) * p.velocity * 50,
+                    y: Math.sin(p.angle) * p.velocity * 50,
+                    opacity: 0,
+                    scale: [1, 0]
                   }}
-                  initial={{
-                    x: 0,
-                    y: 0,
-                    scale: 0,
-                    opacity: 1,
-                  }}
-                  animate={{
-                    x: Math.cos(particle.angle) * particle.velocity * 40,
-                    y: Math.sin(particle.angle) * particle.velocity * 40,
-                    scale: [0, 1, 0],
-                    opacity: [1, 1, 0],
-                  }}
-                  transition={{
-                    duration: 1.2,
-                    ease: "easeOut",
-                  }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
                 />
               ))}
             </div>
           ))}
 
+          {/* Main Card */}
           <motion.div
-            className="absolute inset-0 flex items-center justify-center"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.5 }}
+            className="relative z-10 bg-white dark:bg-zinc-900 p-8 rounded-3xl shadow-2xl border-4 border-white/20 text-center max-w-sm w-full mx-4"
+            initial={{ scale: 0.5, opacity: 0, y: 100 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.8, opacity: 0, y: -50 }}
+            transition={{ type: "spring", damping: 15 }}
           >
-            <motion.div
-              className="relative rounded-3xl px-12 py-8 shadow-2xl border-4 border-white overflow-hidden"
-              style={{
-                background: `linear-gradient(135deg, ${getGradientColors()})`,
-              }}
-              initial={{ y: 50, opacity: 0 }}
+            <motion.div 
+              className="text-8xl mb-4"
               animate={{ 
-                y: 0, 
-                opacity: 1,
-                scale: [1, 1.05, 1],
+                scale: [1, 1.2, 1],
+                rotate: [0, 10, -10, 0]
               }}
-              exit={{ y: -50, opacity: 0 }}
-              transition={{
-                duration: 0.6,
-                scale: {
-                  duration: 1.2,
-                  repeat: Infinity,
-                  repeatDelay: 0.3,
-                }
-              }}
+              transition={{ duration: 0.8, repeat: Infinity, repeatDelay: 1 }}
             >
-              <motion.div
-                className="absolute inset-0 opacity-20"
-                animate={{
-                  background: [
-                    'radial-gradient(circle at 20% 50%, white 0%, transparent 50%)',
-                    'radial-gradient(circle at 80% 50%, white 0%, transparent 50%)',
-                    'radial-gradient(circle at 50% 80%, white 0%, transparent 50%)',
-                    'radial-gradient(circle at 20% 50%, white 0%, transparent 50%)',
-                  ]
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-
-              <motion.div
-                className="text-center relative z-10"
-                animate={{
-                  rotate: [0, -2, 2, -2, 0],
-                }}
-                transition={{
-                  duration: 0.6,
-                  repeat: Infinity,
-                  repeatDelay: 1.5,
-                }}
-              >
-                <motion.div 
-                  className="text-8xl mb-4"
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    rotate: [0, 10, -10, 0]
-                  }}
-                  transition={{
-                    duration: 1,
-                    repeat: Infinity,
-                    repeatDelay: 0.5
-                  }}
-                >
-                  {getStreakEmoji()}
-                </motion.div>
-                
-                <motion.h2 
-                  className="text-5xl font-bold text-white mb-3 drop-shadow-lg"
-                  animate={{
-                    scale: [1, 1.05, 1]
-                  }}
-                  transition={{
-                    duration: 0.8,
-                    repeat: Infinity,
-                    repeatDelay: 0.8
-                  }}
-                >
-                  {getStreakMessage()}
-                </motion.h2>
-                
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <p className="text-3xl text-white font-bold mb-2 drop-shadow">
-                    {streakCount} Day Streak!
-                  </p>
-                  <p className="text-lg text-white/90 font-medium">
-                    Keep up the amazing work! 🌍
-                  </p>
-                </motion.div>
-              </motion.div>
+              {currentEmoji}
             </motion.div>
-          </motion.div>
 
-          <motion.div
-            className="absolute inset-0"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 0.4, 0.3, 0] }}
-            transition={{ duration: duration / 1000 }}
-            style={{
-              background: `radial-gradient(circle at center, ${getStreakColors()[0]}40 0%, transparent 70%)`,
-            }}
-          />
+            <motion.h2 
+              className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 mb-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              {streakCount} Day Streak!
+            </motion.h2>
 
-          <motion.div
-            className="absolute top-0 left-0 right-0 h-32"
-            initial={{ opacity: 0, y: -100 }}
-            animate={{ opacity: [0, 1, 1, 0], y: 0 }}
-            transition={{ duration: duration / 1000 }}
-          >
-            {Array.from({ length: streakCount >= 7 ? 20 : 10 }).map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-1 rounded-full"
-                style={{
-                  left: `${(i / (streakCount >= 7 ? 20 : 10)) * 100}%`,
-                  height: `${30 + Math.random() * 40}px`,
-                  background: `linear-gradient(180deg, ${getStreakColors()[i % getStreakColors().length]} 0%, transparent 100%)`,
-                }}
-                animate={{
-                  scaleY: [0, 1, 0.8, 0],
-                  opacity: [0, 1, 0.8, 0]
-                }}
-                transition={{
-                  duration: 1.5,
-                  delay: i * 0.05,
-                  repeat: Infinity,
-                  repeatDelay: 2
-                }}
-              />
-            ))}
+            <motion.p 
+              className="text-xl text-zinc-600 dark:text-zinc-300 font-medium"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              {currentMessage}
+            </motion.p>
           </motion.div>
         </div>
       )}
